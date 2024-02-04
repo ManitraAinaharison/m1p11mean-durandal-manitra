@@ -1,0 +1,77 @@
+<div class="absolute bg-gray-50 py-7 top-0 bottom-auto inset-x-0 z-[100]">
+    <div class="max-w-[1200px] justify-between items-center mx-auto px-6">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <a routerLink="/" class="relative float-left text-slate-700 no-underline h-auto mr-8 pl-0">
+                    <img [src]="this.logoUrl" alt="Logo" class="w-40 transition-transform duration-300 hover:scale-95">
+                </a>
+                <nav class="relative float-left">
+                    <ul class="flex justify-end items-center mb-0 pl-0 list-none">
+                        <li class="nav-item-wrapper">
+                            <a routerLink="/accueil" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item-wrapper">
+                            <a routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">About</a>
+                        </li>
+                        <li class="nav-item-wrapper">
+                            <div class="block relative text-left mx-auto z-50">
+                                <div class="flex p-0 transition-colors duration-350 cursor-pointer   align-top text-left whitespace-nowrap mx-auto text-gray-800 no-underline relative">
+                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline">Services</div>
+                                    <img 
+                                        src="assets/img/dropdown-arrow.svg" 
+                                        loading="lazy"
+                                        alt="Chevron" 
+                                        class="ml-3 mr-0 static transition-all duration-300">
+                                </div>
+                                <nav class="dropdown-navbar-container dropdown-list" style="display: none;">
+                                    <a routerLink="makeup.html"
+                                        class="dropdown-nav-link inner dropdown-link">Makeup</a>
+                                    <a routerLink="hair-styling.html"
+                                        class="dropdown-nav-link inner dropdown-link">Hair styling</a>
+                                    <a routerLink="waxing.html"
+                                        class="dropdown-nav-link inner dropdown-link">Waxing</a>
+                                    <a routerLink="massages.html"
+                                        class="dropdown-nav-link inner dropdown-link">Massages</a>
+                                    <a routerLink="nails.html" class="dropdown-nav-link inner dropdown-link">Nails</a>
+                                    <a routerLink="skin-care.html"
+                                        class="dropdown-nav-link inner dropdown-link">Skincare</a>
+                                </nav>
+                            </div>
+                        </li>
+                        <li class="nav-item-wrapper">
+                            <a routerLink="/shop" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Shop</a>
+                        </li>
+                        <li class="nav-item-wrapper">
+                            <div class="block relative text-left mx-auto z-50">
+                                <div class="flex p-0 transition-colors duration-350 cursor-pointer   align-top text-left whitespace-nowrap mx-auto text-gray-800 no-underline relative">
+                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline">Pages</div>
+                                    <img 
+                                        src="assets/img/dropdown-arrow.svg" 
+                                        loading="lazy"
+                                        alt="Chevron" 
+                                        class="ml-3 mr-0 static transition-all duration-300">
+                                </div>
+                                <nav class="dropdown-navbar-container dropdown-list" style="display: none;">
+                                    <a routerLink="makeup.html"
+                                        class="dropdown-nav-link inner dropdown-link">Makeup</a>
+                                    <a routerLink="hair-styling.html"
+                                        class="dropdown-nav-link inner dropdown-link">Hair styling</a>
+                                    <a routerLink="waxing.html"
+                                        class="dropdown-nav-link inner dropdown-link">Waxing</a>
+                                    <a routerLink="massages.html"
+                                        class="dropdown-nav-link inner dropdown-link">Massages</a>
+                                    <a routerLink="nails.html" class="dropdown-nav-link inner dropdown-link">Nails</a>
+                                    <a routerLink="skin-care.html"
+                                        class="dropdown-nav-link inner dropdown-link">Skincare</a>
+                                </nav>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="flex items-center">
+                
+            </div>
+        </div>
+    </div>
+</div>
