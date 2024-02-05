@@ -8,15 +8,15 @@ services:
   #     command: sh -c "echo 'Back service started. Now running Front service.' && sleep 5 && docker-compose run --rm frontend"
 
   backend:
-    container_name: salon-back-container
+    container_name: manja-backend-container
     user: "1000"
     # environment:
     #   - UID=1000  # Set the desired user ID here
-    build: ./back
-    image: salon-back-image
+    build: ./manja-backend
+    image: manja-backend-image
     volumes:
       - type: bind
-        source: ./back
+        source: ./manja-backend
         target: /app
     
     ports: 
