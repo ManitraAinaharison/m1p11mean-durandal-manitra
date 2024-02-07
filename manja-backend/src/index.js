@@ -6,7 +6,9 @@ require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env" : ".env.dev",
 });
 
-mongoose.connect(process.env.MONGO_STRING_URL);
+mongoose.connect(process.env.MONGO_STRING_URL, {
+  serverApi: { version: "1", strict: true, deprecationErrors: true },
+});
 
 const db = mongoose.connection;
 
