@@ -1,5 +1,6 @@
-const util = require('../../../../util/datatype.util')
-const ROLES = util.createEnum(["USER" , "ADMIN" , "EMPLOYEE"]);
+const util = require("../../../../util/datatype.util");
+const ROLES = util.createEnum(["USER", "ADMIN", "EMPLOYEE"]);
+const securityUtil = require("../../../../util/security.util");
 
 const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
@@ -24,7 +25,7 @@ const userSchema = new mongoose.Schema({
           start: { type: Date, required: true },
           end: {
             type: Date,
-            required: true
+            required: true,
             // validate: {
             //   validator: function (value) {
             //     // `this` refers to the document being validated
@@ -40,11 +41,26 @@ const userSchema = new mongoose.Schema({
 });
 
 // fire a function before doc saved to db
-userSchema.pre('save', async function(next) {
-  // const salt = await bcrypt.genSalt();
-  // this.password = await bcrypt.hash(this.password, salt);
-  // next();
+userSchema.pre("save", async function (next) {
+  try {
+    console.log(this.password);
+    this.password = securityUtil.hash(this.password);
+  } catch (e) {
+    console.log(e.message);
+    throw new Error("An error occurred on the user password hash:", e.message);
+  }
+  next();
 });
+
+// userSchema.post('save', function (error, doc, next) { // if the email is not unique
+//     if (error.name === 'MongoError' && error.code === 11000) {
+//         // Duplicate key error (uniqueness constraint)
+//         next(new Error('Email must be unique'));
+//     } else {
+//         // Other errors
+//         next(error);
+//     }
+// });
 
 module.exports.User = mongoose.model("User", userSchema);
 module.exports.ROLES = ROLES;
