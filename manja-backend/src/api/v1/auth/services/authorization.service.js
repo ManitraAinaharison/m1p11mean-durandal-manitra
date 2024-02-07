@@ -1,0 +1,3 @@
+function giveJwt(user){
+    
+}
