@@ -1,4 +1,4 @@
-<div class="absolute bg-gray-50 py-7 top-0 bottom-auto inset-x-0 z-[100]">
+<div class="absolute bg-transparent py-7 top-0 bottom-auto inset-x-0 z-[100]">
     <div class="max-w-[1200px] justify-between items-center mx-auto px-6">
         <div class="flex justify-between items-center">
             <div class="flex items-center">
@@ -8,61 +8,45 @@
                 <nav class="relative float-left">
                     <ul class="flex justify-end items-center mb-0 pl-0 list-none">
                         <li class="nav-item-wrapper">
-                            <a routerLink="/accueil" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
-                        </li>
-                        <li class="nav-item-wrapper">
-                            <a routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">About</a>
+                            <a routerLink="/accueil" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Accueil</a>
                         </li>
                         <li class="nav-item-wrapper">
                             <div class="block relative text-left mx-auto z-50">
-                                <div class="flex p-0 transition-colors duration-350 cursor-pointer   align-top text-left whitespace-nowrap mx-auto text-gray-800 no-underline relative">
-                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline">Services</div>
+                                <div class="dropdown-toggle" (click)="openDropdown($event)">
+                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline hover:text-[#eba37a]">Services</div>
                                     <img 
                                         src="assets/img/dropdown-arrow.svg" 
                                         loading="lazy"
                                         alt="Chevron" 
-                                        class="ml-3 mr-0 static transition-all duration-300">
+                                        class="dropdown-arrow">
                                 </div>
-                                <nav class="dropdown-navbar-container dropdown-list" style="display: none;">
-                                    <a routerLink="makeup.html"
-                                        class="dropdown-nav-link inner dropdown-link">Makeup</a>
-                                    <a routerLink="hair-styling.html"
-                                        class="dropdown-nav-link inner dropdown-link">Hair styling</a>
-                                    <a routerLink="waxing.html"
-                                        class="dropdown-nav-link inner dropdown-link">Waxing</a>
-                                    <a routerLink="massages.html"
-                                        class="dropdown-nav-link inner dropdown-link">Massages</a>
-                                    <a routerLink="nails.html" class="dropdown-nav-link inner dropdown-link">Nails</a>
-                                    <a routerLink="skin-care.html"
-                                        class="dropdown-nav-link inner dropdown-link">Skincare</a>
+                                <nav class="dropdown-navbar-container dropdown-list">
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Makeup</a>
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Coiffure</a>
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Épilation</a>
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Massages</a>
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Ongles</a>
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Soins du visage</a>
                                 </nav>
                             </div>
                         </li>
                         <li class="nav-item-wrapper">
-                            <a routerLink="/shop" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Shop</a>
+                            <a routerLink="/a-propos" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">À propos</a>
                         </li>
                         <li class="nav-item-wrapper">
                             <div class="block relative text-left mx-auto z-50">
-                                <div class="flex p-0 transition-colors duration-350 cursor-pointer   align-top text-left whitespace-nowrap mx-auto text-gray-800 no-underline relative">
-                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline">Pages</div>
+                                <div class="dropdown-toggle" (click)="openDropdown($event)">
+                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline hover:text-[#eba37a]">Pages</div>
                                     <img 
                                         src="assets/img/dropdown-arrow.svg" 
                                         loading="lazy"
                                         alt="Chevron" 
-                                        class="ml-3 mr-0 static transition-all duration-300">
+                                        class="dropdown-arrow">
                                 </div>
-                                <nav class="dropdown-navbar-container dropdown-list" style="display: none;">
-                                    <a routerLink="makeup.html"
-                                        class="dropdown-nav-link inner dropdown-link">Makeup</a>
-                                    <a routerLink="hair-styling.html"
-                                        class="dropdown-nav-link inner dropdown-link">Hair styling</a>
-                                    <a routerLink="waxing.html"
-                                        class="dropdown-nav-link inner dropdown-link">Waxing</a>
-                                    <a routerLink="massages.html"
-                                        class="dropdown-nav-link inner dropdown-link">Massages</a>
-                                    <a routerLink="nails.html" class="dropdown-nav-link inner dropdown-link">Nails</a>
-                                    <a routerLink="skin-care.html"
-                                        class="dropdown-nav-link inner dropdown-link">Skincare</a>
+                                <nav class="dropdown-navbar-container dropdown-list">
+                                    <a routerLink="/services" class="dropdown-nav-link inner dropdown-link">Nos Services</a>
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Promotions</a>
+                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Adresse</a>
                                 </nav>
                             </div>
                         </li>
@@ -70,7 +54,22 @@
                 </nav>
             </div>
             <div class="flex items-center">
-                
+                <!-- <div *ifAuthenticated="false"> -->
+                <div>
+                    <div class="grid grid-cols-2">
+                        <a routerLink="/login" class="flex justify-end items-center no-underline text-gray-900 lowercase pr-8 hover:-translate-y-[1px] hover:duration-300">
+                            Se connecter
+                        </a>
+                        <a routerLink="/inscription" class="button-primary">
+                            S'inscrire
+                        </a>
+                    </div>
+                </div>
+                <div *ifAuthenticated="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>                      
+                </div>
             </div>
         </div>
     </div>
