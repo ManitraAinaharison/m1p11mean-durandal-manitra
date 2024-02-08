@@ -15,6 +15,7 @@ import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { HomeModule } from './features/home/home.module';
 import { ServiceModule } from './features/service/service.module';
 import { CustomerAuthenticationModule } from './features/customer-authentication/customer-authentication.module';
+import { IfAuthenticatedDirective } from './shared/directives/if-authenticated.directive';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import { CustomerAuthenticationModule } from './features/customer-authentication
   ],
   imports: [
     BrowserModule,
+    IfAuthenticatedDirective,
     HttpClientModule,
     CustomerAuthenticationModule,
     HomeModule,

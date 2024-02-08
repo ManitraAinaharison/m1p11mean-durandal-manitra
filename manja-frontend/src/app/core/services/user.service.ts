@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, distinctUntilChanged, map, shareReplay, tap } from 'rxjs';
-import { Credentials, User } from '../models/user.model';
+import { Credentials, SignUpData, User } from '../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { JwtService } from './jwt.service';
 import { Router } from '@angular/router';
@@ -25,6 +25,12 @@ export class UserService {
     login(credentials: Credentials): Observable<User> {
         return this.http
           .post<User>("/users/customer-login", credentials)
+          .pipe(tap((user) => this.setAuth(user)));
+    }
+
+    signup(userData: SignUpData): Observable<User> {
+        return this.http
+          .post<User>("/users/sign-up", userData)
           .pipe(tap((user) => this.setAuth(user)));
     }
 
