@@ -1,24 +1,30 @@
 const User = require("../schemas/user.schema").User;
 const ROLES = require("../schemas/user.schema").ROLES;
 const mongoose = require("mongoose");
-const seecurityUtil = require("../../../../util/security.util");
+const securityUtil = require("../../../../util/security.util");
+
+const bcrypt = require("bcrypt");
 
 module.exports.register = async function register(req) {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { firstname, lastname, username, password, email, role } = req.body;
-    let newUser = await User.create({
+    let { firstname, lastname, username, password, email } = req.body;
+    await User.deleteMany()
+    let newUser = new User({
       firstname,
       lastname,
       username,
       password,
-      email: email.toLowerCase(),
-      role: ROLES.USER,
+      email,
+      role: ROLES.CUSTOMER,
     });
 
     newUser = await newUser.save({ session });
-    const { accessToken, refreshToken } = securityUtil.generateTokens({
+    username = newUser.username;
+    email = newUser.email;
+    role = newUser.role;
+    const { accessToken, refreshToken } = await securityUtil.generateTokens({
       username,
       email,
       role,
@@ -40,16 +46,18 @@ module.exports.register = async function register(req) {
 
 module.exports.login = async function login(req) {
   try {
-    const { email, password } = req.body;
-    const user = User.findOne({
+    let { email, password } = req.body;
+    email = email.toLowerCase();
+    const user = await User.findOne({
       email,
-      password: seecurityUtil.hash(password),
     });
-    if (!user) return null;
-    const { accessToken, refreshToken } = securityUtil.generateTokens({
+    if (!user || !securityUtil.isMatch(password, user.password)) return null;
+    const username = user.username;
+    const role = user.role;
+    const { accessToken, refreshToken } = await securityUtil.generateTokens({
       username,
       email,
-      role: user.role,
+      role,
     });
     return {
       accessToken,
@@ -58,7 +66,7 @@ module.exports.login = async function login(req) {
     };
   } catch (e) {
     console.log(e);
-    throw new Exception(e.message);
+    throw new Error(e.message);
   }
 };
 
