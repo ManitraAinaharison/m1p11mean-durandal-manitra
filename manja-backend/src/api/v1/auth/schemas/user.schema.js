@@ -1,5 +1,5 @@
 const util = require("../../../../util/datatype.util");
-const ROLES = util.createEnum(["USER", "ADMIN", "EMPLOYEE"]);
+const ROLES = util.createEnum(["CUSTOMER", "ADMIN", "EMPLOYEE"]);
 const securityUtil = require("../../../../util/security.util");
 
 const mongoose = require("mongoose");
@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
 // fire a function before doc saved to db
 userSchema.pre("save", async function (next) {
   try {
-    console.log(this.password);
+    this.email = this.email.toLowerCase();
     this.password = securityUtil.hash(this.password);
   } catch (e) {
     console.log(e.message);
