@@ -1,5 +1,6 @@
 # current node version at that time (12/2023)
-FROM mongodb/mongodb-community-server
+FROM mongodb/mongodb-community-server:6.0.13-ubuntu2204
+
 WORKDIR /app
 
 # Copy the current dir contents into the container at /client
