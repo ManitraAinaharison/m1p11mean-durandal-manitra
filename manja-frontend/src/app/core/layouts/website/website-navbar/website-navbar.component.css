@@ -34,9 +34,17 @@
         @apply invisible min-w-60 border-[1px] border-gray-200 bg-white pt-5 px-9 pb-8 top-14 transform translate-y-16 scale-95;
     }
 
+    .dropdown-navbar-container button {
+        @apply hidden !important;
+    }
+
     .dropdown-navbar-container.active {
         transform-style: preserve-3d;
         @apply visible min-w-60 transform-none  transition-transform duration-300;
+    }
+
+    .dropdown-navbar-container.active button {
+        @apply block !important;
     }
 
     .dropdown-list {
