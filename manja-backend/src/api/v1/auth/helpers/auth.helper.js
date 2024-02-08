@@ -8,15 +8,13 @@ function addTokenCookies(
     // httpOnly: true,
     secure: true,
     sameSite: 'none',
-    maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRATION, 10),
-    maxAge: 60,
+    maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRATION),
   });
   response.cookie("refreshToken", refreshToken, {
     // httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRATION, 10),
-    maxAge: 60,
+    maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRATION),
   });
 };
 
