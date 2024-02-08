@@ -1,0 +1,19 @@
+@import 'tailwindcss/components';
+
+@layer components {
+    .nav-item-wrapper {
+        @apply ml-0 mr-8;
+    }
+
+    .nav-link {
+        @apply lowercase text-[18px] leading-loose font-normal no-underline transition-transform duration-300 text-neutral-800;
+    }
+
+    .nav-link.active {
+        @apply text-[#eba37a];
+    }
+    
+    .nav-link:hover {
+        @apply text-[#eba37a];
+    }
+}

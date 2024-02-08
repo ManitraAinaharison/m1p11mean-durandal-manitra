@@ -1,0 +1,97 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+    * {
+        box-sizing: border-box;
+    }
+    
+    html {
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        overflow-y: scroll;
+    }
+    
+    body {
+        margin: 0;
+        @apply text-gray-500;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 18px;
+        line-height: 30px;
+    }
+
+    h1 {
+        @apply text-gray-900;
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 62px;
+        font-weight: 400;
+        line-height: 80px;
+    }
+
+    h2 {
+        @apply text-gray-900;
+        margin-top: 0;
+        margin-bottom: 18px;
+        font-size: 38px;
+        font-weight: 500;
+        line-height: 52px;
+    }
+
+    h3 {
+        @apply text-gray-900;
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 26px;
+        font-weight: 500;
+        line-height: 36px;
+    }
+
+    p {
+        display: block;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+    }
+
+    img {
+        max-width: 100%;
+        vertical-align: middle;
+        display: inline-block;
+    }
+}
+
+@layer utilities {
+    .button-primary {
+        @apply bg-gray-900 text-white text-center lowercase rounded-[80px] px-10 py-3 font-medium leading-5 no-underline  transition-all duration-300;
+    }
+
+    .button-primary:hover {
+        @apply bg-[#eba37a] text-white translate-y-[-1px];
+    }
+
+    .button-secondary {
+        @apply border border-gray-200 bg-white text-neutral-800 text-center lowercase rounded-[80px] px-10 py-3 font-medium leading-5 no-underline transition-all duration-300;
+    }
+
+    .button-secondary:hover {
+        @apply bg-gray-900 text-white translate-y-[-1px];
+    }
+
+}
+
+@layer utilities { 
+    .section {
+        @apply py-[200px];
+    }
+
+    .section.first {
+        @apply bg-gray-50 pb-20 relative overflow-hidden;
+    }
+
+    .section-container {
+        @apply max-w-[1200px] justify-between items-center mx-auto px-6;
+    }
+}
