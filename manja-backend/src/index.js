@@ -29,10 +29,9 @@ const config = {
   username: process.env.ATLAS_API_PUBLIC,
   password: process.env.ATLAS_API_PRIVATE,
 };
-
-const { checkAndUpdateIP } = mongoDBAutoIP.setup(config);
-checkAndUpdateIP()
-  .then(() => {
+// const { checkAndUpdateIP } = mongoDBAutoIP.setup(config);
+// checkAndUpdateIP()
+  // .then(() => {
     mongoose.connect(process.env.MONGO_STRING_URL, {
       serverApi: { version: "1", strict: true, deprecationErrors: true },
     });
@@ -47,7 +46,7 @@ checkAndUpdateIP()
         console.log(`Example app listening on port ${port}`);
       });
     });
-  })
-  .catch((error) => {
-    console.error("Failed to update IP whitelist on startup:", error);
-  });
+  // })
+  // .catch((error) => {
+  //   console.error("Failed to update IP whitelist on startup:", error);
+  // });
