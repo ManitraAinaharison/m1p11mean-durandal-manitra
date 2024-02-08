@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms"
 import { UserService } from '../../../../core/services/user.service';
 import { Credentials } from '../../../../core/models/user.model';
 import { Router } from '@angular/router';
+import { fieldHasError, markFormGroupTouched } from '../../../../shared/utils/form.util';
 
 
 interface LoginForm {
@@ -17,7 +18,7 @@ interface LoginForm {
     templateUrl: './login.component.html',
     styleUrl: './login.component.css',
 })
-export class LoginComponent  implements OnInit {
+export class LoginComponent implements OnInit {
 
     loginForm!: FormGroup<LoginForm>;
     loginFormSubmitIsLoading: boolean = false;
@@ -58,7 +59,7 @@ export class LoginComponent  implements OnInit {
     submitLoginForm(): void {
         this.showErrorLoginForm = false;
         this.loginFormSubmitIsLoading = true;
-        this.markFormGroupTouched(this.loginForm);
+        markFormGroupTouched(this.loginForm);
         
         if(this.loginForm.valid) {
 
@@ -82,21 +83,8 @@ export class LoginComponent  implements OnInit {
 
     }
 
-    // TODO: Put functions below in shared service 
-    markFormGroupTouched(formGroup: FormGroup): void {
-        Object.values(formGroup.controls).forEach(control => {
-            if (control instanceof FormGroup) {
-                this.markFormGroupTouched(control);
-            } else {
-                control.markAsTouched();
-            }
-        });
-    }
-
-    fieldHasError(form: FormGroup, formControlName: string, validatorName: string): boolean {
-        return form.controls[formControlName].touched && 
-            form.controls[formControlName].errors && 
-            form.controls[formControlName].errors![validatorName];
+    fieldHasErrorWrapper(form: FormGroup, formControlName: string, validatorName: string): boolean {
+        return fieldHasError(form, formControlName, validatorName);
     }
 }
 

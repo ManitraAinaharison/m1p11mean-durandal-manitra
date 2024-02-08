@@ -1,12 +1,11 @@
 export interface User {
-    username: string;
+    firstname: string;
+    lastname: string;
     email: string;
-    firstname?: string;
-    lastname?: string;
+    username: string;
+    password: string;
     token: string;
 }
 
-export interface Credentials { 
-    username: string;
-    password: string;
-}
+export type Credentials = Pick<User, 'username' | 'password'>;
+export type SignUpData = Pick<User, 'firstname' | 'lastname' | 'email' | 'username' | 'password'>;
