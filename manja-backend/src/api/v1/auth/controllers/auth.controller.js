@@ -22,7 +22,6 @@ router.post("/login", async (req, res) => {
   try {
     const { accessToken, refreshToken, responseBody } =
       await authenticationService.login(req);
-    console.log(accessToken, refreshToken)
     await authHelper.addTokenCookies(res, { accessToken, refreshToken });
     res.status(201).json(responseBody);
   } catch (e) {
@@ -35,7 +34,7 @@ router.get("/users", (req, res) => {
   return res.status(200).json(authenticationService.listUsers());
 });
 
-router.get("/users-protected", authMiddleware.authorise([ROLES.EMPLOYEE]), (req, res) => {
+router.get("/users-protected", authMiddleware.authorise([ROLES.CUSTOMER]), (req, res) => {
   return res.status(200).json(authenticationService.listUsers());
 });
 

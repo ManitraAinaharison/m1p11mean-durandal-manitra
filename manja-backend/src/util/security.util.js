@@ -14,8 +14,8 @@ function decodeToken(token) {
   return jwt.decode(token, process.env.API_SECRET);
 }
 
-async function isTokenExpired(token, orTokenIsNull=false) {
-  if(!token && orTokenIsNull === true) return true;
+function isTokenExpired(token, orTokenIsNull = false) {
+  if (token == null && orTokenIsNull === true) return true;
   const decoded = decodeToken(token);
   const expirationTimestamp = decoded.exp * 1000; // Convert to milliseconds
   return Date.now() >= expirationTimestamp;
@@ -32,14 +32,14 @@ async function createToken(payload, { expiresIn, ...otherOptions }) {
 async function createAccessToken({ username, email, role }) {
   return await createToken(
     { username, email, role },
-    { expiresIn: parseInt(process.env.ACCESS_TOKEN_EXPIRATION, 10) }
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION + "s" }
   );
 }
 
 async function createRefreshToken({ username, email, role }) {
   return await createToken(
     { username, email, role },
-    { expiresIn: parseInt(process.env.REFRESH_TOKEN_EXPIRATION, 10) }
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION + "s" }
   );
 }
 
@@ -49,9 +49,11 @@ async function generateTokens({ username, email, role }) {
   return { accessToken, refreshToken };
 }
 
-async function sameUserToken(decodedAccessToken, decodedRefreshToken){
+async function sameUserToken(decodedAccessToken, decodedRefreshToken) {
   const fields = ["username", "email", "role"];
-  return fields.every((field)=>decodedAccessToken[field] === decodedRefreshToken[field])
+  return fields.every(
+    (field) => decodedAccessToken[field] === decodedRefreshToken[field]
+  );
 }
 
 module.exports.hash = hash;
