@@ -15,9 +15,9 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     standalone: true,
 })
 export class IfAuthenticatedDirective<T> implements OnInit {
-    
+
     destroyRef = inject(DestroyRef);
-    
+
     constructor(
         private templateRef: TemplateRef<T>,
         private userService: UserService,
@@ -32,15 +32,16 @@ export class IfAuthenticatedDirective<T> implements OnInit {
         .isAuthenticated
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((isAuthenticated: boolean) => {
+
+            this.viewContainer.clear();
+            this.hasView = false;
+
             const authRequired = isAuthenticated && this.condition;
             const unauthRequired = !isAuthenticated && !this.condition;
 
             if ((authRequired || unauthRequired) && !this.hasView) {
                 this.viewContainer.createEmbeddedView(this.templateRef);
                 this.hasView = true;
-            } else if (this.hasView) {
-                this.viewContainer.clear();
-                this.hasView = false;
             }
         });
     }

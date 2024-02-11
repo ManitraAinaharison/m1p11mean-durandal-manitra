@@ -5,13 +5,12 @@ function addTokenCookies(
   { accessToken, refreshToken }
 ) {
   response.cookie("accessToken", accessToken, {
-    // httpOnly: true,
     secure: true,
-    sameSite: 'none',
+    sameSite: "none",
     maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRATION),
   });
   response.cookie("refreshToken", refreshToken, {
-    // httpOnly: true,
+    httpOnly: true,
     secure: true,
     sameSite: "none",
     maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRATION),
