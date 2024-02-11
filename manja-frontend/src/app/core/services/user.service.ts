@@ -4,6 +4,7 @@ import { Credentials, SignUpData, User } from '../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { JwtService } from './jwt.service';
 import { Router } from '@angular/router';
+import { ApiError, ApiSuccess } from '../models/api.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +12,10 @@ import { Router } from '@angular/router';
 export class UserService {
 
     private currentUserSubject = new BehaviorSubject<User | null>(null);
-    
+
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
     public isAuthenticated = this.currentUser.pipe(map((user) => !!user));
+    public errorMessage: string = "";
 
     constructor(
         private readonly http: HttpClient,
@@ -22,16 +24,16 @@ export class UserService {
     ) {}
 
 
-    login(credentials: Credentials): Observable<User> {
+    login(credentials: Credentials): Observable<ApiSuccess> {
         return this.http
-          .post<User>("/users/customer-login", credentials)
-          .pipe(tap((user) => this.setAuth(user)));
+          .post<ApiSuccess>("/v1/login", credentials, { withCredentials: true })
+          .pipe(tap((res) => this.setAuth(res.payload)));
     }
 
-    signup(userData: SignUpData): Observable<User> {
+    signup(userData: SignUpData): Observable<ApiSuccess> {
         return this.http
-          .post<User>("/users/sign-up", userData)
-          .pipe(tap((user) => this.setAuth(user)));
+          .post<ApiSuccess>("/v1/register", userData)
+          .pipe(tap((res: ApiSuccess) => this.setAuth(res.payload)));
     }
 
     logout(): void {
@@ -39,12 +41,12 @@ export class UserService {
         void this.router.navigate(["/"]);
     }
 
-    getCurrentUser(): Observable<User> {
+    getCurrentUser(): Observable<ApiSuccess> {
         return this.http
-            .get<User>("/user")
+            .get<ApiSuccess>("/v1/user", { withCredentials: true })
             .pipe(
                 tap({
-                    next: (user) => this.setAuth(user),
+                    next: (res: ApiSuccess) => this.setAuth(res.payload),
                     error: () => this.purgeAuth(),
                 }),
                 shareReplay(1)
@@ -52,12 +54,10 @@ export class UserService {
     }
 
     setAuth(user: User): void {
-        this.jwtService.saveToken(user.token);
         this.currentUserSubject.next(user);
     }
-    
+
     purgeAuth(): void {
-        this.jwtService.destroyToken();
         this.currentUserSubject.next(null);
     }
 }

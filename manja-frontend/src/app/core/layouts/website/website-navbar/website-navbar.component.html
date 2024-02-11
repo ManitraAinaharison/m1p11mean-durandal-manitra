@@ -14,10 +14,10 @@
                             <div class="block relative text-left mx-auto z-50">
                                 <div class="dropdown-toggle" (click)="openDropdown($event)">
                                     <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline hover:text-[#eba37a]">Services</div>
-                                    <img 
-                                        src="assets/img/dropdown-arrow.svg" 
+                                    <img
+                                        src="assets/img/dropdown-arrow.svg"
                                         loading="lazy"
-                                        alt="Chevron" 
+                                        alt="Chevron"
                                         class="dropdown-arrow">
                                 </div>
                                 <nav class="dropdown-navbar-container dropdown-list">
@@ -37,10 +37,10 @@
                             <div class="block relative text-left mx-auto z-50">
                                 <div class="dropdown-toggle" (click)="openDropdown($event)">
                                     <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline hover:text-[#eba37a]">Pages</div>
-                                    <img 
-                                        src="assets/img/dropdown-arrow.svg" 
+                                    <img
+                                        src="assets/img/dropdown-arrow.svg"
                                         loading="lazy"
-                                        alt="Chevron" 
+                                        alt="Chevron"
                                         class="dropdown-arrow">
                                 </div>
                                 <nav class="dropdown-navbar-container dropdown-list">
@@ -54,8 +54,7 @@
                 </nav>
             </div>
             <div class="flex items-center">
-                <!-- <div *ifAuthenticated="false"> -->
-                <div class="hidden">
+                <div *ifAuthenticated="false">
                     <div class="grid grid-cols-2">
                         <a routerLink="/login" class="flex justify-end items-center no-underline text-gray-900 lowercase pr-8 hover:-translate-y-[1px] hover:duration-300">
                             Se connecter
@@ -65,8 +64,7 @@
                         </a>
                     </div>
                 </div>
-                <!-- <div *ifAuthenticated="true"> -->
-                <div>
+                <div *ifAuthenticated="true">
                     <div class="flex justify-between items-center gap-x-8">
                         <div class="block relative text-left mx-auto z-50">
                             <div class="dropdown-toggle" (click)="openDropdown($event)">
@@ -79,12 +77,12 @@
                                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#eba37a] opacity-75"></span>
                                             <span class="relative inline-flex rounded-full h-3 w-3 bg-[#eba37a]"></span>
                                         </span>
-                                    </div>                           
+                                    </div>
                                 </div>
-                                <img 
-                                    src="assets/img/dropdown-arrow.svg" 
+                                <img
+                                    src="assets/img/dropdown-arrow.svg"
                                     loading="lazy"
-                                    alt="Chevron" 
+                                    alt="Chevron"
                                     class="dropdown-arrow hidden">
                             </div>
                             <nav class="dropdown-navbar-container dropdown-list right-0">
@@ -98,21 +96,21 @@
                         <div class="block relative text-left mx-auto z-50">
                             <div class="dropdown-toggle" (click)="openDropdown($event)">
                                 <div class="flex items-center">
-                                    <svg 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        fill="none" 
-                                        viewBox="0 0 24 24" 
-                                        stroke-width="1.5" 
-                                        stroke="currentColor" 
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
                                         class="w-6 h-6 text-gray-900 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    </svg> 
-                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline">jean06</div>
+                                    </svg>
+                                    <div class="text-neutral-800 lowercase p-0 text-[18px] leading-loose no-underline">{{ (this.userService.currentUser | async)?.username }}</div>
                                 </div>
-                                <img 
-                                    src="assets/img/dropdown-arrow.svg" 
+                                <img
+                                    src="assets/img/dropdown-arrow.svg"
                                     loading="lazy"
-                                    alt="Chevron" 
+                                    alt="Chevron"
                                     class="dropdown-arrow">
                             </div>
                             <nav class="dropdown-navbar-container dropdown-list right-0">
@@ -122,13 +120,13 @@
                                     </div>
                                 </span>
                                 <a routerLink="" class="dropdown-nav-link inner dropdown-link text-nowrap relative">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                         class="w-6 h-6 absolute left-0 top-1/2 -translate-y-1/2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg> 
+                                    </svg>
                                     <span class="ml-8">
                                         Historique de rendez-vous
-                                    </span>                                 
+                                    </span>
                                 </a>
                                 <span class="w-full">
                                     <div class="w-full flex justify-center border-t-[1px] border-gray-200">

@@ -1,23 +1,50 @@
-import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, OnInit, Renderer2 } from '@angular/core';
+import { UserService } from './../../../services/user.service';
+import { AfterContentInit, AfterViewInit, Component, DestroyRef, ElementRef, HostListener, OnChanges, OnInit, Renderer2, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { ApiError, ApiSuccess } from '../../../models/api.model';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-website-navbar',
     templateUrl: './website-navbar.component.html',
     styleUrl: './website-navbar.component.css',
 })
-export class WebsiteNavbarComponent implements OnInit {
-    
+export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
+
     logoUrl: string = 'assets/img/logo.svg';
     dropdownToggles: HTMLElement[]  = [];
 
+    destroyRef = inject(DestroyRef);
+
     constructor(
-        private elementRef: ElementRef, 
-        private renderer: Renderer2
+        private elementRef: ElementRef,
+        private renderer: Renderer2,
+        public userService: UserService,
+        private router: Router,
+        private cookieService: CookieService,
     ) {}
 
     ngOnInit(): void {
-        this.dropdownToggles = this.elementRef.nativeElement.querySelectorAll('.dropdown-toggle');
+      this.dropdownToggles = this.elementRef.nativeElement.querySelectorAll('.dropdown-toggle');
+      if (this.cookieService.get('accessToken')) {
+        this.userService
+        .getCurrentUser()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res: ApiSuccess) => {
+            this.userService.setAuth(res.payload);
+          },
+          error: (err: ApiError) => {
+            this.userService.errorMessage = err.message;
+            this.router.navigate(["/login"]);
+          }
+        });
+      }
+    }
+
+    ngAfterViewInit() {
+        this.updateDropdownTogglesWhenUserChanges();
     }
 
     @HostListener('document:click', ['$event'])
@@ -57,5 +84,16 @@ export class WebsiteNavbarComponent implements OnInit {
             }
         });
     }
-      
+
+    updateDropdownTogglesWhenUserChanges() {
+      this.userService
+      .currentUser
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+          next: () => {
+            this.dropdownToggles = this.elementRef.nativeElement.querySelectorAll('.dropdown-toggle');
+          }
+      });
+    }
+
 }
