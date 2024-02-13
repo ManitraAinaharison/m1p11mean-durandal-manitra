@@ -1,9 +1,9 @@
+import { JwtService } from './jwt.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, distinctUntilChanged, map, shareReplay, tap } from 'rxjs';
 import { Credentials, SignUpData, User } from '../models/user.model';
 import { HttpClient } from '@angular/common/http';
-import { JwtService } from './jwt.service';
-import { Router } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { ApiError, ApiSuccess } from '../models/api.model';
 
 @Injectable({
@@ -16,18 +16,19 @@ export class UserService {
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
     public isAuthenticated = this.currentUser.pipe(map((user) => !!user));
     public errorMessage: string = "";
+    public targetUrl: string = "";
 
     constructor(
         private readonly http: HttpClient,
-        private readonly jwtService: JwtService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly jwtService: JwtService
     ) {}
 
 
     login(credentials: Credentials): Observable<ApiSuccess> {
         return this.http
-          .post<ApiSuccess>("/v1/login", credentials, { withCredentials: true })
-          .pipe(tap((res) => this.setAuth(res.payload)));
+          .post<ApiSuccess>("/v1/login", credentials)
+          .pipe(tap((res: ApiSuccess) => this.setAuth(res.payload)));
     }
 
     signup(userData: SignUpData): Observable<ApiSuccess> {
@@ -38,12 +39,19 @@ export class UserService {
 
     logout(): void {
         this.purgeAuth();
-        void this.router.navigate(["/"]);
+        let currentUrl = this.router.url;
+        if (currentUrl.startsWith('/')) currentUrl = currentUrl.substring(1);
+        const currentRoute: Route | null = this.router.config.find(route => route.path === currentUrl) || null;
+        if (currentRoute && currentRoute.canActivate && currentRoute.canActivate.length > 0) {
+          this.router.navigate(["/login"]);
+        } else {
+          return;
+        }
     }
 
     getCurrentUser(): Observable<ApiSuccess> {
         return this.http
-            .get<ApiSuccess>("/v1/user", { withCredentials: true })
+            .get<ApiSuccess>("/v1/user")
             .pipe(
                 tap({
                     next: (res: ApiSuccess) => this.setAuth(res.payload),
@@ -58,6 +66,7 @@ export class UserService {
     }
 
     purgeAuth(): void {
+        this.jwtService.destroyTokens();
         this.currentUserSubject.next(null);
     }
 }

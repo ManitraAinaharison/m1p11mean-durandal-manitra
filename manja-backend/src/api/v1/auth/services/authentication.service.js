@@ -11,7 +11,6 @@ module.exports.register = async function register(req) {
   session.startTransaction();
   try {
     let { firstname, lastname, username, password, email } = req.body;
-    await User.deleteMany()
     let newUser = new User({
       firstname,
       lastname,
@@ -34,12 +33,12 @@ module.exports.register = async function register(req) {
     return {
       accessToken,
       refreshToken,
-      responseBody: { username, email, role },
+      responseBody: apiUtil.successResponse(true, { username, email, role }),
     };
   } catch (e) {
     await session.abortTransaction();
     console.log(e);
-    throw new Error("Veuillez réessayer s'il vous plaît");
+    throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
   } finally {
     await session.endSession();
   }

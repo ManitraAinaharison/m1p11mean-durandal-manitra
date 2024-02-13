@@ -6,14 +6,11 @@ function addTokenCookies(
 ) {
   response.cookie("accessToken", accessToken, {
     secure: true,
-    sameSite: "none",
-    maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRATION),
+    sameSite: "none"
   });
   response.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
     secure: true,
-    sameSite: "none",
-    maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRATION),
+    sameSite: "none"
   });
 };
 

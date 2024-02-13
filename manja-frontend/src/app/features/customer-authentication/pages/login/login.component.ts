@@ -70,9 +70,9 @@ export class LoginComponent implements OnInit {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: () => {
-                    // console.log(this.cookieService.get("refreshToken"));
                     this.loginFormSubmitIsLoading = false;
-                    // this.router.navigate(["/"])
+                    const nextPage = this.userService.targetUrl === "" ? "/" : this.userService.targetUrl
+                    this.router.navigate([nextPage])
                 },
                 error: (err: ApiError) => {
                     this.userService.errorMessage = err.message;

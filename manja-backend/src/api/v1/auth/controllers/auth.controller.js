@@ -12,6 +12,7 @@ router.post("/register", async (req, res) => {
       await authenticationService.register(req);
     await authHelper.addTokenCookies(res, { accessToken, refreshToken });
     res.status(201).json(responseBody);
+    console.log(responseBody, "inscrit et connecté");
   } catch (e) {
     console.error(e.message);
     res.status(500).json({

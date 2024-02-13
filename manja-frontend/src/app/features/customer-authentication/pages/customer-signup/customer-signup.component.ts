@@ -95,7 +95,9 @@ export class CustomerSignupComponent implements OnInit {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: () => {
-                    this.router.navigate(["/"])
+                  this.signUpFormSubmitIsLoading = false;
+                  const nextPage = this.userService.targetUrl === "" ? "/" : this.userService.targetUrl
+                  this.router.navigate([nextPage])
                 },
                 error: (err: ApiError) => {
                   this.errorSignUpForm = err.message;
