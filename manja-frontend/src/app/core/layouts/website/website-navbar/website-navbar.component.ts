@@ -1,3 +1,4 @@
+import { JwtService } from './../../../services/jwt.service';
 import { UserService } from './../../../services/user.service';
 import { AfterContentInit, AfterViewInit, Component, DestroyRef, ElementRef, HostListener, OnChanges, OnInit, Renderer2, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,12 +23,12 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
         private renderer: Renderer2,
         public userService: UserService,
         private router: Router,
-        private cookieService: CookieService,
+        private jwtService: JwtService
     ) {}
 
     ngOnInit(): void {
       this.dropdownToggles = this.elementRef.nativeElement.querySelectorAll('.dropdown-toggle');
-      if (this.cookieService.get('accessToken')) {
+      if (this.jwtService.getAccessToken() && this.jwtService.getRefreshToken()) {
         this.userService
         .getCurrentUser()
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -40,6 +41,8 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
             this.router.navigate(["/login"]);
           }
         });
+      } else {
+        this.jwtService.destroyTokens();
       }
     }
 
@@ -52,7 +55,7 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
         let isDropdownClick = false;
         for (let i = 0; i < this.dropdownToggles.length; i++) {
             const dropdownToggle = this.dropdownToggles[i];
-            if (dropdownToggle.contains(event.target as Node)) {
+            if (dropdownToggle.contains(event.target as Node) || dropdownToggle.nextElementSibling?.contains(event.target as Node)) {
                 isDropdownClick = true;
                 break;
             }
@@ -96,4 +99,7 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
       });
     }
 
+    logout() {
+        this.userService.logout();
+    }
 }

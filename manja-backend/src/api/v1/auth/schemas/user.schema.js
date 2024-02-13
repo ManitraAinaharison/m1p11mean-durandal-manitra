@@ -1,6 +1,7 @@
 const util = require("../../../../util/datatype.util");
 const ROLES = util.createEnum(["CUSTOMER", "ADMIN", "EMPLOYEE"]);
 const securityUtil = require("../../../../util/security.util");
+const apiUtil = require("../../../../util/api.util");
 
 const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
@@ -52,15 +53,18 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// userSchema.post('save', function (error, doc, next) { // if the email is not unique
-//     if (error.name === 'MongoError' && error.code === 11000) {
-//         // Duplicate key error (uniqueness constraint)
-//         next(new Error('Email must be unique'));
-//     } else {
-//         // Other errors
-//         next(error);
-//     }
-// });
+userSchema.post('save', function(error, doc, next) {
+  console.log(error.name);
+  if (error.name === 'MongoServerError' && error.code === 11000) {
+    let errorMessage = "";
+    if (error.keyValue.email) {
+      errorMessage = `L'email ${error.keyValue.email} est déjà pris par un autre utilisateur.`;
+    }
+    throw apiUtil.ErrorWithStatusCode(errorMessage, 500);
+  } else {
+  }
+  next();
+});
 
 module.exports.User = mongoose.model("User", userSchema);
 module.exports.ROLES = ROLES;
