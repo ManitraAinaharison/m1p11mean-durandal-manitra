@@ -5,10 +5,11 @@ import { UserService } from '../../../../core/services/user.service';
 import { Credentials } from '../../../../core/models/user.model';
 import { Router } from '@angular/router';
 import { fieldHasError, markFormGroupTouched } from '../../../../shared/utils/form.util';
+import { ApiError } from '../../../../core/models/api.model';
 
 
 interface LoginForm {
-    username: FormControl<string>;
+    email: FormControl<string>;
     password: FormControl<string>;
 }
 
@@ -22,14 +23,13 @@ export class LoginComponent implements OnInit {
 
     loginForm!: FormGroup<LoginForm>;
     loginFormSubmitIsLoading: boolean = false;
-    showErrorLoginForm: boolean = false;
 
     destroyRef = inject(DestroyRef);
 
     constructor(
         private fb: FormBuilder,
         private router: Router,
-        private userService: UserService,
+        public userService: UserService,
     ) {}
 
     ngOnInit(): void {
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
 
     initLoginForm(): void {
         this.loginForm = this.fb.group<LoginForm>({
-            username: new FormControl("", {
+            email: new FormControl("", {
                 validators: [Validators.required],
                 nonNullable: true
             }),
@@ -51,16 +51,16 @@ export class LoginComponent implements OnInit {
 
     defineLoginPayload(): Credentials {
         return {
-            username: this.loginForm.value.username ?? '',
+            email: this.loginForm.value.email ?? '',
             password: this.loginForm.value.password ?? '',
         };
     }
 
     submitLoginForm(): void {
-        this.showErrorLoginForm = false;
+        this.userService.errorMessage = "";
         this.loginFormSubmitIsLoading = true;
         markFormGroupTouched(this.loginForm);
-        
+
         if(this.loginForm.valid) {
 
             const loginPayload: Credentials = this.defineLoginPayload();
@@ -70,10 +70,12 @@ export class LoginComponent implements OnInit {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: () => {
-                    this.router.navigate(["/"])
+                    this.loginFormSubmitIsLoading = false;
+                    const nextPage = this.userService.targetUrl === "" ? "/" : this.userService.targetUrl
+                    this.router.navigate([nextPage])
                 },
-                error: (err) => {
-                    this.showErrorLoginForm = true;
+                error: (err: ApiError) => {
+                    this.userService.errorMessage = err.message;
                     this.loginFormSubmitIsLoading = false;
                 }
             });

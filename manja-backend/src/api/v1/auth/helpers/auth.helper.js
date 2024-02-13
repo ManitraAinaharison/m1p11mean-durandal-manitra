@@ -5,16 +5,12 @@ function addTokenCookies(
   { accessToken, refreshToken }
 ) {
   response.cookie("accessToken", accessToken, {
-    // httpOnly: true,
     secure: true,
-    sameSite: 'none',
-    maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRATION),
+    sameSite: "none"
   });
   response.cookie("refreshToken", refreshToken, {
-    // httpOnly: true,
     secure: true,
-    sameSite: "none",
-    maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRATION),
+    sameSite: "none"
   });
 };
 
