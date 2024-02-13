@@ -4,8 +4,7 @@ export interface User {
     email: string;
     username: string;
     password: string;
-    token: string;
 }
 
-export type Credentials = Pick<User, 'username' | 'password'>;
+export type Credentials = Pick<User, 'email' | 'password'>;
 export type SignUpData = Pick<User, 'firstname' | 'lastname' | 'email' | 'username' | 'password'>;

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const mongoDBAutoIP = require("mongodbautoip");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const cors = require('cors');
 
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env" : ".env.dev",
@@ -11,6 +12,10 @@ require("dotenv").config({
 const app = express();
 const port = process.env.PORT;
 
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());

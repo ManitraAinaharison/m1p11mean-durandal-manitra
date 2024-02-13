@@ -6,6 +6,7 @@ import { SignUpData } from '../../../../core/models/user.model';
 import { fieldHasError, markFormGroupTouched } from '../../../../shared/utils/form.util';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { equalValueValidator } from '../../../../shared/custom-validators';
+import { ApiError } from '../../../../core/models/api.model';
 
 
 interface SignUpForm {
@@ -27,7 +28,7 @@ export class CustomerSignupComponent implements OnInit {
 
     signUpForm!: FormGroup<SignUpForm>;
     signUpFormSubmitIsLoading: boolean = false;
-    showErrorSignUpForm: boolean = false;
+    errorSignUpForm: string = "";
 
     destroyRef = inject(DestroyRef);
 
@@ -81,11 +82,10 @@ export class CustomerSignupComponent implements OnInit {
     }
 
     submitSignUpForm(): void {
-        console.log(this.signUpForm);
-        this.showErrorSignUpForm = false;
+        this.errorSignUpForm = "";
         this.signUpFormSubmitIsLoading = true;
         markFormGroupTouched(this.signUpForm);
-        
+
         if(this.signUpForm.valid) {
 
             const signupPayload: SignUpData = this.defineSignUpPayload();
@@ -95,11 +95,13 @@ export class CustomerSignupComponent implements OnInit {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: () => {
-                    this.router.navigate(["/"])
+                  this.signUpFormSubmitIsLoading = false;
+                  const nextPage = this.userService.targetUrl === "" ? "/" : this.userService.targetUrl
+                  this.router.navigate([nextPage])
                 },
-                error: (err) => {
-                    this.showErrorSignUpForm = true;
-                    this.signUpFormSubmitIsLoading = false;
+                error: (err: ApiError) => {
+                  this.errorSignUpForm = err.message;
+                  this.signUpFormSubmitIsLoading = false;
                 }
             });
 

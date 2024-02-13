@@ -6,13 +6,13 @@
     * {
         box-sizing: border-box;
     }
-    
+
     html {
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
         overflow-y: scroll;
     }
-    
+
     body {
         margin: 0;
         @apply text-gray-500;
@@ -63,7 +63,7 @@
     }
 }
 
-@layer utilities {
+@layer components {
     .button-primary {
         @apply bg-gray-900 text-white text-center lowercase rounded-[80px] px-10 py-3 font-medium leading-5 no-underline  transition-all duration-300;
     }
@@ -86,7 +86,7 @@
     }
 
     .input {
-        @apply w-full rounded-[100px] mb-0 px-6 py-3 text-[18px] transition-all duration-300 bg-gray-100 border-[1px] border-gray-300 hover:border-[#eba37a] hover:bg-white  lowercase;
+        @apply w-full rounded-[100px] mb-0 px-6 py-3 text-[18px] transition-all duration-300 bg-gray-100 border-[1px] border-gray-300 hover:border-[#eba37a] hover:bg-white;
     }
 
     .input.error {
@@ -98,7 +98,7 @@
     }
 }
 
-@layer utilities { 
+@layer utilities {
     .section {
         @apply py-[200px];
     }

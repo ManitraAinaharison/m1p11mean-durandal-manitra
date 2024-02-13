@@ -4,57 +4,72 @@ const helperUtil = require("../helpers/auth.helper");
 module.exports.authorise = function authorise(permittedRoles) {
   return async (req, res, next) => {
     try {
-      const accessToken = req.cookies.accessToken;
-      const refreshToken = req.cookies.refreshToken;
+      let accessToken = req.cookies.accessToken;
+      let refreshToken = req.cookies.refreshToken;
 
-      if (!accessToken && !refreshToken) { // no-token
-        return res.redirect(403, "/login", "access denied");
+			helperUtil.removeTokenCookies(res);
+
+      if (
+				(!accessToken && !refreshToken) || 
+				(accessToken && !refreshToken)
+			) {
+				return res.status(403).json({
+					message: "Token manquant."
+				});
+			}
+
+			const decodedAccessToken = accessToken ? securityUtil.decodeToken(accessToken) : null;
+			const decodedRefreshToken = securityUtil.decodeToken(refreshToken);
+
+			if (
+				decodedAccessToken && 
+				decodedRefreshToken && 
+				!securityUtil.sameUserToken(decodedAccessToken, decodedRefreshToken)
+			) {
+        return res.status(403).json({
+          message: "Tokens invalide."
+        });
+			}
+
+
+      if (
+				(accessToken && !permittedRoles.includes(decodedAccessToken.role)) && 
+				(refreshToken && !permittedRoles.includes(decodedRefreshToken.role))
+			) {
+				return res.status(403).json({
+					message: "Accès refusé."
+				});
       }
 
-      const decodedAccesToken = securityUtil.decodeToken(accessToken);
-      const decodedRefreshToken = securityUtil.decodeToken(refreshToken);
+			const expiredAccessToken = accessToken ? securityUtil.isTokenExpired(accessToken, true) : null;
+			const expiredRefreshToken = securityUtil.isTokenExpired(refreshToken, true);
 
-      const accessExpired = securityUtil.isTokenExpired(accessToken);
-      const refreshExpiredOrNull = securityUtil.isTokenExpired(
-        refreshToken,
-        true
-      );
+			helperUtil.addTokenCookies(res, req.cookies );
+			
+			if (!accessToken || (accessToken && expiredAccessToken == true)) {
 
-      if (!securityUtil.sameUserToken(decodedAccesToken, decodedRefreshToken)) {
-        res.clearCookie("refreshToken");
-      }
+				if (refreshToken && expiredRefreshToken == true) {
+					return res.status(403).json({
+							message: "Session expirée. Veuillez vous reconnecter."
+					});
+				}
 
-      if (!permittedRoles.includes(decodedAccesToken.role)) {
-        // unsuffisent permission
-        return res.redirect("/login", 403);
-      } else if (
-        // both tokens expired
-        accessExpired &&
-        refreshExpiredOrNull
-      ) {
-        console.info(
-          `tokens expired at ${new Date(
-            decodedAccesToken.exp * 1000
-          )} - ${new Date(decodedRefreshToken.exp * 1000)}`
-        );
-        helperUtil.removeTokenCookies(res);
-        return res.redirect("/login", 403);
-      } else if (
-        // accessToken expired but refreshTokenStill valid
-        accessExpired &&
-        !refreshExpiredOrNull
-      ) {
-      }
-      const newTokens = await securityUtil.generateTokens(
-        decodedAccesToken.username,
-        decodedAccesToken.email,
-        decodedAccesToken.role
-      );
-      helperUtil.addTokenCookies(res, { ...newTokens });
+				helperUtil.removeTokenCookies(res);
+				const userData = {
+					username: decodedRefreshToken.username,
+          email: decodedRefreshToken.email,
+          role: decodedRefreshToken.role
+				}
+				accessToken = await securityUtil.createAccessToken(userData);
+				helperUtil.addTokenCookies(res, { accessToken, refreshToken });
+			}
+
       next();
     } catch (e) {
-      console.log(e);
-      return res.status(500);
+      console.error(e.message);
+      return res.status(500).json({
+        message: e.message
+      });
     }
   };
 };
