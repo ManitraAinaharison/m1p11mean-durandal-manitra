@@ -4,11 +4,11 @@ import { SalonService } from '../../../../core/services/salon-service.service';
 import { ServiceModel, SubService } from '../../../../core/models/salon-service.model';
 
 @Component({
-  selector: 'app-details-service',
-  templateUrl: './details-service.component.html',
-  styleUrl: './details-service.component.css',
+  selector: 'app-reservation',
+  templateUrl: './reservation.component.html',
+  styleUrl: './reservation.component.css',
 })
-export class DetailsServiceComponent {
+export class ReservationComponent {
   serviceSlug: string | null = null;
   matchingService: ServiceModel | null = null;
   constructor(
