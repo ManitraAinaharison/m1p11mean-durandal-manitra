@@ -1,0 +1,58 @@
+<div class="w-96">
+  <!-- calendar template style -->
+  <div class="max-h-106 w-full h-96 text-sm">
+    <div class="mb-5 flex justify-between">
+      <div class="text-primary">January 2022</div>
+      <div class="flex gap-x-1 text-secondary">
+        <div
+          class="size-6 flex items-center justify-center rounded-full text-secondary hover:bg-gray-200 cursor-pointer focus:outline-none"
+        >
+          &lt;
+        </div>
+        <div
+          class="size-6 flex items-center justify-center rounded-full text-secondary hover:bg-gray-200 cursor-pointer focus:outline-none"
+        >
+          &gt;
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-7 gap-y-3">
+      @for (weekDay of weekDays; track $index) {
+      <div
+        class="size-8 flex items-center justify-center rounded-full text-secondary cursor-pointer focus:outline-none"
+      >
+        {{ weekDay }}
+      </div>
+      }
+      @for (calendarDate of dateRange; track $index) {
+        <div
+[ngClass]="{
+  'size-8 flex items-center justify-center rounded-full cursor-pointer focus:outline-none': true,
+  
+}"      >
+        23
+      </div>
+      }
+      <div
+        class="size-8 flex items-center justify-center rounded-full text-secondary hover:bg-gray-200 cursor-pointer focus:outline-none"
+      >
+        23
+      </div>
+      <div
+        class="size-8 flex items-center justify-center rounded-full text-primary hover:bg-gray-200 cursor-pointer focus:outline-none"
+      >
+        1
+      </div>
+      <div
+        class="size-8 flex items-center justify-center rounded-full text-primary hover:bg-gray-200 border-2 border-dark border-solid cursor-pointer focus:outline-none"
+      >
+        12
+      </div>
+      <div
+        class="size-8 flex items-center justify-center rounded-full text-primary hover:bg-tumbleweed cursor-pointer focus:outline-none"
+      >
+        12
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import { DetailsServiceComponent } from './pages/details-service/details-service
 import { RouterModule, Routes } from '@angular/router';
 import { ServiceCardComponent } from '../../shared/components/service-card/service-card.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
+import { DatePickerComponent } from '../../shared/components/datepicker/datepicker.component';
 
 
 const serviceRoutes: Routes = [
@@ -22,7 +23,8 @@ const serviceRoutes: Routes = [
     ListServicesComponent,
     DetailsServiceComponent,
     ServiceCardComponent,
-    ReservationComponent
+    ReservationComponent,
+    DatePickerComponent
   ],
   imports: [CommonModule, RouterModule.forChild(serviceRoutes)],
 })

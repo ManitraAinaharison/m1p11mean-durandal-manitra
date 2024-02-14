@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         dark: "#14142a",
         "neutral-gray": "#f9fafc",
+        "tumbleweed": "#eba37a",
       },
       textColor: {
         primary: "#14142a",
