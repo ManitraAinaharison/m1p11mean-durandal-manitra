@@ -31,4 +31,6 @@ export interface DateInterval {
 export interface DateIntervalDetails extends DateInterval {
   dailyPercentage: number;
   duration: number,
+  percentageStart: number;
+  percentageEnd: number;
 }
