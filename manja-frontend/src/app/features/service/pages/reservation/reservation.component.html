@@ -1,3 +1,4 @@
+@if(matchingService){
 <div class="pt-50 pb-32.5 px-6 bg-neutral-gray">
   <div class="w-full flex justify-center px-6">
     <div class="w-180 text-center">
@@ -16,8 +17,41 @@
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt aperiam
       ab, libero debitis at cumque assumenda tempora illum nihil?
     </p>
-    <div class="mt-12 mb-4 px-12 py-17">
+    <div class="mt-12 mb-4 px-6 py-17">
+      <h4 class="text-primary mb-6 font-semibold">
+        Date et heure de votre rendez-vous
+      </h4>
       <datepicker />
+      <timepicker
+        [openingHour]="openingHour"
+        [closingHour]="closingHour"
+        [nonAvailableHours]="nonAvailableHours"
+      />
+      <h4 class="text-primary mt-12 mb-6 font-semibold">Votre offre</h4>
+      <div class="grid grid-cols-3 gap-x-5 gap-y-2.5">
+        <div
+          *ngFor="let subService of matchingService.subServices"
+          (click)="setSelectedSubService(subService)"
+          [ngClass]="{
+            'p-4 rounded-lg hover:scale-105 select-none cursor-pointer focus:outline-none': true,
+            'hover:bg-neutral-gray': !(
+              selectedSubService?.slug === subService.slug
+            ),
+            'bg-tumbleweed': selectedSubService?.slug === subService.slug
+          }"
+        >
+          <div class="mb-0 flex justify-between text-primary font-bold">
+            <h5>{{ subService.name }}</h5>
+            <div class="text-lg">{{ subService.price }} $</div>
+          </div>
+          <span>
+            <p class="m-y-0 p-0 text-secondary">
+              {{ subService.description }} ({{ subService.duration }} min)
+            </p></span
+          >
+        </div>
+      </div>
     </div>
   </div>
 </div>
+}
