@@ -1,4 +1,4 @@
-import { ServiceModel, SubService } from '../models/salon-service.model';
+import { ServiceModel, SubService } from '../../models/salon-service.model';
 
 export const salonServiceMockData: ServiceModel[] = [
   {
