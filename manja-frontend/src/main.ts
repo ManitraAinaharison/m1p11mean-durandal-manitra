@@ -9,5 +9,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+dayjs.tz.setDefault(dayjs.tz.guess());
+
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));

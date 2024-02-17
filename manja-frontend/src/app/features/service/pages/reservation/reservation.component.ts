@@ -9,7 +9,10 @@ import { AppointmentService } from '../../../../core/services/appointment.servic
 import { EmployeeService } from '../../../../core/services/employee.service';
 import { Employee } from '../../../../core/models/user.model';
 import dayjs, { Dayjs } from 'dayjs';
-import { DateInterval, DateIntervalDetails } from '../../../../core/models/appointment.model';
+import {
+  DateInterval,
+  DateIntervalDetails,
+} from '../../../../core/models/appointment.model';
 import { toDateIntervalDetails } from '../../../../core/util/date.util';
 
 @Component({
@@ -24,8 +27,8 @@ export class ReservationComponent {
   employees: Employee[] | null = null;
   nonAvailableHours: DateIntervalDetails[] = [];
   referenceDate: Dayjs = dayjs();
-  openingHour : number = 9;
-  closingHour : number = 17;
+  openingHour: number = 9;
+  closingHour: number = 17;
 
   constructor(
     private route: ActivatedRoute,
@@ -71,7 +74,11 @@ export class ReservationComponent {
   }
 
   setNonAvailableHours(hours: DateInterval[]): void {
-    this.nonAvailableHours = toDateIntervalDetails(hours, (this.closingHour - this.openingHour) * 60);
-    console.log(this.nonAvailableHours)
+    this.nonAvailableHours = toDateIntervalDetails(
+      hours,
+      this.referenceDate.hour(this.openingHour).minute(0).second(0).millisecond(0),
+      this.referenceDate.hour(this.closingHour).minute(0).second(0).millisecond(0)
+      );
+      console.log(this.nonAvailableHours)
   }
 }

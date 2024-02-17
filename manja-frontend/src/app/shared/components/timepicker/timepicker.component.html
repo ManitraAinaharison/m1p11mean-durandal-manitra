@@ -1,31 +1,24 @@
-<div class="w-auto h-80 flex gap-6 text-primary">
-  <div class="w-17 h-full bg-slate-200 select-none z-0">
-    <div
-      class="w-full h-20 bg-stone-300 flex flex-col justify-between text-center text-sm relative"
+<div class="w-80 h-80 flex gap-6 text-primary">
+  <div class="w-24 h-full relative bg-slate-500">
+    @for (nonAvailableHour of nonAvailableHours; track $index) {
+    <p
+      class="w-full absolute m-0 p-0"
+      [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
     >
-      <p class="m-0 p-0 relative -top-2.5">- 12 : 00 -</p>
-      <p class="m-0 p-0 relative top-2.5 z-10">- 14 : 00 -</p>
-    </div>
-    <div
-      class="w-full h-30 bg-slate-600 flex flex-col justify-between text-center text-sm relative"
-    >
-      <p class="m-0 p-0 absolute -bottom-2.5 z-10">- 15 : 45 -</p>
-    </div>
-    <div
-      class="w-full h-10 bg-transparent flex flex-col justify-between text-center text-sm relative"
-    >
-      <p class="m-0 p-0 absolute -bottom-2.5 z-10">- 16 : 10 -</p>
-    </div>
-    <div
-      class="w-full h-16 bg-tumbleweed flex flex-col justify-between text-center text-sm relative"
-    >
-      <p class="m-0 p-0 absolute -bottom-2.5 z-10">- 16 : 45 -</p>
-    </div>
+      {{ nonAvailableHour.dailyPercentage }}
+    </p>
+    }
+    <p class="absolute top-[calc(100%_-_15px)] m-0 p-0">-- end --</p>
   </div>
-  <div class="w-50 h-80 bg-neutral-gray rounded-md relative">
-    <div class="w-50 h-20 bg-stone-300 relative"></div>
-    <div class="w-50 h-30 bg-slate-600 relative"></div>
-    <div class="w-50 h-10 bg-transparent relative"></div>
-    <div class="w-50 h-16 bg-tumbleweed relative"></div>
+  <div class="w-50 h-full relative bg-slate-500">
+    <p class="absolute top-[calc(0%_-_15px)] m-0 p-0">-- start --</p>
+    @for (nonAvailableHour of nonAvailableHours; track $index) {
+    <div
+      class="w-full absolute m-0 p-0 bg-black"
+      [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
+      [style.height]="nonAvailableHour.dailyPercentage + '%'"
+    ></div>
+    <!-- <p class="absolute top-[{{nonAvailableHour.percentageStart}}%] m-0 p-0">text</p> -->
+    }
   </div>
 </div>
