@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, shareReplay, tap, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ServiceModel, SubService } from '../models/salon-service.model';
-import { salonServiceMockData, subServiceMockData } from './service.mockdata';
+import { salonServiceMockData, subServiceMockData } from './api-mock-data/service.mockdata';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,6 @@ import { salonServiceMockData, subServiceMockData } from './service.mockdata';
 export class SalonService {
   private serviceList = new BehaviorSubject<ServiceModel[] | null>(null);
   private selectedService = new BehaviorSubject<ServiceModel | null>(null);
-  private selectedSubService = new BehaviorSubject<SubService | null>(null);
 
   constructor(private readonly http: HttpClient) {}
   getServices(): Observable<ServiceModel[]> {
@@ -32,10 +31,6 @@ export class SalonService {
 
   setSelectedService(selected: ServiceModel | null) {
     this.selectedService.next(selected);
-  }
-
-  setSelectedSubService(selected: SubService | null) {
-    this.selectedSubService.next(selected);
   }
 
   getService(slug: string): Observable<ServiceModel> {
