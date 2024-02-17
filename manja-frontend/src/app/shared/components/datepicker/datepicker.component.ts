@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import dayjs, { Dayjs } from 'dayjs';
 
 @Component({
@@ -9,20 +9,23 @@ import dayjs, { Dayjs } from 'dayjs';
 export class DatePickerComponent {
   weeksNumber: number = 6;
   dateRange: CalendarDate[] = [];
-  weekDays: string[] = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  openDays: number[] = [0, 1, 2, 3, 4];
+  weekDays = WEEKDAYS;
+  @Input() referenceDate: Dayjs = dayjs();
+  @Output() updateReferenceDate = new EventEmitter<Dayjs>();
+  currentMonth: Month = MONTHS_FRENCH[this.referenceDate.month()];
+  currentYear: number = this.referenceDate.year();
+  selectedDates: CalendarDate[] = [];
+
+  @Input()dailyNonAvailableHours : {start: Date, end: Date}[] = []
 
   constructor() {
-    this.generateDates();
+    this.generateDates(this.referenceDate);
   }
 
-  generateDates() {
-    const currentDate: Dayjs = dayjs()
-      .set('hours', 0)
-      .set('minutes', 0)
-      .set('seconds', 0)
-      .set('milliseconds', 0);
-    const firstDateOfMonth: Dayjs = currentDate.date(1);
-    const lastDateOfMonth: Dayjs = currentDate.endOf('month');
+  generateDates(referenceDate: Dayjs) {
+    const firstDateOfMonth: Dayjs = referenceDate.date(1);
+    const lastDateOfMonth: Dayjs = referenceDate.endOf('month');
     const calendarDays: Dayjs[] = [];
     for (let weekday = 1; weekday < firstDateOfMonth.day(); weekday++)
       calendarDays.push(firstDateOfMonth.day(weekday));
@@ -36,49 +39,130 @@ export class DatePickerComponent {
 
     const remainingDaysNumber = this.weeksNumber * 7 - calendarDays.length;
     for (
-      let date = lastDateOfMonth.date();
+      let date = lastDateOfMonth.date() + 1;
       date <= lastDateOfMonth.date() + remainingDaysNumber;
       date++
     )
       calendarDays.push(lastDateOfMonth.date(date));
 
-    this.setDateRange(toCalendarDates(calendarDays));
-    console.log(this.dateRange)
+    this.setDateRange(
+      toCalendarDates(calendarDays, {
+        month: this.referenceDate.month(),
+        openDays: this.openDays,
+        selectedDates: this.selectedDates,
+      })
+    );
   }
 
   setDateRange(range: CalendarDate[]): void {
     this.dateRange = range;
   }
+
+  nextMonth() {
+    this.changeMonth(+1);
+  }
+
+  previousMonth() {
+    this.changeMonth(-1);
+  }
+
+  changeMonth(value: number) {
+    const nextMonth = this.referenceDate.month(
+      this.referenceDate.month() + value
+    );
+    this.referenceDate = nextMonth;
+    this.updateValues();
+  }
+
+  updateValues() {
+    this.updateReferenceDate.emit(this.referenceDate);
+    this.generateDates(this.referenceDate);
+    this.currentMonth = MONTHS_FRENCH[this.referenceDate.month()];
+    this.currentYear = this.referenceDate.year();
+  }
+
+  selectDate(calendarDate: CalendarDate): void {
+    if (!calendarDate.selectable) return;
+    this.selectedDates = [{ ...calendarDate, selected: true }];
+    this.updateValues();
+  }
 }
 
 interface CalendarDate {
-  day: Dayjs;
-  ofCurrentMonth: boolean;
-  currentDate : boolean,
-  pastDate : boolean,
+  value: Dayjs;
+  isPriorToCurrent: boolean;
+  belongsToMonth: boolean;
+  isCurrentDate: boolean;
   isOpenDay: boolean;
+  selectable: boolean;
+  selected: boolean;
 }
 
 function toCalendarDates(
   dateList: Dayjs[],
-  options?: { currentMonth: number; openDays: number[] }
+  options?: { month: number; openDays: number[]; selectedDates: CalendarDate[] }
 ): CalendarDate[] {
   return dateList.map((d) => toCalendarDate(d, options));
 }
 
 function toCalendarDate(
   value: Dayjs,
-  options?: { currentMonth: number; openDays: number[] }
+  options?: { month: number; openDays: number[]; selectedDates: CalendarDate[] }
 ): CalendarDate {
-  const currentMonth = options?.currentMonth ?? dayjs().month();
-  const ofCurrentMonth: boolean = value.month() === currentMonth;
+  const currentDate = dayjs();
+  const month = options?.month ?? currentDate.month();
+  const belongsToMonth: boolean = value.month() === month;
   const isOpenDay = options?.openDays
-    ? options.openDays.includes(value.day())
+    ? options.openDays.includes(value.day() - 1)
     : true;
+  const isPriorToCurrent = value.isBefore(currentDate, 'date');
   return {
-    day: value,
-    currentDate:
-    ofCurrentMonth,
+    value,
+    isPriorToCurrent,
+    belongsToMonth,
+    isCurrentDate: isCurrentDate(value),
     isOpenDay,
+    selectable: isOpenDay && !isPriorToCurrent,
+    selected: isSelected(value, options?.selectedDates ?? []),
   };
 }
+
+function isCurrentDate(value: Dayjs): boolean {
+  return value.isSame(dayjs(), 'date');
+}
+
+function isSelected(value: Dayjs, selectedDates: CalendarDate[]): boolean {
+  return selectedDates.some((selected) => selected.value.isSame(value, 'date'));
+}
+
+function cleanHMSM(value: Dayjs): Dayjs {
+  return value.hour(0).minute(0).second(0).millisecond(0);
+}
+
+const MONTHS_FRENCH = [
+  'Janvier',
+  'Février',
+  'Mars',
+  'Avril',
+  'Mai',
+  'Juin',
+  'Juillet',
+  'Août',
+  'Septembre',
+  'Octobre',
+  'Novembre',
+  'Décembre',
+];
+type Month = (typeof MONTHS_FRENCH)[number];
+
+const days = [
+  'Lundi',
+  'Mardi',
+  'Mercredi',
+  'Jeudi',
+  'Vendredi',
+  'Samedi',
+  'Dimanche',
+];
+
+const WEEKDAYS = days.map((d) => ({ legend: d, code: d.charAt(0) }));

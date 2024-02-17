@@ -1,15 +1,17 @@
-<div class="w-96">
+<div class="w-96 select-none">
   <!-- calendar template style -->
   <div class="max-h-106 w-full h-96 text-sm">
     <div class="mb-5 flex justify-between">
-      <div class="text-primary">January 2022</div>
+      <div class="text-primary">{{ currentMonth }} {{ currentYear }}</div>
       <div class="flex gap-x-1 text-secondary">
         <div
+          (click)="previousMonth()"
           class="size-6 flex items-center justify-center rounded-full text-secondary hover:bg-gray-200 cursor-pointer focus:outline-none"
         >
           &lt;
         </div>
         <div
+          (click)="nextMonth()"
           class="size-6 flex items-center justify-center rounded-full text-secondary hover:bg-gray-200 cursor-pointer focus:outline-none"
         >
           &gt;
@@ -19,40 +21,39 @@
     <div class="grid grid-cols-7 gap-y-3">
       @for (weekDay of weekDays; track $index) {
       <div
-        class="size-8 flex items-center justify-center rounded-full text-secondary cursor-pointer focus:outline-none"
+        [ngClass]="{
+          'size-8 flex items-center justify-center rounded-full cursor-pointer focus:outline-none': true,
+          'text-secondary': true,
+          'text-red-300': !openDays.includes($index)
+        }"
+        [title]="
+          !openDays.includes($index)
+            ? weekDay.legend + ' : Jour non ouvrable'
+            : weekDay.legend
+        "
       >
-        {{ weekDay }}
+        {{ weekDay.code }}
+      </div>
+      } @for (calendarDate of dateRange; track $index) {
+      <div
+        (click)="selectDate(calendarDate)"
+        [title]="
+          !calendarDate.isOpenDay
+            ? 'Jour non ouvrable'
+            : ''
+        "
+        [ngClass]="{
+          'size-8 flex items-center justify-center rounded-full cursor-pointer focus:outline-none':true,
+          'text-primary': calendarDate.belongsToMonth && calendarDate.isOpenDay && !calendarDate.isCurrentDate,
+          'text-secondary': !calendarDate.belongsToMonth && !calendarDate.isOpenDay && !!calendarDate.isCurrentDate,
+          'text-light bg-dark hover:bg-dark hover:opacity-75': calendarDate.isCurrentDate,
+          'hover:bg-gray-200': calendarDate.selectable && !calendarDate.selected,
+          'bg-tumbleweed': calendarDate.selectable && calendarDate.selected,
+        }"
+      >
+        {{ calendarDate.value.date() }}
       </div>
       }
-      @for (calendarDate of dateRange; track $index) {
-        <div
-[ngClass]="{
-  'size-8 flex items-center justify-center rounded-full cursor-pointer focus:outline-none': true,
-  
-}"      >
-        23
-      </div>
-      }
-      <div
-        class="size-8 flex items-center justify-center rounded-full text-secondary hover:bg-gray-200 cursor-pointer focus:outline-none"
-      >
-        23
-      </div>
-      <div
-        class="size-8 flex items-center justify-center rounded-full text-primary hover:bg-gray-200 cursor-pointer focus:outline-none"
-      >
-        1
-      </div>
-      <div
-        class="size-8 flex items-center justify-center rounded-full text-primary hover:bg-gray-200 border-2 border-dark border-solid cursor-pointer focus:outline-none"
-      >
-        12
-      </div>
-      <div
-        class="size-8 flex items-center justify-center rounded-full text-primary hover:bg-tumbleweed cursor-pointer focus:outline-none"
-      >
-        12
-      </div>
     </div>
   </div>
 </div>
