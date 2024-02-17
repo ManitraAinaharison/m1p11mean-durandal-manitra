@@ -27,17 +27,20 @@ services:
     tty: true
 
   # frontend:
-  #   container_name: salon-front-container
-  #   user: "1000:1000"
-  #   environment:
-  #     - UID=1000  # Set the desired user ID here
-  #   build: ./front
-  #   image: salon-front-image
+  #   container_name: manja-front-container
+  #   build: ./manja-frontend
+  #   image: manja-frontend-image
+  #   working_dir: /app
   #   volumes:
-  #     - ./front:/app
-  #   ports: 
-  #     - 4200:4200
-  #   restart: no
+  #     - type: bind
+  #       source: ./manja-frontend
+  #       target: /app
+  #   expose:
+  #     - 9000
+  #   ports:
+  #     - 9000:9000
+  #   user: "1000"
+  #   # restart: no
   #   # detach: true
   #   tty: true
 
