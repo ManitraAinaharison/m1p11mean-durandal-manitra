@@ -86,3 +86,50 @@ module.exports.getAppointmentsOfEmployeeByDate = async (employeeId, date) => {
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
     }
 }
+
+module.exports.getAppointmentsHistoryByCustomerId = async (customerId) => {
+    try {
+        const appointmentsHistory = await Appointment
+        .find({ client: customerId }, '-client -commission -statusHistory -__v')
+        .populate({ path: 'employee', select: 'firstname lastname -_id -role' })
+        .populate({ path: 'subService', select: '-_id -ptgCommission -price -duration -description' })
+        .sort({ appointmentDate: -1 });
+        return appointmentsHistory;
+    } catch (e) {
+        throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500)
+    }
+};
+
+module.exports.payAppointment = async (customerId, appointmentId) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) throw apiUtil.ErrorWithStatusCode("Ce rendez vous n'existe pas", 500);
+        if (appointment.client != customerId) throw apiUtil.ErrorWithStatusCode("Ce rendez vous n'existe pas", 500);
+        if (appointment.status > 0 && appointment.status < 4) throw apiUtil.ErrorWithStatusCode("Paiement déjà efféctué pour ce rendez-vous");
+        if (appointment.status == 4) throw apiUtil.ErrorWithStatusCode("Vous avez déjà annulé ce rendez-vous");
+
+        const now = Date.now();
+
+        appointment.status = 1;
+        appointment.payment = {
+            paymentDate: now,
+            amount: appointment.price // Change if necessary
+        },
+        appointment.statusHistory.push({
+            status: 1,
+            statusDate: now
+        });
+        await appointment.save();
+        await session.commitTransaction();
+        return appointment;
+    } catch (e) {
+        await session.abortTransaction();
+        throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
+    } finally {
+        await session.endSession();
+    }
+};
+
+module.exports.sendEmailTo
