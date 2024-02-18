@@ -64,12 +64,3 @@ module.exports.login = async function login(req, roles) {
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
     }
 };
-
-
-module.exports.login = async function login(req) {
-    try {
-        
-    } catch (e) {
-        throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
-    }
-};

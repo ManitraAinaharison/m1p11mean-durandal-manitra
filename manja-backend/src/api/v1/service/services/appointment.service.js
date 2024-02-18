@@ -36,7 +36,7 @@ module.exports.insertAppointment = async (req) => {
         if(!appointmentHelper.isInEmployeeSchedule(employee.workSchedule, appointmentDate, subService.duration)) 
             throw apiUtil.ErrorWithStatusCode("Le rendez-vous doit être entre les horaires de travail de l'employé", 500);
 
-        const appointmentsPresenOnTheChosenDate = await this.getAppointmentOfEmployeeByDate(employeeId, appointmentDate);
+        const appointmentsPresenOnTheChosenDate = await this.getAppointmentsOfEmployeeByDate(employeeId, appointmentDate);
         if(!appointmentHelper.notOverlapAnotherAppointment(appointmentsPresenOnTheChosenDate, appointmentDate, subService.duration))
             throw apiUtil.ErrorWithStatusCode("Un rendez-vous est déjà calé à cette heure", 500);
 
@@ -67,7 +67,7 @@ module.exports.insertAppointment = async (req) => {
     }
 };
 
-module.exports.getAppointmentOfEmployeeByDate = async (employeeId, date) => {
+module.exports.getAppointmentsOfEmployeeByDate = async (employeeId, date) => {
     try {
         let startOfDate = new Date(date.getTime());
         startOfDate.setHours(0, 0, 0, 0);

@@ -1,18 +1,13 @@
-const apiUtil = require("../../../../util/api.util");
-
-function getScheduleOfTheDayIndex(employeeWorkSchedule, appointmentDate) {
-    const day = appointmentDate.getDay();
-    return employeeWorkSchedule.findIndex((schedule) => schedule.day === day);
-}
+const employeeHelper = require("./employee.helper");
 
 function isInEmployeeWorkingDay(employeeWorkSchedule, appointmentDate) {
-    let scheduleOfTheDayIndex = getScheduleOfTheDayIndex(employeeWorkSchedule, appointmentDate);
+    let scheduleOfTheDayIndex = employeeHelper.getScheduleOfTheDayIndex(employeeWorkSchedule, appointmentDate);
     if (scheduleOfTheDayIndex < 0) return false;
     return true;
 }
 
 function isInEmployeeSchedule(employeeWorkSchedule, appointmentDate, subServiceDuration) {
-    let scheduleOfTheDayIndex = getScheduleOfTheDayIndex(employeeWorkSchedule, appointmentDate);
+    let scheduleOfTheDayIndex = employeeHelper.getScheduleOfTheDayIndex(employeeWorkSchedule, appointmentDate);
     let scheduleOfTheDay = employeeWorkSchedule[scheduleOfTheDayIndex];
     let dateToCheck = new Date(appointmentDate.getTime());
     dateToCheck.setFullYear(1970);
@@ -42,6 +37,16 @@ function notOverlapAnotherAppointment(appointmentsForGivenDate, appointmentDate,
     return true;
 }
 
+function getDateIntervalOfAppoiment(appointment) {
+    const appointmentDate = appointment.appointmentDate;
+    const appointmentDatePlusDuration = new Date(appointmentDate.getTime() + (appointment.duration * 1000));
+    return {
+        start: appointmentDate,
+        end: appointmentDatePlusDuration
+    };
+}
+
 module.exports.isInEmployeeWorkingDay = isInEmployeeWorkingDay;
 module.exports.isInEmployeeSchedule = isInEmployeeSchedule;
 module.exports.notOverlapAnotherAppointment = notOverlapAnotherAppointment;
+module.exports.getDateIntervalOfAppoiment = getDateIntervalOfAppoiment;
