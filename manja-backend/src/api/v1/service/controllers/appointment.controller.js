@@ -45,5 +45,18 @@ router.get("/appointments/history", authMiddleware.authorise([ROLES.CUSTOMER]), 
     }
 });
 
+router.post("/appointments/reminder", authMiddleware.authorise([ROLES.CUSTOMER]), async (req, res) => {
+    try {
+        const appoin = await appointmentService.sendAppointmentReminderEmail();
+        // await emailService.sendEmail(['manitraainaharison2222@yopmail.com'], 'Test Rappel des rendez-vous', '<h1>Ceci est un test 2</h1>');
+        responseBody = apiUtil.successResponse(true, appoin);
+        res.status(200).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
 
 module.exports = router;

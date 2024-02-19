@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const ejs = require('ejs');
+const fs = require('fs');
+const path = require('path');
 const appointmentHelper = require("../helpers/appointment.helper");
 const apiUtil = require("../../../../util/api.util");
+const dateUtil = require("../../../../util/date.util");
 const securityUtil = require("../../../../util/security.util");
 const { Appointment } = require("../schemas/appointment.schema");
 const { SubService } = require("../schemas/subservice.schema");
 const { Employee } = require("../../auth/schemas/user.schema");
+const emailService = require("../../../../email/email.service");
 
 module.exports.insertAppointment = async (req) => {
     const session = await mongoose.startSession();
@@ -132,4 +137,37 @@ module.exports.payAppointment = async (customerId, appointmentId) => {
     }
 };
 
-module.exports.sendEmailTo
+module.exports.sendAppointmentReminderEmail = async () => {
+    try {
+        const now = new Date();
+        const nowPlusTwelveHours = new Date(now.getTime() + (15 * 3600 * 1000));
+        const appointments = await Appointment
+        .find({ appointmentDate: { $lt: nowPlusTwelveHours }, status: 1, reminder: { $exists: false } })
+        .populate({ path: 'client' })
+        .populate({ path: 'subService' });
+
+        const promises = appointments.map(async (appntmnt) => {
+
+            const subject = "Rappel de rendez-vous";
+            const templatePath = path.join(__dirname, '../../../../email/templates/appointmentReminder.ejs');
+            const appointmentReminderTemplate = await fs.promises.readFile(templatePath, 'utf8');
+            const templateData = {
+                title: subject,
+                firstname: appntmnt.client.firstname,
+                lastname: appntmnt.client.lastname,
+                subServiceName: appntmnt.subService.name,
+                date: dateUtil.datesAreEqualWithoutTime(now, appntmnt.appointmentDate) ? "aujourd'hui" : `le ${dateUtil.toLongFrenchDate(appntmnt.appointmentDate)}`,
+                hour: dateUtil.humanizeHour(appntmnt.appointmentDate)
+            };
+            let renderedHtml = ejs.render(appointmentReminderTemplate, templateData);
+            await emailService.sendEmail(appntmnt.client.email, subject, renderedHtml);
+        });
+
+        await Promise.all(promises);
+
+        return appointments;
+    } catch (e) {
+        console.log(e);
+        throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
+    }
+};
