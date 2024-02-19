@@ -13,4 +13,8 @@ export class TimepickerComponent {
   @Input({ required: true }) nonAvailableHours: DateIntervalDetails[] = [];
   
   constructor() {}
+
+  doesItWork(){
+    console.log('hehe mfers')
+  }
 }

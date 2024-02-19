@@ -3,7 +3,7 @@ import { BehaviorSubject, of, shareReplay, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Appointment, DateInterval } from '../models/appointment.model';
 import { SubService } from '../models/salon-service.model';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { mockupFindNonAvailableHours } from './api-mock-data/appointment.mockdata';
 
 @Injectable({
@@ -13,6 +13,9 @@ export class AppointmentService {
   private appointment = new BehaviorSubject<Appointment[] | null>(null);
   private selectedSubService = new BehaviorSubject<SubService | null>(null);
   private nonAvailableHours = new BehaviorSubject<DateInterval[]>([]);
+  private referenceDate = new BehaviorSubject<Dayjs>(dayjs());
+
+  referenceDate$ = this.referenceDate.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -35,5 +38,13 @@ export class AppointmentService {
 
   setNonAvailableHours(nonAvailableHours: DateInterval[]) {
     this.nonAvailableHours.next(nonAvailableHours);
+  }
+
+  updateReferenceDate(value: Dayjs) : void{
+    this.referenceDate.next(value);
+  }
+
+  getReferenceDate(){
+    return this.referenceDate$;
   }
 }
