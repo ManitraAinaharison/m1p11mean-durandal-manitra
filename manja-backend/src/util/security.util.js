@@ -23,29 +23,29 @@ function isTokenExpired(token, orTokenIsNull = false) {
 
 // HS256 by default
 async function createToken(payload, { expiresIn, ...otherOptions }) {
-  return await jwt.sign(payload, process.env.API_SECRET, {
+  return await jwt.sign(JSON.parse(JSON.stringify(payload)), process.env.API_SECRET, {
     expiresIn,
     ...otherOptions,
   });
 }
 
-async function createAccessToken({ username, email, role }) {
+async function createAccessToken(user) {
   return await createToken(
-    { username, email, role },
+    user,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION + "s" }
   );
 }
 
-async function createRefreshToken({ username, email, role }) {
+async function createRefreshToken(user) {
   return await createToken(
-    { username, email, role },
+    user,
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION + "s" }
   );
 }
 
-async function generateTokens({ username, email, role }) {
-  const accessToken = await createAccessToken({ username, email, role });
-  const refreshToken = await createRefreshToken({ username, email, role });
+async function generateTokens(user) {
+  const accessToken = await createAccessToken(user);
+  const refreshToken = await createRefreshToken(user);
   return { accessToken, refreshToken };
 }
 

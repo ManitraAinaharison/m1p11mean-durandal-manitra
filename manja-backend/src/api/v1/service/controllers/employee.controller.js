@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const securityUtil = require("../../../../util/security.util");
+const employeeService = require("../services/employee.service");
 const apiUtil = require("../../../../util/api.util");
 
-router.get("/user", (req, res) => {
+router.get("/employees/:employeeId/schedules", async (req, res) => {
     try {
-        const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
-        const { password: pwd, __t, __v, _id, iat, exp, ...currentUser } = decodedRefreshToken;
-        const responseBody = apiUtil.successResponse(true, currentUser);
+        const employeeId = req.params.employeeId;
+        const schedules = await employeeService.getSchedulesOfEmployeeByGivenDate(employeeId, req.query.date);
+        const responseBody = apiUtil.successResponse(true, schedules);
         res.status(200).json(responseBody);
     } catch (e) {
         console.error(e.statusCode, e.message);
