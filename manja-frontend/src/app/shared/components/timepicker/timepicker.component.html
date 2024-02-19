@@ -1,0 +1,26 @@
+<div class="w-80 h-80 flex gap-6 text-primary">
+  <div class="w-24 h-full relative bg-slate-500">
+    @for (nonAvailableHour of nonAvailableHours; track $index) {
+    <p
+      class="w-full absolute m-0 p-0"
+      [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
+    >
+      {{ nonAvailableHour.dailyPercentage }}
+    </p>
+    }
+    <p class="absolute top-[calc(100%_-_15px)] m-0 p-0">-- end --</p>
+  </div>
+  <div class="w-50 h-full relative bg-slate-500">
+    <p class="absolute top-[calc(0%_-_15px)] m-0 p-0">-- start --</p>
+    @for (nonAvailableHour of nonAvailableHours; track $index) {
+    <div
+      class="w-full absolute m-0 p-0 bg-black"
+      [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
+      [style.height]="nonAvailableHour.dailyPercentage + '%'"
+      [draggable]="true"
+      (dragover)="doesItWork()"
+    ></div>
+    <!-- <p class="absolute top-[{{nonAvailableHour.percentageStart}}%] m-0 p-0">text</p> -->
+    }
+  </div>
+</div>
