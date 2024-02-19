@@ -16,7 +16,9 @@ import { HomeModule } from './features/home/home.module';
 import { ServiceModule } from './features/service/service.module';
 import { CustomerAuthenticationModule } from './features/customer-authentication/customer-authentication.module';
 import { IfAuthenticatedDirective } from './shared/directives/if-authenticated.directive';
+import { ServiceCardComponent } from './shared/components/service-card/service-card.component';
 import { TooltipDirective } from './shared/directives/tooltip.directive';
+
 
 
 @NgModule({
