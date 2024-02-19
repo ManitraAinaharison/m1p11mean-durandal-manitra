@@ -8,7 +8,11 @@ module.exports.getEmployeesBySubService = async function getEmployeesBySubServic
         const subService = await SubService.findOne({slug: subServiceSlug}, 'id');
         if(!subService) throw apiUtil.ErrorWithStatusCode("Ce sous service n'existe pas", 404);
         const nameRegex = new RegExp(`(.*)(${employeName.split(' ').join('|')})(.*)`, 'i');
-        return await Employee.find({ subServices: { $in: [subService._id] }, $or: [{ lastname: nameRegex }, { firstname: nameRegex }]});
+        return await Employee.
+        find({ 
+            subServices: { $in: [subService._id] }, 
+            $or: [{ lastname: nameRegex }, { firstname: nameRegex }]
+        }, 'firstname lastname -_id -role');
     } catch (e) {
         console.log(e.statusCode, e.message);
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
