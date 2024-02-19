@@ -14,6 +14,7 @@ import {
   DateIntervalDetails,
 } from '../../../../core/models/appointment.model';
 import { toDateIntervalDetails } from '../../../../core/util/date.util';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-reservation',
@@ -26,7 +27,7 @@ export class ReservationComponent {
   selectedSubService: SubService | null = null;
   employees: Employee[] | null = null;
   nonAvailableHours: DateIntervalDetails[] = [];
-  referenceDate: Dayjs = dayjs();
+  referenceDate : Dayjs = dayjs(); // default value
   openingHour: number = 9;
   closingHour: number = 17;
 
@@ -47,6 +48,9 @@ export class ReservationComponent {
     this.employeeService.getEmployees().subscribe((employeeList) => {
       this.setEmployees(employeeList);
     });
+    this.appointmentService.referenceDate$.subscribe((date)=>{
+      this.referenceDate = date;
+    })
     this.appointmentService
       .getNonAvailableHours(this.referenceDate)
       .subscribe((hours) => {

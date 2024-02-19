@@ -17,6 +17,8 @@
       class="w-full absolute m-0 p-0 bg-black"
       [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
       [style.height]="nonAvailableHour.dailyPercentage + '%'"
+      [draggable]="true"
+      (dragover)="doesItWork()"
     ></div>
     <!-- <p class="absolute top-[{{nonAvailableHour.percentageStart}}%] m-0 p-0">text</p> -->
     }
