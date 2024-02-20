@@ -96,6 +96,31 @@
     .msg-invalidated-input {
         @apply  text-sm text-red-400 pl-6 pt-1;
     }
+
+    .tooltip {
+      @apply absolute text-white px-3 py-1 rounded-lg text-[14px] text-center text-nowrap;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .tooltip.tooltip-top {
+      top: 0;
+      left: 50%;
+      transform: translateY(-150%) translateX(-50%);
+    }
+
+    .tooltip.tooltip-bottom {
+      bottom: 0;
+      left: 50%;
+      transform: translateY(150%) translateX(-50%);
+    }
+
+    .tooltip.tooltip-left {
+      @apply right-20;
+    }
+
+    .tooltip.tooltip-right {
+      @apply left-20;
+    }
 }
 
 @layer utilities {

@@ -11,7 +11,6 @@ import { TokenInterceptor } from './core/interceptors/token.interceptor';
 
 // Modules import
 import { ServiceCardComponent } from './shared/components/service-card/service-card.component';
-import { TooltipDirective } from './shared/directives/tooltip.directive';
 import { LayoutsModule } from './core/layouts/layouts.module';
 
 
@@ -19,8 +18,7 @@ import { LayoutsModule } from './core/layouts/layouts.module';
 @NgModule({
   declarations: [
     AppComponent,
-    NotFoundComponent,
-    TooltipDirective
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

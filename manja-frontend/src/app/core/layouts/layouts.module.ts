@@ -6,6 +6,9 @@ import { WebsiteLayoutComponent } from './pages/website-layout/website-layout.co
 import { DashboardLayoutComponent } from './pages/dashboard-layout/dashboard-layout.component';
 import { AppRoutingModule } from '../../app-routing.module';
 import { IfAuthenticatedDirective } from '../../shared/directives/if-authenticated.directive';
+import { DashboardSidebarComponent } from './components/dashboard-sidebar/dashboard-sidebar.component';
+import { DashboardNavbarComponent } from './components/dashboard-navbar/dashboard-navbar.component';
+import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 
 
 
@@ -14,12 +17,15 @@ import { IfAuthenticatedDirective } from '../../shared/directives/if-authenticat
     WebsiteLayoutComponent,
     DashboardLayoutComponent,
     WebsiteNavbarComponent,
-    WebsiteFooterComponent
+    WebsiteFooterComponent,
+    DashboardSidebarComponent,
+    DashboardNavbarComponent
   ],
   imports: [
     CommonModule,
     AppRoutingModule,
-    IfAuthenticatedDirective
+    IfAuthenticatedDirective,
+    TooltipDirective
   ]
 })
 export class LayoutsModule { }
