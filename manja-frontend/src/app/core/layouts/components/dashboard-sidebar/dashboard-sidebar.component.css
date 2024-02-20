@@ -1,0 +1,47 @@
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer components {
+  .logo-wrapper {
+    @apply relative flex items-center justify-center p-2 space-x-4 transition-all duration-300;
+  }
+
+  .logo-wrapper.compressed {
+    @apply relative flex items-center justify-start p-2 space-x-4 transition-all duration-300;
+  }
+
+  .sidebar-collapser {
+    @apply absolute -right-7.5 rounded-lg p-1 bg-gray-100 border-gray-900 shadow-xl cursor-pointer hover:bg-gray-200 transition-all duration-300;
+  }
+
+  .sidebar-collapser.compressed {
+    transform: rotateY(180deg);
+    @apply transition-all duration-300;
+  }
+
+  .sidebar-item {
+    @apply hover:bg-gray-800 hover:text-gray-50 rounded-lg transition-all duration-300;
+  }
+
+  .sidebar-item.compressed {
+    @apply flex justify-center transition-all duration-300;
+  }
+
+  .sidebar-item.active,
+  .sidebar-item.compressed.active {
+    @apply text-[#eba37a] transition-all duration-300;
+  }
+
+  .sidebar-item-label.compressed {
+    @apply hidden;
+  }
+}
+
+@layer utilities {
+  .sidebar {
+    @apply w-[270px] h-full;
+  }
+  .sidebar.compressed {
+    @apply w-[70px] h-full;
+  }
+}
