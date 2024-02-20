@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { ServiceModel } from '../../../../core/models/salon-service.model';
-import { SalonService } from '../../../../core/services/salon-service.service';
+import { SalonService } from '../../../../../core/services/salon-service.service';
+import { ServiceModel } from '../../../../../core/models/salon-service.model';
 
 @Component({
   selector: 'app-list-services',

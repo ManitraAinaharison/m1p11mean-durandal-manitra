@@ -10,6 +10,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 
 const homeRoutes: Routes = [
+  { path: '', redirectTo: "/accueil", pathMatch: "full"},
   { path: 'accueil', component: HomepageComponent }
 ];
 

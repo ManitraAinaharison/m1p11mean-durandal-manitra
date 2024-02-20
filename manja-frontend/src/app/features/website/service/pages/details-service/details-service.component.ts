@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SalonService } from '../../../../core/services/salon-service.service';
-import { ServiceModel, SubService } from '../../../../core/models/salon-service.model';
+import { ServiceModel } from '../../../../../core/models/salon-service.model';
+import { SalonService } from '../../../../../core/services/salon-service.service';
 
 @Component({
   selector: 'app-details-service',
