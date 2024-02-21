@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ListServicesComponent } from './pages/list-services/list-services.component';
 import { DetailsServiceComponent } from './pages/details-service/details-service.component';
 import { RouterModule, Routes } from '@angular/router';
-import { ServiceCardComponent } from '../../shared/components/service-card/service-card.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
-import { DatePickerComponent } from '../../shared/components/datepicker/datepicker.component';
-import { TimepickerComponent } from '../../shared/components/timepicker/timepicker.component';
-import { CdkDrag, CdkDragHandle, CdkDropList, DragDropModule } from '@angular/cdk/drag-drop';
+import { DatePickerComponent } from '../../../shared/components/datepicker/datepicker.component';
+import { ServiceCardComponent } from '../../../shared/components/service-card/service-card.component';
+import { TimepickerComponent } from '../../../shared/components/timepicker/timepicker.component';
 
 
 const serviceRoutes: Routes = [
