@@ -1,24 +1,13 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs';
-import {
-  DateInterval,
-  DateIntervalDetails,
-} from '../../../../core/models/appointment.model';
-import {
-  ServiceModel,
-  SubService,
-} from '../../../../core/models/salon-service.model';
-import { Employee } from '../../../../core/models/user.model';
-import { AppointmentService } from '../../../../core/services/appointment.service';
-import { EmployeeService } from '../../../../core/services/employee.service';
-import { SalonService } from '../../../../core/services/salon-service.service';
-import {
-  createDateIntervalDetail,
-  toDateIntervalDetails,
-} from '../../../../core/util/date.util';
-import { toCalendarDate } from '../../../../shared/utils/date.util';
-import { CalendarDate } from '../../../../shared/types/date.types';
+import { DateIntervalDetails, DateInterval } from '../../../../../core/models/appointment.model';
+import { ServiceModel, SubService } from '../../../../../core/models/salon-service.model';
+import { Employee } from '../../../../../core/models/user.model';
+import { AppointmentService } from '../../../../../core/services/appointment.service';
+import { EmployeeService } from '../../../../../core/services/employee.service';
+import { SalonService } from '../../../../../core/services/salon-service.service';
+import { toDateIntervalDetails } from '../../../../../core/util/date.util';
 
 @Component({
   selector: 'app-reservation',

@@ -1,11 +1,11 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
-import { UserService } from '../../../../core/services/user.service';
-import { Credentials } from '../../../../core/models/user.model';
 import { Router } from '@angular/router';
-import { fieldHasError, markFormGroupTouched } from '../../../../shared/utils/form.util';
-import { ApiError } from '../../../../core/models/api.model';
+import { ApiError } from '../../../../../core/models/api.model';
+import { Credentials } from '../../../../../core/models/user.model';
+import { UserService } from '../../../../../core/services/user.service';
+import { markFormGroupTouched, fieldHasError } from '../../../../../shared/utils/form.util';
 
 
 interface LoginForm {

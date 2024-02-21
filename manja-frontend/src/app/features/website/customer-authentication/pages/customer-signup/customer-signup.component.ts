@@ -1,12 +1,12 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from '../../../../core/services/user.service';
-import { SignUpData } from '../../../../core/models/user.model';
-import { fieldHasError, markFormGroupTouched } from '../../../../shared/utils/form.util';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { equalValueValidator } from '../../../../shared/custom-validators';
-import { ApiError } from '../../../../core/models/api.model';
+import { ApiError } from '../../../../../core/models/api.model';
+import { SignUpData } from '../../../../../core/models/user.model';
+import { UserService } from '../../../../../core/services/user.service';
+import { equalValueValidator } from '../../../../../shared/custom-validators';
+import { markFormGroupTouched, fieldHasError } from '../../../../../shared/utils/form.util';
 
 
 interface SignUpForm {

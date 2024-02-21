@@ -1,10 +1,10 @@
-import { JwtService } from './../../../services/jwt.service';
-import { UserService } from './../../../services/user.service';
-import { AfterContentInit, AfterViewInit, Component, DestroyRef, ElementRef, HostListener, OnChanges, OnInit, Renderer2, inject } from '@angular/core';
+
+import { AfterViewInit, Component, DestroyRef, ElementRef, HostListener, OnChanges, OnInit, Renderer2, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { ApiError, ApiSuccess } from '../../../models/api.model';
-import { CookieService } from 'ngx-cookie-service';
+import { ApiSuccess, ApiError } from '../../../models/api.model';
+import { JwtService } from '../../../services/jwt.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
     selector: 'app-website-navbar',
