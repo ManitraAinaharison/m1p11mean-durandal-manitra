@@ -1,20 +1,24 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SalonService } from '../../../../core/services/salon-service.service';
-import {
-  ServiceModel,
-  SubService,
-} from '../../../../core/models/salon-service.model';
-import { AppointmentService } from '../../../../core/services/appointment.service';
-import { EmployeeService } from '../../../../core/services/employee.service';
-import { Employee } from '../../../../core/models/user.model';
 import dayjs, { Dayjs } from 'dayjs';
 import {
   DateInterval,
   DateIntervalDetails,
 } from '../../../../core/models/appointment.model';
-import { toDateIntervalDetails } from '../../../../core/util/date.util';
-import { BehaviorSubject } from 'rxjs';
+import {
+  ServiceModel,
+  SubService,
+} from '../../../../core/models/salon-service.model';
+import { Employee } from '../../../../core/models/user.model';
+import { AppointmentService } from '../../../../core/services/appointment.service';
+import { EmployeeService } from '../../../../core/services/employee.service';
+import { SalonService } from '../../../../core/services/salon-service.service';
+import {
+  createDateIntervalDetail,
+  toDateIntervalDetails,
+} from '../../../../core/util/date.util';
+import { toCalendarDate } from '../../../../shared/utils/date.util';
+import { CalendarDate } from '../../../../shared/types/date.types';
 
 @Component({
   selector: 'app-reservation',
@@ -27,9 +31,16 @@ export class ReservationComponent {
   selectedSubService: SubService | null = null;
   employees: Employee[] | null = null;
   nonAvailableHours: DateIntervalDetails[] = [];
-  referenceDate : Dayjs = dayjs(); // default value
+  referenceDate: Dayjs = dayjs().date(1); // default value
+  selectedDate: DateIntervalDetails = createDateIntervalDetail(
+    dayjs(),
+    dayjs(),
+    dayjs().add(15, 'minute'),
+    15
+  ); // default value
   openingHour: number = 9;
   closingHour: number = 17;
+  businessHours: DateInterval = { start: dayjs(), end: dayjs() };
 
   constructor(
     private route: ActivatedRoute,
@@ -43,19 +54,27 @@ export class ReservationComponent {
       let slug: string | null = params.get('sub-service-slug');
       this.serviceSlug = slug;
       this.setMatchingService(slug);
+
       this.selectedSubService;
-    });
-    this.employeeService.getEmployees().subscribe((employeeList) => {
-      this.setEmployees(employeeList);
-    });
-    this.appointmentService.referenceDate$.subscribe((date)=>{
-      this.referenceDate = date;
-    })
-    this.appointmentService
-      .getNonAvailableHours(this.referenceDate)
-      .subscribe((hours) => {
-        this.setNonAvailableHours(hours);
+      this.employeeService.getEmployees().subscribe((employeeList) => {
+        this.setEmployees(employeeList);
       });
+      this.appointmentService.referenceDate$.subscribe((date) => {
+        this.referenceDate = date;
+      });
+      this.appointmentService.selectedDate$.subscribe((date) => {
+        this.selectedDate = date;
+        this.appointmentService
+          .getNonAvailableHours(this.selectedDate.start)
+          .subscribe((response) => {
+            this.setNonAvailableHours(
+              response.nonAvailableHours,
+              response.businessHours
+            );
+            this.setBusinessHours(response.businessHours);
+          });
+      });
+    });
   }
 
   setMatchingService(slug: string | null) {
@@ -77,12 +96,34 @@ export class ReservationComponent {
     this.selectedSubService = selected;
   }
 
-  setNonAvailableHours(hours: DateInterval[]): void {
+  setNonAvailableHours(
+    nonAvailableHours: DateInterval[],
+    businessHours: DateInterval
+  ): void {
     this.nonAvailableHours = toDateIntervalDetails(
-      hours,
-      this.referenceDate.hour(this.openingHour).minute(0).second(0).millisecond(0),
-      this.referenceDate.hour(this.closingHour).minute(0).second(0).millisecond(0)
-      );
-      console.log(this.nonAvailableHours)
+      nonAvailableHours,
+      businessHours.start,
+      businessHours.end
+    );
+  }
+
+  setBusinessHours(value: DateInterval): void {
+    this.businessHours = value;
+  }
+
+  updateSelectedDate(value: Dayjs[]): void {
+    this.appointmentService.updateSelectedDate(value[0]);
+  }
+
+  updateReferenceDate(value: Dayjs): void {
+    this.appointmentService.updateReferenceDate(value);
+  }
+
+  selectedDateToCalendarFormat(): CalendarDate {
+    return toCalendarDate(this.selectedDate.start, {
+      month: this.referenceDate.month(),
+      openDays: [],
+      selected: true,
+    });
   }
 }
