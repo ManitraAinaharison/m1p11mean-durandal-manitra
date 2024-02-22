@@ -29,6 +29,7 @@ export class TimepickerComponent {
   };
   @Input({ required: true }) nonAvailableHours: DateIntervalDetails[] = [];
   @Input({ required: true }) cursorInterval: DateIntervalDetails | null = null; // selectedDate
+  @Input() disabled: boolean  = false; // selectedDate
 
   @Output() updateSelectedDate = new EventEmitter<Dayjs>();
 
@@ -68,10 +69,6 @@ export class TimepickerComponent {
 
   isOverridingNonAvailableHours(): boolean {
     if (!this.cursorInterval) return false;
-    console.log(isOverridingNonAvailableHours(
-      this.cursorInterval,
-      this.nonAvailableHours
-    ))
     return isOverridingNonAvailableHours(
       this.cursorInterval,
       this.nonAvailableHours

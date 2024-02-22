@@ -7,6 +7,7 @@ import { ReservationComponent } from './pages/reservation/reservation.component'
 import { DatePickerComponent } from '../../../shared/components/datepicker/datepicker.component';
 import { ServiceCardComponent } from '../../../shared/components/service-card/service-card.component';
 import { TimepickerComponent } from '../../../shared/components/timepicker/timepicker.component';
+import { CdkDrag, CdkDropList, DragDropModule } from '@angular/cdk/drag-drop';
 
 
 const serviceRoutes: Routes = [
@@ -30,9 +31,6 @@ const serviceRoutes: Routes = [
   ],
   imports: [
     DragDropModule,
-    CdkDrag,
-    CdkDropList,
-    CdkDragHandle,
     CommonModule,
     RouterModule.forChild(serviceRoutes),
   ],

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, shareReplay, tap, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { ServiceModel, SubService } from '../models/salon-service.model';
-import { salonServiceMockData, subServiceMockData } from './api-mock-data/service.mockdata';
+import { ServiceModel } from '../models/salon-service.model';
+import { ApiResponse } from '../models/api.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,12 +12,12 @@ export class SalonService {
   private selectedService = new BehaviorSubject<ServiceModel | null>(null);
 
   constructor(private readonly http: HttpClient) {}
-  getServices(): Observable<ServiceModel[]> {
-    // return this.http.get<ServiceModel[]>('/services').pipe(
-    return of(salonServiceMockData).pipe(
+  getServices(): Observable<ApiResponse<ServiceModel[]>> {
+    return this.http.get<ApiResponse<ServiceModel[]>>('/v1/services').pipe(
       tap({
-        next: (service) => this.setServiceList(service),
-        error: () => {
+        next: (response) => this.setServiceList(response.payload),
+        error: (e) => {
+          console.log(e);
           throw Error('not implemented yet');
         },
       }),
@@ -33,18 +33,17 @@ export class SalonService {
     this.selectedService.next(selected);
   }
 
-  getService(slug: string): Observable<ServiceModel> {
-    // return this.http.get<SubService>('/sub-services/:slug').pipe(
-    return of(
-      salonServiceMockData.find((s) => s.slug === slug) as ServiceModel
-    ).pipe(
-      tap({
-        next: (service) => this.setSelectedService(service),
-        error: () => {
-          throw Error('not implemented yet');
-        },
-      }),
-      shareReplay(1)
-    );
+  getService(slug: string): Observable<ApiResponse<ServiceModel>> {
+    return this.http
+      .get<ApiResponse<ServiceModel>>(`/v1/services/${slug}`)
+      .pipe(
+        tap({
+          next: (response) => this.setSelectedService(response.payload),
+          error: () => {
+            throw Error('not implemented yet');
+          },
+        }),
+        shareReplay(1)
+      );
   }
 }
