@@ -3,9 +3,15 @@ import { CommonModule } from '@angular/common';
 import { HomeModule } from './home/home.module';
 import { CustomerAuthenticationModule } from './customer-authentication/customer-authentication.module';
 import { ServiceModule } from './service/service.module';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { NotFoundComponent } from '../../shared/components/not-found/not-found.component';
 
-
+const notFoundRoute: Routes = [
+  {
+    path: '**',
+    component: NotFoundComponent,
+  }
+];
 
 @NgModule({
   declarations: [],
@@ -13,7 +19,8 @@ import { RouterModule } from '@angular/router';
     CommonModule,
     CustomerAuthenticationModule,
     HomeModule,
-    ServiceModule
+    ServiceModule,
+    RouterModule.forChild(notFoundRoute)
   ],
   exports: [RouterModule]
 })
