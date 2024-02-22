@@ -19,13 +19,15 @@ module.exports.authorise = function authorise(permittedRoles) {
 			const decodedRefreshToken = securityUtil.decodeToken(refreshToken);
 
 			if (decodedAccessToken && decodedRefreshToken && !securityUtil.sameUserToken(decodedAccessToken, decodedRefreshToken)) {
+				helperUtil.addTokenCookies(res, req.cookies );
 				return res.status(403).json({
-					message: "Tokens invalide."
+					message: "Tokens invalide. Veuillez vous reconnecter"
 				});
 			}
 
 
 			if ((accessToken && !permittedRoles.includes(decodedAccessToken.role)) && (refreshToken && !permittedRoles.includes(decodedRefreshToken.role))) {
+				helperUtil.addTokenCookies(res, req.cookies );
 				return res.status(403).json({
 					message: "Accès refusé."
 				});
@@ -39,6 +41,7 @@ module.exports.authorise = function authorise(permittedRoles) {
 			if (!accessToken || (accessToken && expiredAccessToken == true)) {
 
 				if (refreshToken && expiredRefreshToken == true) {
+					helperUtil.addTokenCookies(res, req.cookies );
 					return res.status(403).json({
 							message: "Session expirée. Veuillez vous reconnecter."
 					});
