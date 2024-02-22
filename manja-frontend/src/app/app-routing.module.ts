@@ -1,14 +1,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { DashboardLayoutComponent } from './core/layouts/pages/dashboard-layout/dashboard-layout.component';
 import { WebsiteLayoutComponent } from './core/layouts/pages/website-layout/website-layout.component';
+import { AdminLoginComponent } from './features/dashboard/admin-authentication/pages/admin-login/admin-login.component';
+import { authGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   {
+    path: 'dashboard/login',
+    component: AdminLoginComponent,
+    pathMatch: "full"
+  },
+  {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule)
+    loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule),
+    canActivate: [authGuard]
   },
   {
     path: '',
