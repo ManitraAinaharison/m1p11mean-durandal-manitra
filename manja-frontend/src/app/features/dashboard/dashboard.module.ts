@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AdminAuthenticationModule } from './admin-authentication/admin-authentication.module';
 
 
 
 @NgModule({
-  declarations: [
-
-  ],
+  declarations: [],
   imports: [
-    CommonModule
+    CommonModule,
+    AdminAuthenticationModule
   ],
   exports: [RouterModule]
 })

@@ -31,6 +31,12 @@ export class UserService {
           .pipe(tap((res: ApiSuccess) => this.setAuth(res.payload)));
     }
 
+    adminLogin(credentials: Credentials): Observable<ApiSuccess> {
+        return this.http
+          .post<ApiSuccess>("/v1/admin/login", credentials)
+          .pipe(tap((res: ApiSuccess) => this.setAuth(res.payload)));
+    }
+
     signup(userData: SignUpData): Observable<ApiSuccess> {
         return this.http
           .post<ApiSuccess>("/v1/register", userData)
