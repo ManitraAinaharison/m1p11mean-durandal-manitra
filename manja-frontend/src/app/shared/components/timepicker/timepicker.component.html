@@ -1,4 +1,9 @@
-<div class="w-80 h-80 flex gap-6 text-primary">
+@if (cursorInterval && !disabled) {
+<div
+  class="w-80 h-80 flex gap-6 text-primary"
+  id="timepickerParent"
+  #timepickerParent
+>
   <div class="w-24 h-full relative bg-slate-500">
     @for (nonAvailableHour of nonAvailableHours; track $index) {
     <p
@@ -17,10 +22,31 @@
       class="w-full absolute m-0 p-0 bg-black"
       [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
       [style.height]="nonAvailableHour.dailyPercentage + '%'"
-      [draggable]="true"
-      (dragover)="doesItWork()"
     ></div>
-    <!-- <p class="absolute top-[{{nonAvailableHour.percentageStart}}%] m-0 p-0">text</p> -->
     }
+    <div
+      #timepickerCursor
+      id="timepickerCursor"
+      [ngClass]="{
+        'w-full absolute m-0 p-0 bg-blue-600': true,
+        'bg-red-300': isOverridingNonAvailableHours()
+      }"
+      [style.bottom]="'calc(' + 0 + '%)'"
+      [style.height]="cursorInterval.dailyPercentage + '%'"
+      cdkDragLockAxis="y"
+      cdkDragBoundary="#timepickerParent"
+      (cdkDragEnded)="onDragEnd($event)"
+      cdkDrag
+    ></div>
   </div>
 </div>
+
+<input type="time" [valueAsDate]="cursorInterval.start.local().toDate()" />
+}@else {
+  <div
+  class="w-80 h-80 flex gap-6 text-primary bg-red-500"
+  id="timepickerParent"
+  #timepickerParent
+>
+</div>
+}

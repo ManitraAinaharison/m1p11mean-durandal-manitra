@@ -1,8 +1,18 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, shareReplay, tap, of } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  shareReplay,
+  tap,
+  of,
+  Observer,
+} from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { findEmployee } from './api-mock-data/employee.mockdata';
 import { Employee } from '../models/user.model';
+import { ApiResponse } from '../models/api.model';
+import { Dayjs } from 'dayjs';
+import { EmployeeSchedule } from '../models/appointment.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +34,9 @@ export class EmployeeService {
     // return this.http.get<Employee[]>('/employees').pipe(
     return of(findEmployee(query)).pipe(
       tap({
-        next: (employees) => {this.setEmployees(employees);},
+        next: (employees) => {
+          this.setEmployees(employees);
+        },
         error: () => {
           throw Error('not implemented yet');
         },
@@ -35,5 +47,29 @@ export class EmployeeService {
 
   setEmployees(value: Employee[]) {
     this.employeeList.next(value);
+  }
+
+  getEmployeeSchedule(
+    employeeId: string | undefined,
+    selectedDate: Dayjs
+  ): Observable<ApiResponse<EmployeeSchedule | null>> {
+    if (!employeeId || !selectedDate)
+      return of({ success: true, payload: null });
+    return this.http
+      .get<ApiResponse<EmployeeSchedule>>(
+        `/v1/employees/${employeeId}/schedules?date=${selectedDate.format(
+          'YYYY-MM-DD'
+        )}`
+      )
+      .pipe(
+        tap({
+          next: (response) => {},
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet');
+          },
+        }),
+        shareReplay(1)
+      );
   }
 }

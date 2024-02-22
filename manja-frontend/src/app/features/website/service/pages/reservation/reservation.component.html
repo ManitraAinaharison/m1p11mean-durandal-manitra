@@ -18,15 +18,6 @@
       ab, libero debitis at cumque assumenda tempora illum nihil?
     </p>
     <div class="mt-12 mb-4 px-6 py-17">
-      <h4 class="text-primary mb-6 font-semibold">
-        Date et heure de votre rendez-vous
-      </h4>
-      <datepicker />
-      <timepicker
-        [openingHour]="openingHour"
-        [closingHour]="closingHour"
-        [nonAvailableHours]="nonAvailableHours"
-      />
       <h4 class="text-primary mt-12 mb-6 font-semibold">Votre offre</h4>
       <div class="grid grid-cols-3 gap-x-5 gap-y-2.5">
         <div
@@ -51,7 +42,57 @@
           >
         </div>
       </div>
+      <section>
+        @if(employees && employees.length > 0){
+        <h4>Sélectionnez l'employé qui vous prendra en charge :</h4>
+        <div class="w-full h-auto py-20 flex gap-12">
+          @for (employee of employees; track $index) {
+          <div
+            class="w-86 h-auto bg-neutral-gray cursor-pointer"
+            (click)="setSelectedEmployee(employee)"
+          >
+            <div class="w-86 h-50 flex items-center justify-center">
+              <img
+                [ngClass]="{
+                  'size-36 rounded-full': true,
+                  'border-4 border-solid bg-gradient-to-b from-gray-200 to-transparent': employee._id === selectedEmployee?._id
+                }"
+                src="https://assets-global.website-files.com/60993dcfc8e83c6e36ae8b81/60a5c1bcbc4f722522df1ec2_dana-cutts-salon-webflow-template.jpg"
+              />
+            </div>
+            <div class="w-full h-auto text-center px-6">
+              <h3>{{ employee.firstname }} {{ employee.lastname }}</h3>
+              <p class="text-secondary">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi,
+                deserunt?
+              </p>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </section>
+      <h4 class="text-primary mb-6 font-semibold">
+        Date et heure de votre rendez-vous
+      </h4>
+      <div class="flex gap-6">
+        <datepicker
+          [referenceDate]="referenceDate"
+          (updateReferenceDate)="updateReferenceDate($event)"
+          [selectedDates]="[selectedDateToCalendarFormat()]"
+          (updateSelectedDates)="updateSelectedDate($event)"
+          cdkDrag
+        />
+        <timepicker
+          [disabled]="disableTimePicker"
+          [cursorInterval]="selectedDate"
+          [businessHours]="businessHours"
+          [nonAvailableHours]="nonAvailableHours"
+          (updateSelectedDate)="updateSelectedDate([$event])"
+        />
+      </div>
     </div>
   </div>
 </div>
+
 }

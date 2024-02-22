@@ -716,9 +716,20 @@ export const dailyNonAvailableHours: DateInterval[] = [
   },
 ];
 
-export function mockupFindNonAvailableHours(day: Dayjs): DateInterval[] {
-  return dailyNonAvailableHours.filter(
-    (interval) =>
-      interval.start.isSame(day, 'date') && interval.end.isSame(day, 'date')
-  );
+export function mockupFindNonAvailableHours(day: Dayjs): {
+  businessHours: DateInterval;
+  nonAvailableHours: DateInterval[];
+} {
+  const OPENING_HOUR = 8;
+  const CLOSING_HOUR = 17;
+  return {
+    businessHours: {
+      start: day.hour(OPENING_HOUR).minute(0).second(0).millisecond(0),
+      end: day.hour(CLOSING_HOUR).minute(0).second(0).millisecond(0),
+    },
+    nonAvailableHours: dailyNonAvailableHours.filter(
+      (interval) =>
+        interval.start.isSame(day, 'date') && interval.end.isSame(day, 'date')
+    ),
+  };
 }
