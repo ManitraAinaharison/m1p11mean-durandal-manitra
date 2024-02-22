@@ -15,7 +15,17 @@ module.exports.getSchedulesOfEmployeeByGivenDate = async (employeeId, dateStr) =
 
         
         const scheduleOfTheDayIndex = employeeHelper.getScheduleOfTheDayIndex(employee.workSchedule, givenDate);
-        if (scheduleOfTheDayIndex < 0) throw new apiUtil.ErrorWithStatusCode("Cet employé ne travaille pas un " + frenchDayName, 500);
+        if (scheduleOfTheDayIndex < 0) {
+            const options = { weekday: "long", timeZone: "UTC" };
+            const frenchDayName = givenDate.toLocaleDateString(
+              "fr-FR",
+              options
+            );
+            throw new apiUtil.ErrorWithStatusCode(
+              "Cet employé ne travaille pas un " + frenchDayName,
+              500
+            );
+        }
 
         const appointmentsOfEmployeeByDate = await appointmentService.getAppointmentsOfEmployeeByDate(employeeId, givenDate);
         let appointmentsDateIntervals = [];
