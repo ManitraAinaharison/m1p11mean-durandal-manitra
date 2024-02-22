@@ -13,8 +13,8 @@ export class ListServicesComponent {
   constructor(private salonService: SalonService) {}
 
   ngOnInit(): void {
-    this.salonService.getServices().subscribe((servicesList) => {
-      this.salonServiceList = servicesList;
+    this.salonService.getServices().subscribe((response) => {
+      this.salonServiceList = response.payload;
     });
   }
 }

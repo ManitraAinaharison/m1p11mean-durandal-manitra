@@ -28,6 +28,6 @@ export class DetailsServiceComponent {
     if (!slug) return ;
     this.salonService
       .getService(slug)
-      .subscribe((service) => (this.matchingService = service)); // handle if getSubService returns null
+      .subscribe((response) => (this.matchingService = response.payload)); // handle if getSubService returns null
   }
 }

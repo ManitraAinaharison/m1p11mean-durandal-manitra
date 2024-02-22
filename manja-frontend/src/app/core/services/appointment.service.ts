@@ -6,10 +6,11 @@ import {
   DateInterval,
   DateIntervalDetails,
 } from '../models/appointment.model';
-import { SubService } from '../models/salon-service.model';
+import { SubServiceModel } from '../models/salon-service.model';
 import dayjs, { Dayjs } from 'dayjs';
 import { mockupFindNonAvailableHours } from './api-mock-data/appointment.mockdata';
 import { createDateIntervalDetail } from '../util/date.util';
+import { Employee } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,10 @@ export class AppointmentService {
   CLOSING_HOUR = 17;
 
   private appointment = new BehaviorSubject<Appointment[] | null>(null);
-  private selectedSubService = new BehaviorSubject<SubService | null>(null);
+  private selectedSubService = new BehaviorSubject<SubServiceModel | null>(
+    null
+  );
+  private selectedEmployee = new BehaviorSubject<Employee | null>(null);
   private businessHours = new BehaviorSubject<DateInterval>({
     start: dayjs(),
     end: dayjs(),
@@ -43,13 +47,15 @@ export class AppointmentService {
     )
   );
 
+  selectedEmployee$ = this.selectedEmployee.asObservable();
+  selectedSubService$ = this.selectedSubService.asObservable();
   referenceDate$ = this.referenceDate.asObservable();
   selectedDate$ = this.selectedDate.asObservable();
   businessHours$ = this.businessHours.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
-  setSelectedSubService(selected: SubService | null) {
+  setSelectedSubService(selected: SubServiceModel | null) {
     this.selectedSubService.next(selected);
   }
 
@@ -73,8 +79,19 @@ export class AppointmentService {
     this.nonAvailableHours.next(nonAvailableHours);
   }
 
+  getSelectedDateValue(): DateInterval{
+    return this.selectedDate.value;
+  }
+
   setBusinessHours(businessHours: DateInterval) {
+    const selectedDate = this.getSelectedDateValue().start;
+    businessHours.start = this.toSameDay(dayjs(businessHours.start), selectedDate)
+    businessHours.end = this.toSameDay(dayjs(businessHours.end), selectedDate)
     this.businessHours.next(businessHours);
+  }
+
+  toSameDay(value: Dayjs, referenceDate : Dayjs): Dayjs{
+    return referenceDate.hour(value.hour()).minute(value.minute());
   }
 
   updateReferenceDate(value: Dayjs): void {
@@ -82,6 +99,10 @@ export class AppointmentService {
   }
 
   updateSelectedDate(value: Dayjs): void {
+    this.businessHours.next({
+      start: value.hour(this.OPENING_HOUR).minute(0).second(0).millisecond(0),
+      end: value.hour(this.CLOSING_HOUR).minute(0).second(0).millisecond(0),
+    });
     this.selectedDate.next(
       createDateIntervalDetail(
         value,
@@ -90,13 +111,13 @@ export class AppointmentService {
         this.DEFAULT_SUBSERVICE_DURATION
       )
     );
-    this.businessHours.next({
-      start: value.hour(this.OPENING_HOUR).minute(0).second(0).millisecond(0),
-      end: value.hour(this.CLOSING_HOUR).minute(0).second(0).millisecond(0),
-    });
   }
 
   getReferenceDate() {
     return this.referenceDate$;
+  }
+
+  setSelectedEmployee(employee: Employee): void {
+    this.selectedEmployee.next(employee);
   }
 }
