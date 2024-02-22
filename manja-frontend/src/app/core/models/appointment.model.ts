@@ -34,3 +34,8 @@ export interface DateIntervalDetails extends DateInterval {
   percentageStart: number;
   percentageEnd: number;
 }
+
+export interface EmployeeSchedule {
+  unavailableSchedules: DateInterval[];
+  workSchedules : DateInterval[];
+}

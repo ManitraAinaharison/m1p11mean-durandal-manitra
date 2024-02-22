@@ -12,7 +12,7 @@ module.exports.getEmployeesBySubService = async function getEmployeesBySubServic
         find({ 
             subServices: { $in: [subService._id] }, 
             $or: [{ lastname: nameRegex }, { firstname: nameRegex }]
-        }, 'firstname lastname -_id -role');
+        }, 'firstname lastname _id -role');
     } catch (e) {
         console.log(e.statusCode, e.message);
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);

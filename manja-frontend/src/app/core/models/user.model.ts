@@ -1,4 +1,4 @@
-import { ServiceModel, SubService } from "./salon-service.model";
+import { ServiceModel, SubServiceModel } from "./salon-service.model";
 
 export interface User {
     firstname: string;
@@ -12,6 +12,7 @@ export type Credentials = Pick<User, 'email' | 'password'>;
 export type SignUpData = Pick<User, 'firstname' | 'lastname' | 'email' | 'username' | 'password'>;
 
 export interface Employee extends User {
-  subServices: SubService[];
+  _id?: string,
+  subServices: SubServiceModel[];
   imgPath: string;
 }

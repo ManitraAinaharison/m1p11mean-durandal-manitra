@@ -3,10 +3,10 @@ export interface ServiceModel {
   slug: string;
   description: string;
   imgPath: string;
-  subServices: SubService[];
+  subServices: SubServiceModel[];
 }
 
-export interface SubService {
+export interface SubServiceModel {
   name: string;
   slug: string;
   description: string;

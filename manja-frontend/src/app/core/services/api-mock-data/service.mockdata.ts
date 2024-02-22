@@ -1,4 +1,4 @@
-import { ServiceModel, SubService } from '../../models/salon-service.model';
+import { ServiceModel, SubServiceModel } from '../../models/salon-service.model';
 
 export const salonServiceMockData: ServiceModel[] = [
   {
@@ -163,6 +163,6 @@ export const salonServiceMockData: ServiceModel[] = [
   },
 ];
 
-export const subServiceMockData: SubService[] = salonServiceMockData
+export const subServiceMockData: SubServiceModel[] = salonServiceMockData
   .map((s) => s.subServices)
   .flat();

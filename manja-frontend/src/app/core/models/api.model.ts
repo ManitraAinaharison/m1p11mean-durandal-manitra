@@ -6,3 +6,8 @@ export interface ApiSuccess {
 export interface ApiError {
   message: string;
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  payload: T;
+}
