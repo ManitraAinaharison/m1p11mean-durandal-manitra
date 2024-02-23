@@ -1,42 +1,20 @@
 import { inject } from '@angular/core';
-import { ActivatedRoute, CanActivateFn, Router, Routes } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 import { UserService } from '../services/user.service';
-import { catchError, distinctUntilChanged, map, throwError } from 'rxjs';
-import { ApiSuccess } from '../models/api.model';
-import { HttpErrorResponse } from '@angular/common/http';
+import { map } from 'rxjs';
+import { PageLoaderService } from '../../shared/services/page-loader.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const userService = inject<UserService>(UserService);
-  const router = inject<Router>(Router);
+  const pageLoaderService = inject<PageLoaderService>(PageLoaderService);
   return userService
     .getCurrentUser()
     .pipe(
-      map((res: ApiSuccess) => {
-          const user = res.payload;
+      map(() => {
           userService.errorMessage = "";
           userService.targetUrl = route.url[0].path;
+          pageLoaderService.hide();
           return true;
-      }),
-      catchError((err: HttpErrorResponse) => {
-        console.log('     ', err);
-        userService.errorMessage = err.message;
-        switch (err.status) {
-          case 401:
-            redirectToLogin(router);
-            break;
-          case 403:
-            redirectToLogin(router);
-            break;
-          default:
-            break;
-        }
-        return throwError(() => err.error);
       })
     );
 };
-
-function redirectToLogin(router: Router): void {
-  const currUrl = window.location.href;
-  if (currUrl.includes('dashboard')) router.navigate(['/dashboard/login']);
-  else router.navigate(['/login']);
-}
