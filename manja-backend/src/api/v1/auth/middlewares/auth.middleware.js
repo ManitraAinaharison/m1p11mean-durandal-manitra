@@ -11,7 +11,7 @@ module.exports.authorise = function authorise(permittedRoles) {
 
 			if ((!accessToken && !refreshToken) || (accessToken && !refreshToken)) {
 				return res.status(403).json({
-					message: "Token manquant."
+					message: "" // Token manquant.
 				});
 			}
 

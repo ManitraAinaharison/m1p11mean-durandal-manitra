@@ -12,13 +12,15 @@ import { TokenInterceptor } from './core/interceptors/token.interceptor';
 // Modules import
 import { ServiceCardComponent } from './shared/components/service-card/service-card.component';
 import { LayoutsModule } from './core/layouts/layouts.module';
+import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    PageLoaderComponent
   ],
   imports: [
     BrowserModule,
