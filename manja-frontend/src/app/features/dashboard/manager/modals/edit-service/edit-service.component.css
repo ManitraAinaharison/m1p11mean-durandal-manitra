@@ -1,0 +1,19 @@
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer components {
+
+  .preview-img {
+    @apply w-full flex justify-center items-center !important;
+  }
+
+  .sub-service-card {
+    @apply block w-full p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100;
+  }
+}
+
+@layer utilities {
+  .sub-service-section {
+    @apply w-full px-6;
+  }
+}

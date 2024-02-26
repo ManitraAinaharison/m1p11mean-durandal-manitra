@@ -1,10 +1,8 @@
 
 import { AfterViewInit, Component, DestroyRef, ElementRef, HostListener, OnChanges, OnInit, Renderer2, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
-import { ApiSuccess, ApiError } from '../../../models/api.model';
-import { JwtService } from '../../../services/jwt.service';
 import { UserService } from '../../../services/user.service';
+import { PageLoaderService } from '../../../../shared/services/page-loader.service';
 
 @Component({
     selector: 'app-website-navbar',
@@ -22,28 +20,11 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
         private elementRef: ElementRef,
         private renderer: Renderer2,
         public userService: UserService,
-        private router: Router,
-        private jwtService: JwtService
+        private pageLoaderService: PageLoaderService
     ) {}
 
     ngOnInit(): void {
       this.dropdownToggles = this.elementRef.nativeElement.querySelectorAll('.dropdown-toggle');
-      if (this.jwtService.getAccessToken() && this.jwtService.getRefreshToken()) {
-        this.userService
-        .getCurrentUser()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (res: ApiSuccess) => {
-            this.userService.setAuth(res.payload);
-          },
-          error: (err: ApiError) => {
-            this.userService.errorMessage = err.message;
-            this.router.navigate(["/login"]);
-          }
-        });
-      } else {
-        this.jwtService.destroyTokens();
-      }
     }
 
     ngAfterViewInit() {
