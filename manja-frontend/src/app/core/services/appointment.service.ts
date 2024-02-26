@@ -34,7 +34,7 @@ export class AppointmentService {
   );
   private enablePostAppointment = new BehaviorSubject<boolean>(false);
   private selectedEmployee = new BehaviorSubject<Employee | null>(null);
-  private businessHours = new BehaviorSubject<DateInterval>({
+  private businessHours = new BehaviorSubject<DateInterval | null>({
     start: dayjs()
       .hour(this.DEFAULT_OPENING_HOUR)
       .minute(0)
@@ -94,7 +94,12 @@ export class AppointmentService {
     return this.selectedDate.value;
   }
 
-  setBusinessHours(businessHours: DateInterval) {
+  setBusinessHours(businessHours: DateInterval | null) {
+    if (!businessHours) {
+      // this.selectedDate.next(null);
+      this.businessHours.next(null);
+      return;
+    }
     const selectedDate = this.getSelectedDateValue().start;
     businessHours.start = toSameDay(dayjs(businessHours.start), selectedDate);
     businessHours.end = toSameDay(dayjs(businessHours.end), selectedDate);
@@ -106,45 +111,56 @@ export class AppointmentService {
   }
 
   updateSelectedDate(value: Dayjs): void {
-    const updatedBusinessHours = {
-      start: toTheSameDate(value, this.businessHours.value.start),
-      end: toTheSameDate(value, this.businessHours.value.end),
-    };
+    if (this.businessHours.value) {
+      const updatedBusinessHours = {
+        start: toTheSameDate(value, this.businessHours.value.start),
+        end: toTheSameDate(value, this.businessHours.value.end),
+      };
 
-    this.businessHours.next({
-      start: value
-        .hour(updatedBusinessHours.start.hour())
-        .minute(updatedBusinessHours.start.minute())
-        .second(0)
-        .millisecond(0),
-      end: value
-        .hour(updatedBusinessHours.end.hour())
-        .minute(updatedBusinessHours.end.minute())
-        .second(0)
-        .millisecond(0),
-    });
+      this.businessHours.next({
+        start: value
+          .hour(updatedBusinessHours.start.hour())
+          .minute(updatedBusinessHours.start.minute())
+          .second(0)
+          .millisecond(0),
+        end: value
+          .hour(updatedBusinessHours.end.hour())
+          .minute(updatedBusinessHours.end.minute())
+          .second(0)
+          .millisecond(0),
+      });
 
-    this.selectedDate.next(
-      createDateIntervalDetail2(
-        {
-          start: value,
-          end: value.add(
-            this.selectedSubService.value
-              ? this.selectedSubService.value.duration
-              : this.DEFAULT_SUBSERVICE_DURATION,
-            'minute'
-          ),
-        },
-        updatedBusinessHours
-      )
-    );
+      this.selectedDate.next(
+        createDateIntervalDetail2(
+          {
+            start: value,
+            end: value.add(
+              this.selectedSubService.value
+                ? this.selectedSubService.value.duration
+                : this.DEFAULT_SUBSERVICE_DURATION,
+              'minute'
+            ),
+          },
+          updatedBusinessHours
+        )
+      );
+    } else {
+      this.selectedDate.next({
+        start: value,
+        end: value,
+        dailyPercentage: 0,
+        duration: 0,
+        percentageStart: 0,
+        percentageEnd: 0,
+      });
+    }
   }
 
   getReferenceDate() {
     return this.referenceDate$;
   }
 
-  setSelectedEmployee(employee: Employee): void {
+  setSelectedEmployee(employee: Employee | null): void {
     this.selectedEmployee.next(employee);
   }
 
@@ -153,8 +169,9 @@ export class AppointmentService {
       !!(
         !this.insertedAppointment.value &&
         this.selectedSubService.value &&
-        this.selectedEmployee.value?._id &&
-        this.selectedDate.value
+        this.selectedEmployee.value &&
+        this.selectedDate.value &&
+        this.businessHours.value !== null
       )
     );
   }
@@ -169,8 +186,9 @@ export class AppointmentService {
       employeeId: this.selectedEmployee.value._id,
       subServiceSlug: this.selectedSubService.value.slug,
     };
-    
-    return this.http.post<ApiResponse<PostAppointmentResponse>>(
+
+    const res = this.http
+      .post<ApiResponse<PostAppointmentResponse>>(
         `/v1/appointments`,
         appointment
       )
@@ -189,5 +207,10 @@ export class AppointmentService {
         }),
         shareReplay(1)
       );
+    res.subscribe(
+      (response) => {},
+      (error) => console.log('error', error)
+    );
+    return res;
   }
 }

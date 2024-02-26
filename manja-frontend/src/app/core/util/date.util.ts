@@ -140,14 +140,18 @@ export function isOverlappingNonAvailableHours(
   nonAvailableHours: DateIntervalDetails[]
 ) {
   return nonAvailableHours.some((nonAvailableHour) => {
-    return (interval.start.isAfter(nonAvailableHour.start, 'minute') &&
-      interval.start.isBefore(nonAvailableHour.end, 'minute')) ||
+    return (
+      (interval.start.isAfter(nonAvailableHour.start, 'minute') &&
+        interval.start.isBefore(nonAvailableHour.end, 'minute')) ||
       (interval.end.isAfter(nonAvailableHour.start, 'minute') &&
         interval.end.isBefore(nonAvailableHour.end, 'minute')) ||
       (interval.start.isBefore(nonAvailableHour.start, 'minute') &&
         interval.end.isAfter(nonAvailableHour.end, 'minute')) ||
       (interval.start.isBefore(nonAvailableHour.start, 'minute') &&
-        interval.end.isAfter(nonAvailableHour.end, 'minute'));
+        interval.end.isAfter(nonAvailableHour.end, 'minute')) ||
+      (interval.start.isSame(nonAvailableHour.start, 'minute') &&
+        interval.end.isSame(nonAvailableHour.end, 'minute'))
+    );
   });
 }
 

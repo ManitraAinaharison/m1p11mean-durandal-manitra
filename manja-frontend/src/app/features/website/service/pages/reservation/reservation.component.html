@@ -83,15 +83,15 @@
           [referenceDate]="referenceDate"
           (updateReferenceDate)="updateReferenceDate($event)"
           [selectedDates]="[selectedDateToCalendarFormat()]"
-          (updateSelectedDates)="updateSelectedDate($event)"
+          (updateSelectedDates)="updateSelectedDatePicker($event)"
           cdkDrag
         />
         <timepicker
-          [disabled]="disableTimePicker"
+          [disabled]="!enablePostAppointment"
           [cursorInterval]="selectedDate"
           [businessHours]="businessHours"
           [nonAvailableHours]="nonAvailableHours"
-          (updateSelectedDate)="updateSelectedDate([$event])"
+          (updateSelectedDate)="updateSelectedDateTimepicker([$event])"
         />
       </div>
       <h4>Votre réservation</h4>
