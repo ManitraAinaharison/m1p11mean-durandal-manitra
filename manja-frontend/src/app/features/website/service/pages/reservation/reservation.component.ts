@@ -4,6 +4,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import {
   DateInterval,
   DateIntervalDetails,
+  PostAppointmentResponse,
 } from '../../../../../core/models/appointment.model';
 import {
   ServiceModel,
@@ -45,9 +46,11 @@ export class ReservationComponent {
   ); // default value
   openingHour: number = 9;
   closingHour: number = 17;
-  businessHours: DateInterval = { start: dayjs(), end: dayjs() };
+  businessHours: DateInterval | null = { start: dayjs(), end: dayjs() };
+  // businessHours: DateInterval = { start: dayjs(), end: dayjs() };
   disableTimePicker: boolean = false;
-  enablePostAppointment : boolean = false;
+  enablePostAppointment: boolean = false;
+  insertedAppointment: PostAppointmentResponse | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,9 +66,12 @@ export class ReservationComponent {
       this.serviceSlug = slug;
       this.setMatchingService(slug);
 
-      this.appointmentService.enablePostAppointment$.subscribe((value)=>{
+      this.appointmentService.insertedAppointment$.subscribe((value) => {
+        this.insertedAppointment = value;
+      });
+
+      this.appointmentService.enablePostAppointment$.subscribe((value) => {
         this.enablePostAppointment = value;
-        console.log(value)
       });
 
       this.appointmentService.businessHours$.subscribe((businessHours) => {
@@ -78,15 +84,15 @@ export class ReservationComponent {
       });
       this.appointmentService.referenceDate$.subscribe((value) => {
         this.setReferenceDate(value);
-        this.appointmentService.checkEnablePostAppointment();
       });
 
       this.subServiceService.selectedSubService$.subscribe(
         (selectedSubService) => {
+          this.appointmentService.checkEnablePostAppointment();
           this.selectedSubService = selectedSubService;
           this.subServiceService.getRelatedEmployees().subscribe((response) => {
             this.employees = response.payload;
-            this.appointmentService.checkEnablePostAppointment();
+            this.setSelectedEmployee(null);
           });
         }
       );
@@ -95,7 +101,6 @@ export class ReservationComponent {
         this.selectedEmployee = employee;
         if (!employee) return;
         this.update(employee, this.selectedDate);
-        this.appointmentService.checkEnablePostAppointment();
       });
 
       this.appointmentService.selectedDate$.subscribe((date) => {
@@ -134,13 +139,16 @@ export class ReservationComponent {
               newBusinessHours.end
             )
           );
+          this.appointmentService.checkEnablePostAppointment();
         },
         error: (err) => {
           this.disableTimePicker = true;
+          this.appointmentService.setBusinessHours(null);
+          this.appointmentService.setNonAvailableHours([]);
           throw new Error('not implemented yet');
         },
       });
-      this.appointmentService.checkEnablePostAppointment();
+    this.appointmentService.checkEnablePostAppointment();
   }
 
   setMatchingService(slug: string | null) {
@@ -166,16 +174,25 @@ export class ReservationComponent {
 
   setNonAvailableHours(
     nonAvailableHours: DateInterval[],
-    businessHours: DateInterval
+    businessHours: DateInterval | null
   ): void {
+    if (businessHours === null) {
+      this.nonAvailableHours = [];
+      this.appointmentService.checkEnablePostAppointment();
+      return;
+      // if (nonAvailableHours.length > 0)
+      //   this.appointmentService.setNonAvailableHours([]);
+      // return;
+    }
     this.nonAvailableHours = toDateIntervalDetails(
       nonAvailableHours,
       businessHours.start,
       businessHours.end
     );
+    this.appointmentService.checkEnablePostAppointment();
   }
 
-  setBusinessHours(value: DateInterval): void {
+  setBusinessHours(value: DateInterval | null): void {
     this.businessHours = value;
   }
 
@@ -183,7 +200,12 @@ export class ReservationComponent {
     this.referenceDate = value;
   }
 
-  updateSelectedDate(value: Dayjs[]): void {
+  updateSelectedDatePicker(value: Dayjs[]): void {
+    if (!value[0].isSame(this.selectedDate.start, 'date'))
+      this.appointmentService.updateSelectedDate(value[0]);
+  }
+
+  updateSelectedDateTimepicker(value: Dayjs[]): void {
     this.appointmentService.updateSelectedDate(value[0]);
   }
 
@@ -232,7 +254,7 @@ export class ReservationComponent {
     });
   }
 
-  setSelectedEmployee(employee: Employee): void {
+  setSelectedEmployee(employee: Employee | null): void {
     if (this.selectedEmployee === employee) return;
     this.appointmentService.setSelectedEmployee(employee);
   }
@@ -305,8 +327,7 @@ export class ReservationComponent {
     };
   }
 
-  createAppointment(){
-    console.log('mba')
+  createAppointment() {
     this.appointmentService.postAppointment();
   }
 }

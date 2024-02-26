@@ -24,7 +24,7 @@ import {
   styleUrl: './timepicker.component.css',
 })
 export class TimepickerComponent {
-  @Input({ required: true }) businessHours: DateInterval = {
+  @Input({ required: true }) businessHours: DateInterval | null = {
     start: dayjs(),
     end: dayjs(),
   };
@@ -38,7 +38,7 @@ export class TimepickerComponent {
   @ViewChild('timepickerParent') timepickerParent: ElementRef | undefined;
   @ViewChild('timepickerCursor') timepickerCursor: ElementRef | undefined;
 
-  position : Point = { x: 0, y: 0 };
+  position: Point = { x: 0, y: 0 };
 
   isCursorOnNonAvailableHours: boolean = false;
 
@@ -47,7 +47,7 @@ export class TimepickerComponent {
   @Output('cdkDragEnded')
   onDragEnd($event: CdkDragEnd): void {
     let y = $event.source.getFreeDragPosition().y;
-    if(isNaN(y)) y = 0;
+    if (isNaN(y)) y = 0;
     const startTime = this.calculateCursorPointedTime(y);
     $event.source.reset();
     console.log(
@@ -60,10 +60,10 @@ export class TimepickerComponent {
       this.getCursorPercentageStart(y),
       startTime
     );
-    this.updateSelectedDate.emit(startTime);
+    if (startTime) this.updateSelectedDate.emit(startTime);
   }
 
-  setY(value: number) : void{
+  setY(value: number): void {
     this.position.y = value;
   }
 
@@ -84,7 +84,8 @@ export class TimepickerComponent {
     return (position * 100) / this.getParentHeight();
   }
 
-  calculateCursorPointedTime(yDelta: number): Dayjs {
+  calculateCursorPointedTime(yDelta: number): Dayjs | null {
+    if (!this.businessHours) return null;
     return calculateHour(
       this.getCursorPercentageStart(yDelta),
       this.businessHours
@@ -97,6 +98,11 @@ export class TimepickerComponent {
       this.cursorInterval,
       this.nonAvailableHours
     );
+  }
+
+  isPastCurrentDate(): boolean {
+    if (!this.cursorInterval?.start) return false;
+    return dayjs().isAfter(this.cursorInterval?.start);
   }
 
   getYoriginalPosition() {
@@ -119,9 +125,22 @@ export class TimepickerComponent {
     // return this.getParentHeight() + yDelta;
   }
 
-  getFrontendPosition(){
-    const value =  this.getYoriginalPosition() - this.getCursorHeight();
-    console.log('getFrontendPosition : ', value);
-    return value
+  getFrontendPosition() {
+    const value = this.getYoriginalPosition() - this.getCursorHeight();
+    return value;
+  }
+
+  isTheSameDateAsCurrent(): boolean {
+    if (!this.businessHours) return false;
+    return dayjs().isSame(this.businessHours.start, 'date');
+  }
+
+  noAvailableHours(): boolean {
+    return false;
+  }
+
+  isCurrentTimeAfterClosingHour(): boolean {
+    if (!this.businessHours) return false;
+    return dayjs().isAfter(this.businessHours.end, 'minute');
   }
 }

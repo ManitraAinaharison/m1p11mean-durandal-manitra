@@ -6,12 +6,12 @@ module.exports = {
       colors: {
         dark: "#14142a",
         "neutral-gray": "#f9fafc",
-        "tumbleweed": "#eba37a",
+        tumbleweed: "#eba37a",
       },
       textColor: {
         primary: "#14142a",
         secondary: "#7d7e91",
-        danger: "",
+        danger: "#d9534f",
         light: "#ffffff",
         "dark-gray": "#635959",
       },
