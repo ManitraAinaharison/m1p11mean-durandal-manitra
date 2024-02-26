@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs';
 import {
-  DateIntervalDetails,
   DateInterval,
+  DateIntervalDetails,
 } from '../../../../../core/models/appointment.model';
 import {
   ServiceModel,
@@ -13,13 +13,16 @@ import { Employee } from '../../../../../core/models/user.model';
 import { AppointmentService } from '../../../../../core/services/appointment.service';
 import { EmployeeService } from '../../../../../core/services/employee.service';
 import { SalonService } from '../../../../../core/services/salon-service.service';
+import { SubServiceService } from '../../../../../core/services/subservice.service';
 import {
+  calculateBusinessHours,
+  calculateNonAvailableHours,
   createDateIntervalDetail,
+  getDiff,
   toDateIntervalDetails,
 } from '../../../../../core/util/date.util';
 import { CalendarDate } from '../../../../../shared/types/date.types';
 import { toCalendarDate } from '../../../../../shared/utils/date.util';
-import { SubServiceService } from '../../../../../core/services/subservice.service';
 
 @Component({
   selector: 'app-reservation',
@@ -44,6 +47,7 @@ export class ReservationComponent {
   closingHour: number = 17;
   businessHours: DateInterval = { start: dayjs(), end: dayjs() };
   disableTimePicker: boolean = false;
+  enablePostAppointment : boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,18 +63,30 @@ export class ReservationComponent {
       this.serviceSlug = slug;
       this.setMatchingService(slug);
 
-      this.appointmentService.businessHours$.subscribe((value) => {
-        this.setBusinessHours(value);
+      this.appointmentService.enablePostAppointment$.subscribe((value)=>{
+        this.enablePostAppointment = value;
+        console.log(value)
+      });
+
+      this.appointmentService.businessHours$.subscribe((businessHours) => {
+        this.setBusinessHours(businessHours);
+        this.appointmentService.nonAvailableHours$.subscribe(
+          (nonAvailableHours) => {
+            this.setNonAvailableHours(nonAvailableHours, businessHours);
+          }
+        );
       });
       this.appointmentService.referenceDate$.subscribe((value) => {
         this.setReferenceDate(value);
+        this.appointmentService.checkEnablePostAppointment();
       });
-      
+
       this.subServiceService.selectedSubService$.subscribe(
         (selectedSubService) => {
           this.selectedSubService = selectedSubService;
           this.subServiceService.getRelatedEmployees().subscribe((response) => {
             this.employees = response.payload;
+            this.appointmentService.checkEnablePostAppointment();
           });
         }
       );
@@ -78,24 +94,8 @@ export class ReservationComponent {
       this.appointmentService.selectedEmployee$.subscribe((employee) => {
         this.selectedEmployee = employee;
         if (!employee) return;
-        this.employeeService
-          .getEmployeeSchedule(employee._id, this.selectedDate.start)
-          .subscribe({
-            next: (response) => {
-              if (!response.payload) return;
-              this.appointmentService.setNonAvailableHours(
-                response.payload.unavailableSchedules
-              );
-              this.appointmentService.setBusinessHours(
-                response.payload.workSchedules[0]
-              );
-              this.disableTimePicker = false;
-            },
-            error: (err) => {
-              this.disableTimePicker = true;
-              throw new Error('not implemented yet')
-            },
-          });
+        this.update(employee, this.selectedDate);
+        this.appointmentService.checkEnablePostAppointment();
       });
 
       this.appointmentService.selectedDate$.subscribe((date) => {
@@ -103,32 +103,44 @@ export class ReservationComponent {
         this.selectedDate = date;
         if (this.selectedEmployee === null) {
           this.disableTimePicker = true;
+          this.appointmentService.checkEnablePostAppointment();
           return;
         }
         if (formerSelectedDate.start.isSame(date.start, 'date')) return;
-        this.employeeService
-          .getEmployeeSchedule(
-            this.selectedEmployee._id,
-            this.selectedDate.start
-          )
-          .subscribe({
-            next: (response) => {
-              if (!response.payload) return;
-              this.appointmentService.setNonAvailableHours(
-                response.payload.unavailableSchedules
-              );
-              this.appointmentService.setBusinessHours(
-                response.payload.workSchedules[0]
-              );
-              this.disableTimePicker = false;
-            },
-            error: (err) => {
-              this.disableTimePicker = true;
-              throw Error('not implemented yet');
-            },
-          });
+        this.update(this.selectedEmployee, date);
       });
     });
+  }
+
+  update(selectedEmployee: Employee, selectedDate: DateIntervalDetails) {
+    this.employeeService
+      .getEmployeeSchedule(selectedEmployee._id, selectedDate.start)
+      .subscribe({
+        next: (response) => {
+          if (!response.payload) return;
+          const newNonAvailableHours = calculateNonAvailableHours(
+            response.payload
+          );
+          const newBusinessHours = calculateBusinessHours(response.payload);
+          this.appointmentService.setNonAvailableHours(newNonAvailableHours);
+          this.appointmentService.setBusinessHours(newBusinessHours);
+          this.disableTimePicker = false;
+          this.updateSelectedDateOnClik(
+            selectedDate.start,
+            newBusinessHours,
+            toDateIntervalDetails(
+              newNonAvailableHours,
+              newBusinessHours.start,
+              newBusinessHours.end
+            )
+          );
+        },
+        error: (err) => {
+          this.disableTimePicker = true;
+          throw new Error('not implemented yet');
+        },
+      });
+      this.appointmentService.checkEnablePostAppointment();
   }
 
   setMatchingService(slug: string | null) {
@@ -175,6 +187,39 @@ export class ReservationComponent {
     this.appointmentService.updateSelectedDate(value[0]);
   }
 
+  updateSelectedDateOnClik(
+    value: Dayjs,
+    businessHours: DateInterval,
+    nonAvailableHours: DateIntervalDetails[]
+  ) {
+    const availableHours = this.findAvailableHours(
+      businessHours,
+      nonAvailableHours
+    );
+    if (
+      this.selectedSubService &&
+      availableHours.intervals.length > 0 &&
+      (this.selectedSubService.duration <= availableHours.minDuration ||
+        this.selectedSubService.duration <= availableHours.maxDuration)
+    ) {
+      this.appointmentService.updateSelectedDate(
+        availableHours.intervals[0].start
+      );
+    }
+    if (!this.selectedSubService) {
+      this.appointmentService.updateSelectedDate(value);
+      return;
+    }
+  }
+
+  updateSelectedDateOnDrag() {}
+
+  updateSelectedTimePicker(value: Dayjs[]): void {
+    if (this.selectedSubService) {
+      this.appointmentService.updateSelectedDate(value[0]);
+    }
+  }
+
   updateReferenceDate(value: Dayjs): void {
     this.appointmentService.updateReferenceDate(value);
   }
@@ -190,5 +235,78 @@ export class ReservationComponent {
   setSelectedEmployee(employee: Employee): void {
     if (this.selectedEmployee === employee) return;
     this.appointmentService.setSelectedEmployee(employee);
+  }
+
+  findAvailableHours(
+    businessHours: DateInterval,
+    nonAvailableHours: DateIntervalDetails[]
+  ): {
+    minDuration: number;
+    maxDuration: number;
+    intervals: DateIntervalDetails[];
+  } {
+    if (nonAvailableHours.length === 0 || !this.selectedSubService) {
+      const duration = getDiff(businessHours.start, businessHours.end);
+      return {
+        minDuration: duration,
+        maxDuration: duration,
+        intervals: [
+          {
+            start: businessHours.start,
+            end: businessHours.end,
+            duration,
+            dailyPercentage: 100,
+            percentageStart: 0,
+            percentageEnd: 100,
+          },
+        ],
+      };
+    }
+    const availableHours: DateInterval[] = [];
+    let start = businessHours.start;
+    let minDuration = 0;
+    let maxDuration = 0;
+    for (let index = 0; index < nonAvailableHours.length; index++) {
+      const currentElement = nonAvailableHours[index];
+      let durationDiff = getDiff(start, currentElement.start);
+
+      if (durationDiff > 0) {
+        availableHours.push({
+          start,
+          end: currentElement.start,
+        });
+        start = currentElement.end;
+
+        if (durationDiff < minDuration || minDuration === 0)
+          minDuration = durationDiff;
+        if (durationDiff > maxDuration) maxDuration = durationDiff;
+      }
+      if (index !== nonAvailableHours.length - 1) continue;
+
+      durationDiff = getDiff(start, businessHours.end);
+      if (durationDiff > 0) {
+        availableHours.push({
+          start,
+          end: businessHours.end,
+        });
+        if (durationDiff < minDuration || minDuration === 0)
+          minDuration = durationDiff;
+        if (durationDiff > maxDuration) maxDuration = durationDiff;
+      }
+    }
+    return {
+      minDuration,
+      maxDuration,
+      intervals: toDateIntervalDetails(
+        availableHours,
+        businessHours.start,
+        businessHours.end
+      ),
+    };
+  }
+
+  createAppointment(){
+    console.log('mba')
+    this.appointmentService.postAppointment();
   }
 }

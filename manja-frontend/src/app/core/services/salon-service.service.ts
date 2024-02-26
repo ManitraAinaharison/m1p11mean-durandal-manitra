@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, shareReplay, tap, of } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay, tap, of, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ServiceModel } from '../models/salon-service.model';
 import { ApiResponse } from '../models/api.model';
@@ -37,6 +37,18 @@ export class SalonService {
     return this.http
       .get<ApiResponse<ServiceModel>>(`/v1/services/${slug}`)
       .pipe(
+        map((response) => {
+          return {
+            ...response,
+            payload: {
+              ...response.payload,
+              subServices: response.payload.subServices.map((sub) => ({
+                ...sub,
+                duration: sub.duration / 60,
+              })),
+            },
+          };
+        }),
         tap({
           next: (response) => this.setSelectedService(response.payload),
           error: () => {

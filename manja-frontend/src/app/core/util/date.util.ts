@@ -1,11 +1,16 @@
 import dayjs, { Dayjs } from 'dayjs';
-import { DateInterval, DateIntervalDetails } from '../models/appointment.model';
+import { DateInterval, DateIntervalDetails, EmployeeSchedule, PrimaryDateEmployeeSchedule } from '../models/appointment.model';
+
 function sum(values: number[]): number {
   return values.reduce((partialSum, a) => partialSum + a, 0);
 }
-function getDiff(startDate: Dayjs, endDate: Dayjs): number {
+export function getDiff(startDate: Dayjs, endDate: Dayjs): number {
   return endDate.diff(startDate, 'minute');
 }
+
+export function toSameDay(value: Dayjs, referenceDate: Dayjs): Dayjs {
+    return referenceDate.hour(value.hour()).minute(value.minute());
+  }
 
 function getDuration(interval: DateInterval): number {
   return interval.end.diff(interval.start, 'minute');
@@ -39,6 +44,30 @@ export function createDateIntervalDetail(
     dailyPercentage: (intervalDuration * 100) / totalOpenHours,
     percentageStart: getPercentage(openingHour, date, totalOpenHours),
     percentageEnd: getPercentage(openingHour, end, totalOpenHours),
+  };
+}
+
+export function createDateIntervalDetail2(
+  selectedDateInterval : DateInterval,
+  businessHours : DateInterval
+): DateIntervalDetails {
+  const totalOpenHours: number = getDiff(businessHours.start, businessHours.end);
+  const selectedIntervalDuration : number = getDiff(selectedDateInterval.start, selectedDateInterval.end);
+  return {
+    start: selectedDateInterval.start,
+    end: selectedDateInterval.end,
+    duration: selectedIntervalDuration,
+    dailyPercentage: (selectedIntervalDuration * 100) / totalOpenHours,
+    percentageStart: getPercentage(
+      businessHours.start,
+      selectedDateInterval.start,
+      totalOpenHours
+    ),
+    percentageEnd: getPercentage(
+      businessHours.start,
+      selectedDateInterval.end,
+      totalOpenHours
+    ),
   };
 }
 
@@ -106,7 +135,7 @@ export function toDateIntervalDetails(
   });
 }
 
-export function isOverridingNonAvailableHours(
+export function isOverlappingNonAvailableHours(
   interval: DateIntervalDetails,
   nonAvailableHours: DateIntervalDetails[]
 ) {
@@ -120,4 +149,65 @@ export function isOverridingNonAvailableHours(
       (interval.start.isBefore(nonAvailableHour.start, 'minute') &&
         interval.end.isAfter(nonAvailableHour.end, 'minute'));
   });
+}
+
+export function dateToDayjs(value: Date, reference: Dayjs) : Dayjs{
+  return dayjs(value)
+    .year(reference.year())
+    .month(reference.month())
+    .date(reference.date())
+    .second(0)
+    .millisecond(0);
+}
+
+export function toEmployeeSchedule(schedule: PrimaryDateEmployeeSchedule, referenceDate: Dayjs) : EmployeeSchedule{
+  return {
+    workSchedules: schedule.workSchedules.map((workSchedule) => ({
+      start: dateToDayjs(workSchedule.start, referenceDate),
+      end: dateToDayjs(workSchedule.end, referenceDate),
+    })),
+    unavailableSchedules: schedule.unavailableSchedules.map(
+      (unavailableSchedule) => ({
+        start: dateToDayjs(unavailableSchedule.start, referenceDate),
+        end: dateToDayjs(unavailableSchedule.end, referenceDate),
+      })
+    ),
+  };
+}
+
+/**
+ * @param {EmployeeSchedule} schedule - the employee schedule.
+ * @returns {DateInterval}
+ * @description Get the minimum of the schedule starts and the maximum of the schedule ends.
+ */
+export function calculateBusinessHours(schedule: EmployeeSchedule) : DateInterval{
+  return {
+    start: schedule.workSchedules.reduce((previousvalue, currentValue) => {
+      if (previousvalue.start.isBefore(currentValue.start))
+        return previousvalue;
+      return currentValue;
+    }).start,
+    end: schedule.workSchedules.reduce((previousvalue, currentValue) => {
+      if (previousvalue.end.isAfter(currentValue.end))
+        return previousvalue;
+      return currentValue;
+    }).end,
+  };
+}
+
+/**
+ * @param {EmployeeSchedule} schedule - the employee schedule.
+ * @returns {DateInterval[]}
+ * @description returns all the non available hours including the hours on the schedule between the employe's schifts during the day
+ */
+export function calculateNonAvailableHours(schedule: EmployeeSchedule): DateInterval[]{
+  const result: DateInterval[] = [];
+  result.push(...schedule.unavailableSchedules);
+  let length = schedule.workSchedules.length;
+  for (let index = 0; index < length - 1; index++) {
+    const currentElement = schedule.workSchedules[index];
+    const nextElement = schedule.workSchedules[index+1];
+    result.push({start: currentElement.end, end: nextElement.start})
+  }
+  return result;
 }
