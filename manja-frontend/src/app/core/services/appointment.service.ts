@@ -1,33 +1,50 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of, shareReplay, tap } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import {
   Appointment,
   DateInterval,
   DateIntervalDetails,
+  PostAppointmentResponse,
+  PostAppointment,
 } from '../models/appointment.model';
 import { SubServiceModel } from '../models/salon-service.model';
 import dayjs, { Dayjs } from 'dayjs';
-import { mockupFindNonAvailableHours } from './api-mock-data/appointment.mockdata';
-import { createDateIntervalDetail } from '../util/date.util';
+import {
+  createDateIntervalDetail,
+  createDateIntervalDetail2,
+  toSameDay,
+  toTheSameDate,
+} from '../util/date.util';
 import { Employee } from '../models/user.model';
+import { ApiResponse } from '../models/api.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppointmentService {
   DEFAULT_SUBSERVICE_DURATION = 60; // minutes
-  OPENING_HOUR = 8;
-  CLOSING_HOUR = 17;
+  DEFAULT_OPENING_HOUR = 8;
+  DEFAULT_CLOSING_HOUR = 17;
 
-  private appointment = new BehaviorSubject<Appointment[] | null>(null);
+  private insertedAppointment =
+    new BehaviorSubject<PostAppointmentResponse | null>(null);
   private selectedSubService = new BehaviorSubject<SubServiceModel | null>(
     null
   );
+  private enablePostAppointment = new BehaviorSubject<boolean>(false);
   private selectedEmployee = new BehaviorSubject<Employee | null>(null);
   private businessHours = new BehaviorSubject<DateInterval>({
-    start: dayjs(),
-    end: dayjs(),
+    start: dayjs()
+      .hour(this.DEFAULT_OPENING_HOUR)
+      .minute(0)
+      .second(0)
+      .millisecond(0),
+    end: dayjs()
+      .hour(this.DEFAULT_CLOSING_HOUR)
+      .minute(0)
+      .second(0)
+      .millisecond(0),
   });
   private nonAvailableHours = new BehaviorSubject<DateInterval[]>([]);
   private referenceDate = new BehaviorSubject<Dayjs>(
@@ -36,13 +53,20 @@ export class AppointmentService {
   private selectedDate = new BehaviorSubject<DateIntervalDetails>(
     createDateIntervalDetail(
       dayjs()
-        .hour(this.CLOSING_HOUR)
+        .hour(this.DEFAULT_OPENING_HOUR)
         .minute(0)
         .second(0)
-        .millisecond(0)
-        .subtract(this.DEFAULT_SUBSERVICE_DURATION, 'minute'),
-      dayjs().hour(this.OPENING_HOUR).minute(0).second(0).millisecond(0),
-      dayjs().hour(this.CLOSING_HOUR).minute(0).second(0).millisecond(0),
+        .millisecond(0),
+      dayjs()
+        .hour(this.DEFAULT_OPENING_HOUR)
+        .minute(0)
+        .second(0)
+        .millisecond(0),
+      dayjs()
+        .hour(this.DEFAULT_CLOSING_HOUR)
+        .minute(0)
+        .second(0)
+        .millisecond(0),
       this.DEFAULT_SUBSERVICE_DURATION
     )
   );
@@ -52,6 +76,9 @@ export class AppointmentService {
   referenceDate$ = this.referenceDate.asObservable();
   selectedDate$ = this.selectedDate.asObservable();
   businessHours$ = this.businessHours.asObservable();
+  nonAvailableHours$ = this.nonAvailableHours.asObservable();
+  insertedAppointment$ = this.insertedAppointment.asObservable();
+  enablePostAppointment$ = this.enablePostAppointment.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -59,39 +86,19 @@ export class AppointmentService {
     this.selectedSubService.next(selected);
   }
 
-  getNonAvailableHours(date: Dayjs) {
-    // return this.http.get<Appointment[]>('/appointments/non-available/${date}').pipe(
-    return of(mockupFindNonAvailableHours(date)).pipe(
-      tap({
-        next: (response) => {
-          this.setNonAvailableHours(response.nonAvailableHours);
-          this.setBusinessHours(response.businessHours);
-        },
-        error: () => {
-          throw Error('not implemented yet');
-        },
-      }),
-      shareReplay(1)
-    );
-  }
-
   setNonAvailableHours(nonAvailableHours: DateInterval[]) {
     this.nonAvailableHours.next(nonAvailableHours);
   }
 
-  getSelectedDateValue(): DateInterval{
+  getSelectedDateValue(): DateInterval {
     return this.selectedDate.value;
   }
 
   setBusinessHours(businessHours: DateInterval) {
     const selectedDate = this.getSelectedDateValue().start;
-    businessHours.start = this.toSameDay(dayjs(businessHours.start), selectedDate)
-    businessHours.end = this.toSameDay(dayjs(businessHours.end), selectedDate)
+    businessHours.start = toSameDay(dayjs(businessHours.start), selectedDate);
+    businessHours.end = toSameDay(dayjs(businessHours.end), selectedDate);
     this.businessHours.next(businessHours);
-  }
-
-  toSameDay(value: Dayjs, referenceDate : Dayjs): Dayjs{
-    return referenceDate.hour(value.hour()).minute(value.minute());
   }
 
   updateReferenceDate(value: Dayjs): void {
@@ -99,16 +106,36 @@ export class AppointmentService {
   }
 
   updateSelectedDate(value: Dayjs): void {
+    const updatedBusinessHours = {
+      start: toTheSameDate(value, this.businessHours.value.start),
+      end: toTheSameDate(value, this.businessHours.value.end),
+    };
+
     this.businessHours.next({
-      start: value.hour(this.OPENING_HOUR).minute(0).second(0).millisecond(0),
-      end: value.hour(this.CLOSING_HOUR).minute(0).second(0).millisecond(0),
+      start: value
+        .hour(updatedBusinessHours.start.hour())
+        .minute(updatedBusinessHours.start.minute())
+        .second(0)
+        .millisecond(0),
+      end: value
+        .hour(updatedBusinessHours.end.hour())
+        .minute(updatedBusinessHours.end.minute())
+        .second(0)
+        .millisecond(0),
     });
+
     this.selectedDate.next(
-      createDateIntervalDetail(
-        value,
-        value.hour(this.OPENING_HOUR).minute(0).second(0).millisecond(0),
-        value.hour(this.CLOSING_HOUR).minute(0).second(0).millisecond(0),
-        this.DEFAULT_SUBSERVICE_DURATION
+      createDateIntervalDetail2(
+        {
+          start: value,
+          end: value.add(
+            this.selectedSubService.value
+              ? this.selectedSubService.value.duration
+              : this.DEFAULT_SUBSERVICE_DURATION,
+            'minute'
+          ),
+        },
+        updatedBusinessHours
       )
     );
   }
@@ -119,5 +146,48 @@ export class AppointmentService {
 
   setSelectedEmployee(employee: Employee): void {
     this.selectedEmployee.next(employee);
+  }
+
+  checkEnablePostAppointment(): void {
+    this.enablePostAppointment.next(
+      !!(
+        !this.insertedAppointment.value &&
+        this.selectedSubService.value &&
+        this.selectedEmployee.value?._id &&
+        this.selectedDate.value
+      )
+    );
+  }
+
+  postAppointment(): Observable<ApiResponse<PostAppointmentResponse>> {
+    if (!this.selectedSubService.value || !this.selectedEmployee.value?._id)
+      throw Error(
+        'not implemented yet : Veuillez sélectionnez une offre et un employé'
+      );
+    const appointment: PostAppointment = {
+      appointmentDate: this.selectedDate.value.start.toDate(),
+      employeeId: this.selectedEmployee.value._id,
+      subServiceSlug: this.selectedSubService.value.slug,
+    };
+    
+    return this.http.post<ApiResponse<PostAppointmentResponse>>(
+        `/v1/appointments`,
+        appointment
+      )
+      .pipe(
+        tap({
+          next: (response) => {
+            console.log(response);
+            this.insertedAppointment.next(response.payload);
+            this.enablePostAppointment.next(false);
+            // redirect to acceuil
+          },
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet');
+          },
+        }),
+        shareReplay(1)
+      );
   }
 }

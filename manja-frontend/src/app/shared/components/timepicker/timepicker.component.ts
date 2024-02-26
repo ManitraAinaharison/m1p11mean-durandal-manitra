@@ -5,6 +5,7 @@ import {
   EventEmitter,
   Input,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import dayjs, { Dayjs } from 'dayjs';
@@ -14,7 +15,7 @@ import {
 } from '../../../core/models/appointment.model';
 import {
   calculateHour,
-  isOverridingNonAvailableHours,
+  isOverlappingNonAvailableHours,
 } from '../../../core/util/date.util';
 
 @Component({
@@ -29,26 +30,49 @@ export class TimepickerComponent {
   };
   @Input({ required: true }) nonAvailableHours: DateIntervalDetails[] = [];
   @Input({ required: true }) cursorInterval: DateIntervalDetails | null = null; // selectedDate
-  @Input() disabled: boolean  = false; // selectedDate
+  @Input() disabled: boolean = false; // selectedDate
+  @Input() errorMessage: string | null = null;
 
   @Output() updateSelectedDate = new EventEmitter<Dayjs>();
 
   @ViewChild('timepickerParent') timepickerParent: ElementRef | undefined;
   @ViewChild('timepickerCursor') timepickerCursor: ElementRef | undefined;
 
-  isCursorOnNonAvailableHours : boolean = false;
+  position : Point = { x: 0, y: 0 };
+
+  isCursorOnNonAvailableHours: boolean = false;
 
   constructor() {}
 
   @Output('cdkDragEnded')
   onDragEnd($event: CdkDragEnd): void {
-    const y = $event.source.getFreeDragPosition().y;
+    let y = $event.source.getFreeDragPosition().y;
+    if(isNaN(y)) y = 0;
     const startTime = this.calculateCursorPointedTime(y);
+    $event.source.reset();
+    console.log(
+      'cdkDragEnded pr : ',
+      y,
+      this.position.y,
+      this.getParentHeight(),
+      this.getYoriginalPosition(),
+      this.getYposition(y),
+      this.getCursorPercentageStart(y),
+      startTime
+    );
     this.updateSelectedDate.emit(startTime);
+  }
+
+  setY(value: number) : void{
+    this.position.y = value;
   }
 
   getParentHeight(): number {
     return this.timepickerParent?.nativeElement.offsetHeight;
+  }
+
+  getCursorHeight(): number {
+    return this.timepickerCursor?.nativeElement.offsetHeight;
   }
 
   getCursorWidth(): Point {
@@ -67,15 +91,37 @@ export class TimepickerComponent {
     );
   }
 
-  isOverridingNonAvailableHours(): boolean {
+  isOverlappingNonAvailableHours(): boolean {
     if (!this.cursorInterval) return false;
-    return isOverridingNonAvailableHours(
+    return isOverlappingNonAvailableHours(
       this.cursorInterval,
       this.nonAvailableHours
     );
   }
 
+  getYoriginalPosition() {
+    return (
+      (this.getParentHeight() *
+        (100 -
+          (this.cursorInterval?.percentageStart as number) -
+          (this.cursorInterval?.dailyPercentage as number))) /
+        100 +
+      this.getCursorHeight()
+    );
+  }
+
   getYposition(yDelta: number) {
-    return this.getParentHeight() + yDelta;
+    // if(!this.cursorInterval) return null;
+    return (
+      this.getParentHeight() -
+      ((this.getYoriginalPosition() as number) - yDelta)
+    );
+    // return this.getParentHeight() + yDelta;
+  }
+
+  getFrontendPosition(){
+    const value =  this.getYoriginalPosition() - this.getCursorHeight();
+    console.log('getFrontendPosition : ', value);
+    return value
   }
 }
