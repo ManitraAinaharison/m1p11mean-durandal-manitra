@@ -15,10 +15,9 @@ module.exports.createAdmin = createAdmin = async () => {
 }
 
 module.exports.createEmployees = createEmployees = async () => {
-    const result = [];
   const employees = authDataFile.employees;
   try {
-    await postEmployee(employees);
+    const result = await postEmployee(employees);
     console.log('postEmployees')
     return result;
   } catch (error) {

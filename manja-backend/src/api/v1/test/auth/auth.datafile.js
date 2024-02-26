@@ -67,6 +67,7 @@ module.exports.employees = [
   },
 ].map((el) => ({
   ...el,
+  isDeleted: false,
   workSchedule: {
     day: 1,
     schedule: [
