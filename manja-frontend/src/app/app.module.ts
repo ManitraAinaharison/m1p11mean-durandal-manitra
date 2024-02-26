@@ -20,7 +20,7 @@ import { PageLoaderComponent } from './shared/components/page-loader/page-loader
   declarations: [
     AppComponent,
     NotFoundComponent,
-    PageLoaderComponent
+    PageLoaderComponent,
   ],
   imports: [
     BrowserModule,

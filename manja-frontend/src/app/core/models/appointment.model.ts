@@ -14,7 +14,7 @@ export interface Appointment {
     amount: number;
   };
   status: number; // 0:
-  commision: number;
+  commission: number;
   statusHistory: [
     {
       status: number;
@@ -25,7 +25,7 @@ export interface Appointment {
 
 export interface DateInterval {
   start: Dayjs,
-  end: Dayjs 
+  end: Dayjs
 }
 
 export interface DateIntervalDetails extends DateInterval {
