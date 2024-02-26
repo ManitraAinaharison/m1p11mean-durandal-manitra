@@ -82,7 +82,7 @@ module.exports.getAppointmentsOfEmployeeByDate = async (employeeId, date) => {
 
         const appointmentsByDate = await Appointment.find({
             employee: employeeId,
-            status: { $gt: 0, $lt: 4 },
+            status: { $gte: 0, $lte: 4 },
             appointmentDate: { $gte: startOfDate, $lte: endOfDate }
         });
 

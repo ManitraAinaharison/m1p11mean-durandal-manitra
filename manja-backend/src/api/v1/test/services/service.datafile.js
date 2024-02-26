@@ -218,8 +218,11 @@ module.exports.services = services = [
     subServices: [],
     slug: "soins-du-visage",
   },
-];
+].map((service) => ({
+  ...service,
+  isDeleted: false,
+}));
 
 module.exports.subServices = subServices = services
-  .map((service) => (service.subServices))
+  .map((service) => service.subServices)
   .flat(1);
