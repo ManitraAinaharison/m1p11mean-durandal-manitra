@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, shareReplay, tap, of } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay, tap, of, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ServiceModel } from '../models/salon-service.model';
-import { ApiResponse } from '../models/api.model';
+import { ApiResponse, ApiSuccess } from '../models/api.model';
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +44,22 @@ export class SalonService {
           },
         }),
         shareReplay(1)
+      );
+  }
+
+  addNewService(payload: FormData): Observable<ApiSuccess> {
+    return this.http
+    .post<ApiSuccess>('/v1/services', payload)
+    .pipe(shareReplay(1));
+  }
+
+  getImageFile(imgName: string): Observable<File> {
+    return this.http
+      .get('/images/' + imgName, { responseType: 'blob' })
+      .pipe(
+        map((blob) => {
+          return new File([blob], 'service-img', { type: blob.type });
+        })
       );
   }
 }

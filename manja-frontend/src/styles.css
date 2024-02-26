@@ -93,12 +93,16 @@
         @apply border border-red-400;
     }
 
+    .inp-file-error {
+      @apply border-2 border-red-400 !important;
+    }
+
     .msg-invalidated-input {
         @apply  text-sm text-red-400 pl-6 pt-1;
     }
 
     .tooltip {
-      @apply absolute text-white px-3 py-1 rounded-lg text-[14px] text-center text-nowrap;
+      @apply absolute text-white px-3 py-1 rounded-lg text-[14px] text-center text-nowrap z-50;
       background-color: rgba(0, 0, 0, 0.7);
     }
 
@@ -134,5 +138,22 @@
 
     .section-container {
         @apply max-w-[1200px] justify-between items-center mx-auto px-6;
+    }
+
+    .modal-backdrop {
+      @apply absolute top-0 bottom-0 left-0 right-0 bg-gray-900 opacity-50;
+    }
+
+    .custom-overlay-container,
+    .custom-overlay-container .cdk-global-overlay-wrapper {
+      @apply absolute top-0 bottom-0 left-0 right-0;
+    }
+
+    .custom-overlay-container .cdk-global-overlay-wrapper {
+      @apply flex justify-center items-center;
+    }
+
+    .full-card-container-dashboard {
+      @apply size-full border border-gray-200 text-gray-900 rounded-lg shadow-lg py-4 px-8;
     }
 }

@@ -72,7 +72,7 @@ export class UserService {
     }
 
     purgeAuth(): void {
-        this.jwtService.destroyTokens();
+        // this.jwtService.destroyTokens();
         this.currentUserSubject.next(null);
     }
 }

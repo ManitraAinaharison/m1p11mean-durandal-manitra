@@ -2,7 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const serviceService = require("../services/service.service");
+const authMiddleware = require("../../auth/middlewares/auth.middleware");
+const { upload } = require("../../../../upload/upload.config");
 const apiUtil = require("../../../../util/api.util");
+const securityUtil = require("../../../../util/security.util");
+const { ROLES } = require("../../auth/schemas/user.schema");
 
 router.get("/services", async (req, res) => {
     try {
@@ -18,8 +22,14 @@ router.get("/services", async (req, res) => {
 
 router.get("/services/:serviceSlug", async (req, res) => {
     try {
+        let isManager = false;
+        if (req.cookies.refreshToken) {
+            const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+            if (decodedRefreshToken.role == ROLES.MANAGER) isManager = true;
+        }
+
         const serviceSlug = req.params.serviceSlug;
-        const service = await serviceService.getServiceBySlug(serviceSlug);
+        const service = await serviceService.getServiceBySlug(serviceSlug, isManager);
         const responseBody = apiUtil.successResponse(true, service);
         res.status(200).json(responseBody);
     } catch (e) {
@@ -57,14 +67,47 @@ router.get("/services/:serviceId/subservices/:subserviceId", (req, res) => {
         });
     }
 });
+// NOT IMPLEMENT ENDPOINT
 
-
-router.post("/services", (req, res) => {
+router.post("/services",  [authMiddleware.authorise([ROLES.MANAGER]), upload('uploads/img').single('img')], async (req, res) => {
     try {
-        responseBody = apiUtil.successResponse(true, {});
+        if (!req.body.service) throw apiUtil.ErrorWithStatusCode("Données manquantes", 500); 
+        let serviceData = JSON.parse(req.body.service);
+        const fileName = req.file.filename;
+        const newService = await serviceService.addNewService(serviceData, fileName);
+        responseBody = apiUtil.successResponse(true, newService);
         res.status(201).json(responseBody);
     } catch (e) {
-        res.status(500).json({
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
+router.put("/services/:serviceId", [authMiddleware.authorise([ROLES.MANAGER]), upload('uploads/img').single('img')], async (req, res) => {
+    try {
+        if (!req.body.service) throw apiUtil.ErrorWithStatusCode("Données manquantes", 500); 
+        let serviceId = req.params.serviceId;
+        let serviceData = JSON.parse(req.body.service);
+        const fileName = req.file ? req.file.filename : null;
+        const newService = await serviceService.updateService(serviceId, serviceData, fileName);
+        responseBody = apiUtil.successResponse(true, newService);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
+router.delete("/services/:serviceId", authMiddleware.authorise([ROLES.MANAGER]), async (req, res) => {
+    try {
+        let serviceId = req.params.serviceId;
+        const id = await serviceService.deleteService(serviceId);
+        responseBody = apiUtil.successResponse(true, id);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
             message: e.message
         });
     }
