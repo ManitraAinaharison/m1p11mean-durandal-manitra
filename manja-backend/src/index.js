@@ -4,6 +4,7 @@ const mongoDBAutoIP = require("mongodbautoip");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
+const path = require('path');
 
 require("dotenv").config({
     path: process.env.NODE_ENV === "production" ? ".env" : ".env.dev",
@@ -16,6 +17,13 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        const errorMsg = 'La taille du fichier dépasse la limite autorisée. Veuillez sélectionner un fichier de taille inférieure à 5 Mo';
+        res.status(400).json({ message: errorMsg });
+    }
+});
+app.use('/images', express.static('uploads/img'));
 
 const routes = require("./config/routes.config"); // routes are based on API version
 app.use("/", routes);

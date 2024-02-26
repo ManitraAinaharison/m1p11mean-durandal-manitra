@@ -6,6 +6,7 @@ const serviceSchema = new mongoose.Schema({
     slug: { type: String, required: true, unique: true, min: 1, max: 50 },
     description: { type: String, required: true, min: 1, max: 150 },
     imgPath: { type: String, required: true },
+    isDeleted: { type: Boolean, required: true, default: false},
     subServices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SubService' }]
 });
 

@@ -6,6 +6,7 @@ import { ApiError } from '../../../../../core/models/api.model';
 import { Credentials } from '../../../../../core/models/user.model';
 import { UserService } from '../../../../../core/services/user.service';
 import { markFormGroupTouched, fieldHasError } from '../../../../../shared/utils/form.util';
+import { PageLoaderService } from '../../../../../shared/services/page-loader.service';
 
 
 interface LoginForm {
@@ -30,6 +31,7 @@ export class AdminLoginComponent {
     private fb: FormBuilder,
     private router: Router,
     public userService: UserService,
+    public pageLoaderService: PageLoaderService,
   ) {}
 
   ngOnInit(): void {
@@ -72,7 +74,7 @@ export class AdminLoginComponent {
               next: () => {
                   this.loginFormSubmitIsLoading = false;
                   const nextPage = this.userService.targetUrl === "" ? "/dashboard/" : this.userService.targetUrl
-                  this.router.navigate([nextPage])
+                  this.router.navigate([nextPage]);
               },
               error: (err: ApiError) => {
                   this.userService.errorMessage = err.message;

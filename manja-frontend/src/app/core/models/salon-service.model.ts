@@ -12,7 +12,7 @@ export interface SubServiceModel {
   description: string;
   duration: number;
   price: number;
-  ptgCommision: number;
-  promotions: [{}];
-  history: [];
-} 
+  ptgCommission: number;
+  promotions?: [{}];
+  history?: [];
+}

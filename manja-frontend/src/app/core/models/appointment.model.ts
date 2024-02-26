@@ -14,7 +14,7 @@ export interface Appointment {
     amount: number;
   };
   status: number; // 0:
-  commision: number;
+  commission: number;
   statusHistory: [
     {
       status: number;
