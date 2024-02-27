@@ -6,6 +6,8 @@ module.exports = {
       colors: {
         dark: "#14142a",
         "neutral-gray": "#f9fafc",
+        "dark-gray": "#635959",
+        "middle-gray": "#e4e5e9",
         tumbleweed: "#eba37a",
       },
       textColor: {
@@ -27,6 +29,7 @@ module.exports = {
         27.5: "110px",
         30: "120px",
         32.5: "130px",
+        35: "140px",
         42: "168px",
         45: "180px",
         50: "200px",
