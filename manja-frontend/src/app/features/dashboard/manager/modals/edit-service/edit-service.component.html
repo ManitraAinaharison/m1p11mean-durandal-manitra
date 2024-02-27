@@ -25,7 +25,7 @@
         <ngx-dropzone
         [multiple]="false"
         [accept]="'image/*'"
-        [ngClass]="{'inp-file-error': fieldHasErrorWrapper(this.serviceForm, 'img', 'required')}"
+        [ngClass]="{'inp-file-error': fieldHasErrorWrapper(this.serviceForm, 'img', 'required') || fieldHasErrorWrapper(this.serviceForm, 'img', 'imageSize')}"
         (change)="onImagePicked($event)">
             <ngx-dropzone-label>
                 <div class="p-3">
@@ -50,6 +50,9 @@
         </ngx-dropzone>
         @if (fieldHasErrorWrapper(this.serviceForm, 'img', 'required')) {
             <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+        }
+        @if (fieldHasErrorWrapper(this.serviceForm, 'img', 'imageSize')) {
+            <div class="msg-invalidated-input pl-0"> La taille de l'image ne doit pas dépasser les 5Mo</div>
         }
     </div>
 
@@ -87,18 +90,39 @@
     <div class="sub-service-section">
 
     <div *ngIf="!this.showEditSection" class="w-full h-[450px] pr-6 overflow-y-scroll">
-        <div class="w-full sticky top-0 bg-white p-2 flex justify-between items-center">
-        <p class="font-bold text-[18px]">Liste des sous services</p>
-        <button class="button-primary px-6 py-2 flex justify-start items-center" (click)="this.showEditSubServiceSection()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            nouveau sous service
-        </button>
+        <div class="w-full sticky top-0 bg-white p-2 flex justify-between items-center z-10">
+          <p class="font-bold text-[18px]">Liste des sous services</p>
+          <button class="button-primary px-6 py-2 flex justify-start items-center" (click)="this.showEditSubServiceSection()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              nouveau sous service
+          </button>
         </div>
         <div formArrayName="subServices">
-        <div class="sub-service-card" *ngFor="let subService of subServices.controls; let i = index" [formGroupName]="i" (click)="this.showEditSubServiceSection(i)">
+        <div
+          class="relative sub-service-card cursor-pointer flex justify-between items-center"
+          [ngClass]="{'border-red-400 bg-red-200 hover:bg-red-100': subService.get('slug')?.value && this.isInSubServiceToDelete(subService.get('slug')?.value)}"
+          *ngFor="let subService of subServices.controls; let i = index"
+          [formGroupName]="i"
+          (click)="this.showEditSubServiceSection(i)"
+          >
+            <div *ngIf="!subService.get('slug')?.value" class="absolute inline-flex items-center justify-center w-20 h-6 text-xs font-bold text-white bg-blue-500 border-2 border-white rounded-full -top-2 start-2">Nouveau</div>
             <span class="ml-2 font-bold text-[18px] pb-1">{{ subService.get('name')?.value }}</span><br>
+            <button
+              *ngIf="!this.isInSubServiceToDelete(subService.get('slug')?.value)"
+              type="button"
+              class="bg-red-500 rounded-lg py-1 px-2 mt-2 mr-2 text-white hover:bg-red-400"
+              (click)="this.deleteSubService($event, i)">
+              supprimer
+            </button>
+            <button
+              *ngIf="subService.get('slug')?.value && this.isInSubServiceToDelete(subService.get('slug')?.value)"
+              type="button"
+              class="bg-gray-900 rounded-lg py-1 px-2 mt-2 mr-2 text-white hover:bg-gray-700"
+              (click)="this.cancelDeleteSubService($event, i)">
+              annuler
+            </button>
         </div>
         </div>
         <div class="sub-service-card bg-gray-50" *ngIf="this.subServices.length == 0">
@@ -173,13 +197,16 @@
                     type="number"
                     min="0"
                     class="input rounded-lg px-3 py-1"
-                    [class.error]="fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'required')"
+                    [class.error]="fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'required') || fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'min') || fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'max')"
                     formControlName="ptgCommission">
                     @if (fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'required')) {
                     <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
                     }
                     @if (fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'min')) {
                     <div class="msg-invalidated-input pl-0"> Valeur positive uniquement</div>
+                    }
+                    @if (fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'max')) {
+                    <div class="msg-invalidated-input pl-0"> La valeur doit être compris entre 0 et 100</div>
                     }
                 </div>
             </div>

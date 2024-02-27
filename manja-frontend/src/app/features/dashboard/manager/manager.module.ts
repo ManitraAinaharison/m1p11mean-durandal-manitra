@@ -7,9 +7,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { ListServicesComponent } from './components/list-services/list-services.component';
 import { EditServiceComponent } from './modals/edit-service/edit-service.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatTreeModule} from '@angular/material/tree';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { ReactiveFormsModule } from '@angular/forms';
+import { EditEmployeeComponent } from './modals/edit-employee/edit-employee.component';
 
 const managerRoutes: Routes = [
   { path: 'employees', component: ListEmployeesComponent },
@@ -22,12 +23,13 @@ const managerRoutes: Routes = [
     ServiceCrudComponent,
     ListEmployeesComponent,
     ListServicesComponent,
-    EditServiceComponent
+    EditServiceComponent,
+    EditEmployeeComponent
   ],
   imports: [
     CommonModule,
     MatDialogModule,
-    MatStepperModule,
+    MatTreeModule,
     NgxDropzoneModule,
     ReactiveFormsModule,
     RouterModule.forChild(managerRoutes)
