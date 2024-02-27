@@ -1,6 +1,7 @@
 import { ServiceModel, SubServiceModel } from "./salon-service.model";
 
 export interface User {
+    id?: string;
     firstname: string;
     lastname: string;
     email: string;

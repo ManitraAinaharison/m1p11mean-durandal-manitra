@@ -23,7 +23,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     AppComponent,
     NotFoundComponent,
     PageLoaderComponent,
-    ConfirmBoxComponent,
+    ConfirmBoxComponent
   ],
   imports: [
     BrowserModule,
