@@ -29,6 +29,32 @@ export function toTheSameDate(reference: Dayjs, value: Dayjs): Dayjs {
   return value.year(year).month(month).date(date);
 }
 
+export function formatHHmm(value: Dayjs){
+  return value.format('HH : mm')
+}
+
+export function longDate(value: Dayjs): string {
+  // return value.format('dddd, D MMMM YYYY');
+  return value.calendar(dayjs(), {
+    sameDay: "[Aujourd'hui le ] D MMMM YYYY",
+    nextDay: '[Demain le ] D MMMM YYYY',
+    nextWeek: '[La semaine prochaine, le ] D MMMM YYYY',
+    lastDay: '[Hier le ] D MMMM YYYY',
+    lastWeek: '[La semaine dernière, le ] D MMMM YYYY',
+    sameElse: 'D MMMM YYYY [à] HH:mm', // Everything else
+  });
+}
+export function longDateWithTime(value: Dayjs): string {
+  return value.calendar(dayjs(), {
+    sameDay: "[Aujourd'hui le ] D MMMM YYYY [à] HH:mm",
+    nextDay: '[Demain le ] D MMMM YYYY [à] HH:mm',
+    nextWeek: '[La semaine prochaine le ] D MMMM YYYY [à] HH:mm',
+    lastDay: '[Hier le ] D MMMM YYYY [à] HH:mm',
+    lastWeek: '[La semaine dernière le ] D MMMM YYYY [à] HH:mm',
+    sameElse: 'D MMMM YYYY [à] HH:mm', // Everything else
+  });
+}
+
 export function createDateIntervalDetail(
   date: Dayjs,
   openingHour: Dayjs,

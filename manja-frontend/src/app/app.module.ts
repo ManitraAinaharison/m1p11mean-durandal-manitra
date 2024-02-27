@@ -13,6 +13,7 @@ import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { ServiceCardComponent } from './shared/components/service-card/service-card.component';
 import { LayoutsModule } from './core/layouts/layouts.module';
 import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
+import { SharedPipesModule } from './shared/pipes/shared-pipes.module';
 
 
 
@@ -26,6 +27,7 @@ import { PageLoaderComponent } from './shared/components/page-loader/page-loader
     BrowserModule,
     HttpClientModule,
     LayoutsModule,
+    SharedPipesModule,
     AppRoutingModule
   ],
   providers: [
