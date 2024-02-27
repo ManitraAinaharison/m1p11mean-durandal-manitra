@@ -3,6 +3,7 @@ const Service = require("../schemas/service.schema").Service;
 const SubService = require("../schemas/subservice.schema").SubService;
 const apiUtil = require("../../../../util/api.util");
 const slugify = require('slugify');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports.getListServices = async function getListServices() {
     try {
@@ -17,7 +18,7 @@ module.exports.getServiceBySlug = async function getServiceBySlug(serviceSlug, i
     try {
         let toExcludeToSubService = '-_id';
         if(!isManager) toExcludeToSubService  += '-ptgCommission';
-        const service = await Service.findOne({slug: serviceSlug, isDeleted: false }, '-_id')
+        const service = await Service.findOne({slug: serviceSlug, isDeleted: false }, '-_id -isDeleted')
             .populate({ path: 'subServices', select: toExcludeToSubService });
         if (!service) throw apiUtil.ErrorWithStatusCode("Ce service n'existe pas", 404);
         return service;
@@ -32,13 +33,13 @@ module.exports.addNewService = async (serviceData, filename) => {
     session.startTransaction();
     try {
         let { subServices, ...newService } = serviceData;
-        newService.slug = slugify(newService.name);
+        newService.slug = slugify(newService.name, { lower: true });
         newService.imgPath = filename;
         let service = new Service(newService);
         service = await service.save({ session });
 
         subServices = subServices.map(subService => {
-            subService.slug = slugify(subService.name);
+            subService.slug = slugify(subService.name, { lower: true });
             return new SubService(subService);
         });
         const insertedSubServices = await SubService.insertMany(subServices, { session });
@@ -61,41 +62,67 @@ module.exports.addNewService = async (serviceData, filename) => {
     }
 }
 
-module.exports.updateService = async (serviceId, serviceData, fileName) => {
+module.exports.updateService = async (serviceSlug, serviceData, fileName) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        let service = await Service.findById(serviceId);
+        let service = await Service.findOne({ slug: serviceSlug });
         if (!service) throw apiUtil.ErrorWithStatusCode("Ce service n'existe pas", 404);        
 
-        let { subServicesToUpdate, subServicesToDelete, subServicesToAdd, ...newService } = serviceData;
-        newService.slug = slugify(newService.name);
+        let { subServices, subServicesToDelete, ...newService } = serviceData;
+        
+        // Update service
+        newService.slug = slugify(newService.name, { lower: true });
         if (fileName) newService.imgPath = fileName;
         await Service.updateOne(
             { _id: service._id },
             { $set: newService },
             { session }
         );
-
-        for (let i = 0; i < subServicesToUpdate.length; i++) {
-            const subService = subServicesToUpdate[i];
-            subService.slug = slugify(subService.name);
-            await SubService.updateOne(
-                { _id: subService._id },
-                { $set: subService },
-                { session }
-            );
+        
+        // Update subservices already present in service
+        for (let i = 0; i < subServices.length; i++) {
+            const subService = subServices[i];
+            const oldSlug = subService.slug;
+            if (oldSlug) {
+                subService.slug = slugify(subService.name, { lower: true });
+                await SubService.updateOne(
+                    { slug: oldSlug },
+                    { $set: subService },
+                    { session }
+                );
+            }
         };
 
+        // Get ids of subservices to delete present in service + check if every subService exists
+        let subServiceIdsToDelete = [];
+        for (let i = 0; i < subServicesToDelete.length; i++) {
+            const subServiceSlug = subServicesToDelete[i];
+            const subService = await SubService.findOne({ slug: subServiceSlug });
+            if (!subService) throw apiUtil.ErrorWithStatusCode("Le sous service " + subServiceSlug + " n'existe pas", 500);
+            await SubService.updateOne({ _id: subService._id }, { $set: { isDeleted: true, slug: (subService.slug + '_' + uuidv4()) } });
+            subServiceIdsToDelete.push(subService._id);
+        };
+
+        // Remove from subServices key of service ids of subservices to delete
+        await Service.updateOne(
+            { _id: service._id },
+            { $pull: { subServices: { $in: subServiceIdsToDelete } } },
+            { session }
+        );
+
+        // Insert new subservices
         let insertedSubServiceIds = [];
-        console.log(subServicesToAdd);
-        for (let i = 0; i < subServicesToAdd.length; i++) {
-            const subService = subServicesToAdd[i];
-            subService.slug = slugify(subService.name);
-            let newSubService = new SubService(subService);
-            newSubService = await newSubService.save(newSubService, { session });
-            insertedSubServiceIds.push(newSubService._id);
-        };
+        for (let i = 0; i < subServices.length; i++) {
+            const subService = subServices[i];
+            const oldSlug = subService.slug;
+            if (!oldSlug) {
+                subService.slug = slugify(subService.name, { lower: true });
+                let newSubService = new SubService(subService);    
+                newSubService = await newSubService.save(newSubService, { session });
+                insertedSubServiceIds.push(newSubService._id);
+            }
+        }
 
         await Service.updateOne(
             { _id: service._id },
@@ -103,15 +130,10 @@ module.exports.updateService = async (serviceId, serviceData, fileName) => {
             { session }
         );
 
-        await Service.updateOne(
-            { _id: service._id },
-            { $pull: { subServices: { $in: subServicesToDelete } } },
-            { session }
-        );
-
         await session.commitTransaction();
-        return await Service.findById(serviceId, '-__v').populate('subServices', '-__v');
+        return await Service.findById(service._id, '-__v').populate('subServices', '-__v');
     } catch (e) {
+        console.log(e);
         await session.abortTransaction();
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
     } finally {
@@ -119,19 +141,33 @@ module.exports.updateService = async (serviceId, serviceData, fileName) => {
     }
 };
 
-module.exports.deleteService = async (serviceId) => {
+module.exports.deleteService = async (serviceSlug) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-        const service = await Service.findById(serviceId);
+        const service = await Service.findOne({ slug: serviceSlug, isDeleted: false });
         if (!service) throw apiUtil.ErrorWithStatusCode("Ce service n'existe pas", 404);
+
+        const subServiceIds = service.subServices;
+        for (let i = 0; i < subServiceIds.length; i++) {
+            const subServiceId = subServiceIds[i];
+            const subService = await SubService.findById(subServiceId);
+            if (!subService) throw apiUtil.ErrorWithStatusCode("Le sous service " + subServiceSlug + " n'existe pas", 500);
+            await SubService.updateOne({ _id: subServiceId }, { $set: { isDeleted: true, slug: (subService.slug + '_' + uuidv4()) } });
+        }
 
         await Service.updateOne(
             { _id: service._id },
-            { $set: { isDeleted: true } }
+            { $set: { isDeleted: true, slug: (service.slug + '_' + uuidv4()) } }
         );
 
-        return serviceId;
+        await session.commitTransaction();
+        return service._id;
     } catch (e) {
-        console.log(e.statusCode, e.message);
+        console.log(e);
+        await session.abortTransaction();
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
+    } finally {
+        await session.endSession();
     }
 };

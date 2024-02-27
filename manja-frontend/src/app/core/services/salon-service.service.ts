@@ -53,6 +53,18 @@ export class SalonService {
     .pipe(shareReplay(1));
   }
 
+  updateService(slugService: string, payload: FormData): Observable<ApiSuccess> {
+    return this.http
+    .put<ApiSuccess>(`/v1/services/${slugService}`, payload)
+    .pipe(shareReplay(1));
+  }
+
+  deleteService(slugService: string): Observable<ApiSuccess> {
+    return this.http
+    .delete<ApiSuccess>(`/v1/services/${slugService}`)
+    .pipe(shareReplay(1));
+  }
+
   getImageFile(imgName: string): Observable<File> {
     return this.http
       .get('/images/' + imgName, { responseType: 'blob' })
