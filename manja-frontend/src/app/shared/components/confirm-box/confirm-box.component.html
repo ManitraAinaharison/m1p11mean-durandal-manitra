@@ -1,0 +1,26 @@
+<div class="flex justify-between mt-1">
+  <p class="ml-4 font-bold text-[18px]">{{ this.data.title }}</p>
+  <button class="float-right p-4 hover:text-gray-400" (click)="onCancelClick()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+      </svg>
+  </button>
+  </div>
+
+<mat-dialog-content>
+  <p>{{ this.data.msg }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+<div class="w-full flex justify-end items-center m-3 pt-6 border-t-[1px] border-gray-200">
+    <button type="button" class="button-secondary mx-2" (click)="onCancelClick()">Annuler</button>
+    <button *ngIf="!this.isLoaded()" type="button" class="button-primary mx-2" (click)="onConfirmClick()">Confirmer</button>
+    <button *ngIf="this.isLoaded()" type="button" class="min-w-42 button-primary mx-2 cursor-default disabled:opacity-75 hover:bg-gray-900" [disabled]="true">
+      <div
+          class="inline-block h-4 w-4 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+          role="status">
+          <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Chargement...</span>
+      </div>
+    </button>
+</div>
+</mat-dialog-actions>

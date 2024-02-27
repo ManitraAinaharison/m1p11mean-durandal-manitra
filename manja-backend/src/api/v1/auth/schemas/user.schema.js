@@ -55,7 +55,7 @@ userSchema.post('save', function(error, doc, next) {
     if (error.name === 'MongoServerError' && error.code === 11000) {
         let errorMessage = "";
         if (error.keyValue.email) {
-            errorMessage = `L'email ${error.keyValue.email} est déjà pris par un autre utilisateur.`;
+            errorMessage = `L'email «${error.keyValue.email}» est déjà pris par un autre utilisateur.`;
         }
         throw apiUtil.ErrorWithStatusCode(errorMessage, 500);
     } else {

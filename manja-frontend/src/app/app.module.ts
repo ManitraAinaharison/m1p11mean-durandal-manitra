@@ -10,10 +10,11 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 
 // Modules import
-import { ServiceCardComponent } from './shared/components/service-card/service-card.component';
 import { LayoutsModule } from './core/layouts/layouts.module';
 import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
 import { SharedPipesModule } from './shared/pipes/shared-pipes.module';
+import { ConfirmBoxComponent } from './shared/components/confirm-box/confirm-box.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -22,9 +23,11 @@ import { SharedPipesModule } from './shared/pipes/shared-pipes.module';
     AppComponent,
     NotFoundComponent,
     PageLoaderComponent,
+    ConfirmBoxComponent
   ],
   imports: [
     BrowserModule,
+    MatDialogModule,
     HttpClientModule,
     LayoutsModule,
     SharedPipesModule,
