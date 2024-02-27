@@ -13,6 +13,8 @@ import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { ServiceCardComponent } from './shared/components/service-card/service-card.component';
 import { LayoutsModule } from './core/layouts/layouts.module';
 import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
+import { ConfirmBoxComponent } from './shared/components/confirm-box/confirm-box.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -21,9 +23,11 @@ import { PageLoaderComponent } from './shared/components/page-loader/page-loader
     AppComponent,
     NotFoundComponent,
     PageLoaderComponent,
+    ConfirmBoxComponent,
   ],
   imports: [
     BrowserModule,
+    MatDialogModule,
     HttpClientModule,
     LayoutsModule,
     AppRoutingModule

@@ -84,15 +84,15 @@ router.post("/services",  [authMiddleware.authorise([ROLES.MANAGER]), upload('up
     }
 });
 
-router.put("/services/:serviceId", [authMiddleware.authorise([ROLES.MANAGER]), upload('uploads/img').single('img')], async (req, res) => {
+router.put("/services/:serviceSlug", [authMiddleware.authorise([ROLES.MANAGER]), upload('uploads/img').single('img')], async (req, res) => {
     try {
         if (!req.body.service) throw apiUtil.ErrorWithStatusCode("Données manquantes", 500); 
-        let serviceId = req.params.serviceId;
+        let serviceSlug = req.params.serviceSlug;
         let serviceData = JSON.parse(req.body.service);
         const fileName = req.file ? req.file.filename : null;
-        const newService = await serviceService.updateService(serviceId, serviceData, fileName);
+        const newService = await serviceService.updateService(serviceSlug, serviceData, fileName);
         responseBody = apiUtil.successResponse(true, newService);
-        res.status(201).json(responseBody);
+        res.status(200).json(responseBody);
     } catch (e) {
         res.status(e.statusCode || 500).json({
             message: e.message
@@ -100,12 +100,12 @@ router.put("/services/:serviceId", [authMiddleware.authorise([ROLES.MANAGER]), u
     }
 });
 
-router.delete("/services/:serviceId", authMiddleware.authorise([ROLES.MANAGER]), async (req, res) => {
+router.delete("/services/:serviceSlug", authMiddleware.authorise([ROLES.MANAGER]), async (req, res) => {
     try {
-        let serviceId = req.params.serviceId;
-        const id = await serviceService.deleteService(serviceId);
+        let serviceSlug = req.params.serviceSlug;
+        const id = await serviceService.deleteService(serviceSlug);
         responseBody = apiUtil.successResponse(true, id);
-        res.status(201).json(responseBody);
+        res.status(200).json(responseBody);
     } catch (e) {
         res.status(e.statusCode || 500).json({
             message: e.message

@@ -10,9 +10,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ServiceModel, SubServiceModel } from '../../../../../core/models/salon-service.model';
 import { ApiError } from '../../../../../core/models/api.model';
 import { environment } from '../../../../../../environments/environment';
+import { imageSizeValidator } from '../../../../../shared/custom-validators';
 
 interface SubServiceForm {
   name: FormControl<string>;
+  slug: FormControl<string|null>;
   price: FormControl<number|null>;
   duration: FormControl<number|null>;
   ptgCommission: FormControl<number|null>;
@@ -43,6 +45,10 @@ export class EditServiceComponent {
   serviceFormSubmitIsLoading: boolean = false;
   titleSubServiceForm: string = "";
   currentSubServiceIndexToEdit: number = -1;
+  theImageHasChanged: boolean = false;
+
+  subServicesToDelete: string[] = [];
+
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -113,7 +119,7 @@ export class EditServiceComponent {
               nonNullable: true
           }),
           img: new FormControl(null, {
-            validators: [Validators.required],
+            validators: [Validators.required, imageSizeValidator(5)],
             nonNullable: true
           }),
           subServices: this.fb.array<FormGroup<SubServiceForm>>([])
@@ -126,6 +132,7 @@ export class EditServiceComponent {
               validators: [Validators.required, Validators.maxLength(30)],
               nonNullable: true
           }),
+          slug: new FormControl({ value: null, disabled: true }),
           price: new FormControl(null, {
               validators: [Validators.required, Validators.min(0)],
               nonNullable: true
@@ -135,7 +142,7 @@ export class EditServiceComponent {
               nonNullable: true
           }),
           ptgCommission: new FormControl(null, {
-              validators: [Validators.required, Validators.min(0)],
+              validators: [Validators.required, Validators.min(0), Validators.max(100)],
               nonNullable: true
           }),
           description: new FormControl("", {
@@ -154,6 +161,7 @@ export class EditServiceComponent {
     else {
       const subServiceFormGroup = this.subServices.at(subServiceIndex) as FormGroup;
       this.titleSubServiceForm = `Modification du sous service  «${subServiceFormGroup.get('name')?.value}»`;
+      this.currentSubServiceIndexToEdit = subServiceIndex;
       this.fillSubServiceForm(subServiceIndex);
       this.subServiceForm.markAllAsTouched();
     };
@@ -192,6 +200,7 @@ export class EditServiceComponent {
   addSubServiceFromSubServiceModel(subServiceModel: SubServiceModel) {
     const newSubService = this.fb.group({
       name: subServiceModel.name,
+      slug: subServiceModel.slug,
       price: subServiceModel.price,
       duration: subServiceModel.duration,
       ptgCommission: subServiceModel.ptgCommission,
@@ -211,6 +220,29 @@ export class EditServiceComponent {
     });
   }
 
+  deleteSubService(event: MouseEvent, subServiceIndex: number) {
+    const slug = this.subServices.at(subServiceIndex).value.slug;
+    if(slug) {
+      this.subServicesToDelete.push(slug);
+    } else {
+      this.removeSubService(subServiceIndex);
+    }
+    event.stopPropagation();
+  }
+
+  cancelDeleteSubService(event: MouseEvent, subServiceIndex: number) {
+    const slug = this.subServices.at(subServiceIndex).value.slug;
+    if(slug) {
+      let newArray = this.subServicesToDelete.filter(ss => ss !== slug);
+      this.subServicesToDelete = newArray;
+    }
+    event.stopPropagation();
+  }
+
+  isInSubServiceToDelete(slug: string): boolean {
+    return this.subServicesToDelete.includes(slug);
+  }
+
   resetSubServiceForm() {
     this.subServiceForm.reset();
     Object.keys(this.subServiceForm.controls).forEach(key => {
@@ -220,7 +252,11 @@ export class EditServiceComponent {
 
   submitSubServiceForm() {
     if (this.subServiceForm.valid) {
-      this.addSubService();
+      if(this.currentSubServiceIndexToEdit < 0) {
+        this.addSubService();
+      } else {
+        this.editSubService(this.currentSubServiceIndexToEdit)
+      }
       this.closeEditSubService();
     } else {
       this.subServiceForm.markAllAsTouched();
@@ -233,6 +269,7 @@ export class EditServiceComponent {
 
   onImagePicked(event: any) {
     const file = event.addedFiles[0];
+    this.theImageHasChanged = true;
     this.serviceForm.patchValue({ img: file});
   }
 
@@ -242,12 +279,26 @@ export class EditServiceComponent {
 
   defineServicePayload(): FormData {
     let formData = new FormData();
-    const serviceData = {
+    let img = this.serviceForm.value.img;
+    if (this.data.slug && !this.theImageHasChanged) {
+      img = null
+    }
+    formData.append('img', img);
+
+    let serviceData: {
+      name: string | undefined;
+      description: string | undefined;
+      subServices: any;
+      subServicesToDelete?: string[];
+    } = {
       name: this.serviceForm.value.name,
       description: this.serviceForm.value.description,
       subServices: this.subServices.value
     };
-    formData.append('img', this.serviceForm.value.img);
+    if (this.data.slug) {
+      serviceData.subServicesToDelete = this.subServicesToDelete;
+    }
+
     formData.append('service', JSON.stringify(serviceData));
     return formData;
   }
@@ -258,18 +309,33 @@ export class EditServiceComponent {
     if (this.serviceForm.valid && !this.showEditSection) {
       this.serviceFormSubmitIsLoading = true;
       const servicePayload = this.defineServicePayload();
-      this.salonService
-      .addNewService(servicePayload)
-      .subscribe({
-        next: () => {
-          this.serviceFormSubmitIsLoading = false;
-          this.close();
-        },
-        error: (err: ApiError) => {
-          this.serviceFormSubmitIsLoading = false;
-          this.serviceFormError = err.message
-        }
-      });
+      if (this.data.slug) {
+        this.salonService
+        .updateService(this.data.slug, servicePayload)
+        .subscribe({
+          next: () => {
+            this.serviceFormSubmitIsLoading = false;
+            this.close();
+          },
+          error: (err: ApiError) => {
+            this.serviceFormSubmitIsLoading = false;
+            this.serviceFormError = err.message
+          }
+        });
+      } else {
+        this.salonService
+        .addNewService(servicePayload)
+        .subscribe({
+          next: () => {
+            this.serviceFormSubmitIsLoading = false;
+            this.close();
+          },
+          error: (err: ApiError) => {
+            this.serviceFormSubmitIsLoading = false;
+            this.serviceFormError = err.message
+          }
+        });
+      }
     } else {
       this.serviceForm.markAllAsTouched();
     }
@@ -281,6 +347,7 @@ export class EditServiceComponent {
 
   close() {
     this.serviceFormError = "";
+    this.subServicesToDelete = [];
     this.overlayContainer.getContainerElement().classList.remove('custom-overlay-container');
     this.dialogRef.close();
   }
