@@ -58,5 +58,35 @@ router.post("/appointments/reminder", authMiddleware.authorise([ROLES.CUSTOMER])
     }
 });
 
+router.get("/appointments/:appointmentId", authMiddleware.authorise([ROLES.CUSTOMER]), async (req, res) => {
+    try {
+        const appointmentId = req.params.appointmentId;
+        const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        const appointment = await appointmentService.getAppointment(decodedRefreshToken._id, appointmentId);
+        const responseBody = apiUtil.successResponse(true, appointment);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
+router.put("/appointments/:appointmentId/pay", authMiddleware.authorise([ROLES.CUSTOMER]), async (req, res) => {
+    try {
+        const appointmentId = req.params.appointmentId;
+        const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        const appointment = await appointmentService.validatePayment(decodedRefreshToken._id, appointmentId);
+        const responseBody = apiUtil.successResponse(true, appointment);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
+
+
 
 module.exports = router;
