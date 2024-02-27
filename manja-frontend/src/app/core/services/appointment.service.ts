@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, shareReplay, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, shareReplay, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import {
   Appointment,
@@ -7,6 +7,12 @@ import {
   DateIntervalDetails,
   PostAppointmentResponse,
   PostAppointment,
+  AppointHistoryResponse,
+  AppointmentHistory,
+  GetAppointment,
+  GetAppointmentResponse,
+  PutAppointmentResponse,
+  PutAppointment,
 } from '../models/appointment.model';
 import { SubServiceModel } from '../models/salon-service.model';
 import dayjs, { Dayjs } from 'dayjs';
@@ -71,6 +77,11 @@ export class AppointmentService {
     )
   );
 
+  private appointmentsHistory = new BehaviorSubject<
+    AppointmentHistory[] | null
+  >(null);
+  private appointment = new BehaviorSubject<GetAppointment | null>(null);
+
   selectedEmployee$ = this.selectedEmployee.asObservable();
   selectedSubService$ = this.selectedSubService.asObservable();
   referenceDate$ = this.referenceDate.asObservable();
@@ -79,6 +90,9 @@ export class AppointmentService {
   nonAvailableHours$ = this.nonAvailableHours.asObservable();
   insertedAppointment$ = this.insertedAppointment.asObservable();
   enablePostAppointment$ = this.enablePostAppointment.asObservable();
+
+  appointmentsHistory$ = this.appointmentsHistory.asObservable();
+  appointment$ = this.appointment.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -212,5 +226,109 @@ export class AppointmentService {
       (error) => console.log('error', error)
     );
     return res;
+  }
+
+  getAppointmentsHistory(): Observable<ApiResponse<AppointmentHistory[]>> {
+    return this.http
+      .get<ApiResponse<AppointHistoryResponse[]>>(`/v1/appointments/history`)
+      .pipe(
+        map((response): ApiResponse<AppointmentHistory[]> => {
+          return {
+            ...response,
+            payload: response.payload.map((appointmentHistory) => {
+              const appointmentDate = dayjs(appointmentHistory.appointmentDate);
+              const duration = appointmentHistory.duration / 60;
+              return {
+                ...appointmentHistory,
+                appointmentDate,
+                appointmentDateEnd: appointmentDate.add(duration, 'minute'),
+                duration,
+              };
+            }),
+          };
+        }),
+        tap({
+          next: (response) => {
+            this.appointmentsHistory.next(response.payload);
+          },
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet : api error');
+          },
+        }),
+        shareReplay(1)
+      );
+  }
+
+  getAppointment(
+    appointmentId: string
+  ): Observable<ApiResponse<GetAppointment>> {
+    if (!appointmentId) throw new Error('!appointmentId');
+    return this.http
+      .get<ApiResponse<GetAppointmentResponse>>(
+        `/v1/appointments/${appointmentId}`
+      )
+      .pipe(
+        map((response): ApiResponse<GetAppointment> => {
+          const duration = response.payload.duration / 60;
+          const appointmentDate = dayjs(duration);
+          return {
+            ...response,
+            payload: {
+              ...response.payload,
+              duration,
+              appointmentDate,
+            },
+          };
+        }),
+        tap({
+          next: (response) => {
+            this.appointment.next(response.payload);
+          },
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet : api error');
+          },
+        }),
+        shareReplay(1)
+      );
+  }
+
+  payAppointment(): Observable<ApiResponse<PutAppointment>> {
+    const appointment = this.appointment.value;
+    if (!appointment) {
+      throw new Error("Impossibilité d'effectuer un paiement. !Paiement");
+    } else if (appointment.status > 0) {
+      throw new Error('Ce rendez-vous a déja été payé');
+    }
+    return this.http
+      .put<ApiResponse<PutAppointmentResponse>>(
+        `/v1/appointments/${appointment._id}/pay`,
+        {}
+      )
+      .pipe(
+        map((response): ApiResponse<PutAppointment> => {
+          const duration = response.payload.duration / 60;
+          const appointmentDate = dayjs(duration);
+          return {
+            ...response,
+            payload: {
+              ...response.payload,
+              duration,
+              appointmentDate,
+            },
+          };
+        }),
+        tap({
+          next: (response) => {
+            this.appointment.next(response.payload);
+          },
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet : api error');
+          },
+        }),
+        shareReplay(1)
+      );
   }
 }

@@ -1,5 +1,5 @@
 import { Dayjs } from 'dayjs';
-import { ServiceModel } from './salon-service.model';
+import { ServiceModel, SubServiceModel } from './salon-service.model';
 import { User } from './user.model';
 
 export interface Appointment {
@@ -22,10 +22,57 @@ export interface Appointment {
     }
   ];
 }
+export interface GetAppointment {
+  _id: string;
+  appointmentDate: Dayjs;
+  employee: Pick<User, 'firstname' | 'lastname'>;
+  subService: Pick<SubServiceModel, 'slug' | 'name'>;
+  price: number;
+  status: number;
+  duration: number;
+  // statusHistory: [
+  //   {
+  //     status: number;
+  //     statusDate: Date;
+  //   }
+  // ];
+}
+
+export interface GetAppointmentResponse extends Omit<GetAppointment, 'appointmentDate'>{
+  appointmentDate: Date
+}
+
+export interface PutAppointment extends GetAppointment{};
+
+export interface PutAppointmentResponse extends GetAppointmentResponse{};
+
 export interface PostAppointment {
   appointmentDate: Date;
   employeeId: string;
   subServiceSlug: string;
+}
+
+export interface AppointmentHistory {
+  _id: string;
+  appointmentDate: Dayjs;
+  appointmentDateEnd: Dayjs;
+  employee: {
+    firstname: string;
+    lastname: string;
+  };
+  subService: {
+    name: string;
+    slug: string;
+    __v: number;
+  };
+  duration: number;
+  price: number;
+  status: number;
+}
+
+export interface AppointHistoryResponse
+  extends Omit<AppointmentHistory, 'appointmentDate' | 'appointmentDateEnd'> {
+  appointmentDate: Date;
 }
 
 export interface PostAppointmentResponse {

@@ -1,0 +1,70 @@
+<div class="py-35 flex items-center justify-center bg-neutral-gray">
+  <h1>Mon Rendez-Vous</h1>
+</div>
+<div class="w-full py-12.5 px-6 text-primary">
+  <div class="flex justify-center">
+    <div
+      class="w-180 mt-12 py-17 px-12 border-2 border-middle-gray border-solid"
+    >
+      @if(appointment){
+      <div class="">
+        <span class="text-center"
+          ><h2>{{ appointment.subService.name }}</h2></span
+        >
+        <div class="w-full grid grid-cols-2 gap-10">
+          <div class="">
+            <label class="">Employé responsable</label>
+            <input
+              [value]="
+                appointment.employee.firstname +
+                ' ' +
+                appointment.employee.lastname
+              "
+              class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+            />
+          </div>
+          <div class="grid grid-cols-1">
+            <label class="">Prix</label>
+            <input
+              [value]="appointment.price + ' $'"
+              class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+            />
+          </div>
+          <div class="">
+            <label class="">Name</label>
+            <input
+              [value]="appointment.appointmentDate | longDate"
+              class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+            />
+          </div>
+          <div class="">
+            <label class="">Status</label>
+            <input
+              [value]="appointment.status | appointmentStatus"
+              class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+            />
+          </div>
+        </div>
+        <div class="mt-17 my-10 flex gap-6 justify-center">
+          @if(appointment.status === 0){<button
+            (click)="pay()"
+            [ngClass]="{
+              'px-5 py-2.5 rounded-button bg-dark font-medium text-light hover:bg-orange-300 hover:duration-300 hover:opacity-75': true,
+              'opacity-50': !(appointment.status > 0)
+            }"
+          >Effectuer le paiement</button
+          >}
+          <a href="/mes-rendez-vous">
+            <button
+              [ngClass]="{
+                'px-5 py-2.5 rounded-button bg-dark font-medium text-light hover:bg-orange-300 hover:duration-300 hover:opacity-75': true,
+                'opacity-50': false
+              }"
+            >Voir l'historique de mes rendez-vous</button>
+          </a>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>
