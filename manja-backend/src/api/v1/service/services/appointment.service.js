@@ -171,3 +171,52 @@ module.exports.sendAppointmentReminderEmail = async () => {
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
     }
 };
+
+module.exports.getAppointment = async (customerId, appointmentId) => {
+  try {
+    const appointment = await Appointment.findOne(
+      { _id: appointmentId, client: customerId },
+      "-commission -__v",
+    )
+      .populate({ path: "employee", select: "firstname lastname -_id -role" })
+      .populate({
+        path: "subService",
+        select: "-_id -ptgCommission -price -duration -description",
+      });
+    return appointment;
+  } catch (e) {
+    throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
+  }
+};
+
+module.exports.validatePayment = async (customerId, appointmentId) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+  try {
+
+    let appointment = await Appointment.findOne(
+      { _id: appointmentId, client: customerId },
+      "-commission -__v"
+    )
+      .populate({ path: "employee", select: "firstname lastname -_id -role" })
+      .populate({
+        path: "subService",
+        select: "-_id -ptgCommission -price -duration -description",
+      });
+    if (!appointment.subService) throw new Error("!appointment.subService");
+    appointment.status = 1;
+    appointment.payment = {
+      paymentDate: new Date(),
+      amount: appointment.subService.price,
+    };
+    appointment = await appointment.save({ session });
+    await session.commitTransaction();
+    return appointment;
+  } catch (e) {
+    console.log(e, e.statusCode, e.message);
+    await session.abortTransaction();
+    throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
+  } finally {
+    await session.endSession();
+  }
+};
