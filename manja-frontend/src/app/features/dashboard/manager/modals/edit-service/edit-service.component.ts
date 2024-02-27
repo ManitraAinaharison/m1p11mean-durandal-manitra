@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, Inject, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, Inject, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../../../../core/services/user.service';
@@ -34,7 +34,7 @@ interface ServiceForm {
   templateUrl: './edit-service.component.html',
   styleUrl: './edit-service.component.css'
 })
-export class EditServiceComponent {
+export class EditServiceComponent implements OnInit, OnDestroy {
 
   modalLoaded: boolean = false;
   showEditSection: boolean = false;
@@ -348,7 +348,10 @@ export class EditServiceComponent {
   close() {
     this.serviceFormError = "";
     this.subServicesToDelete = [];
-    this.overlayContainer.getContainerElement().classList.remove('custom-overlay-container');
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.overlayContainer.getContainerElement().classList.remove('custom-overlay-container');
   }
 }
