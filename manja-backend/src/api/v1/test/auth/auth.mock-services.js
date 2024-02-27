@@ -5,6 +5,7 @@ const { Manager, Employee, User } = require("../../auth/schemas/user.schema");
 const { axiosInstance } = require("../../../../config/axios.config");
 const { Service } = require("../../service/schemas/service.schema");
 const { SubService } = require("../../service/schemas/subservice.schema");
+const { Appointment } = require("../../service/schemas/appointment.schema");
 
 module.exports.cleanDb = async() => {
   const session = await mongoose.startSession();
@@ -13,6 +14,7 @@ module.exports.cleanDb = async() => {
     User.collection.drop();
     Service.collection.drop();
     SubService.collection.drop();
+    Appointment.collection.drop();
   } catch (e) {
     await session.abortTransaction();
     console.log(`error dropping collections : ${e}`);
