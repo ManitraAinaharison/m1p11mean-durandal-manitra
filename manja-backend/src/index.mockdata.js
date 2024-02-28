@@ -20,9 +20,9 @@ db.once("open", async () => {
 
     await mockDataFunctions.authMockRequests.cleanDb();
     await mockDataFunctions.authMockRequests.createAdmin();
-    await mockDataFunctions.authMockRequests.createEmployees();
+    // await mockDataFunctions.authMockRequests.createEmployees();
     await mockDataFunctions.authMockRequests.createUsers();
-    await mockDataFunctions.subServiceMockRequests.createSubServices();
-    await mockDataFunctions.serviceMockRequests.createServices();
-    await mockDataFunctions.subServiceMockRequests.assignSubServicesToEmployees();
+    // await mockDataFunctions.subServiceMockRequests.createSubServices();
+    // await mockDataFunctions.serviceMockRequests.createServices();
+    // await mockDataFunctions.subServiceMockRequests.assignSubServicesToEmployees();
 });
