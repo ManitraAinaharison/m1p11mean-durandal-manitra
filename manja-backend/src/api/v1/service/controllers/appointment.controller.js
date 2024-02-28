@@ -86,6 +86,24 @@ router.put("/appointments/:appointmentId/pay", authMiddleware.authorise([ROLES.C
     }
 });
 
+router.put("/appointments/:appointmentId/done", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
+    try {
+        const appointmentId = req.params.appointmentId;
+        const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        const employeeId = decodedRefreshToken._id;
+        const appointment = await appointmentService.validateAppointmentDone(
+          employeeId,
+          appointmentId
+        );
+        const responseBody = apiUtil.successResponse(true, appointment);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
 router.get("/appointments", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
     try {
         const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
@@ -102,12 +120,14 @@ router.get("/appointments", authMiddleware.authorise([ROLES.EMPLOYEE]), async (r
     }
 });
 
-router.get("/appointments/daily-tasks/:date", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
+router.get("/appointments/daily-tasks/:dailyTaskDate", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
     try {
         const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
-        const dailyTaskDetails = await appointmentService.getEmployeeDailyTaskDetails(
-          decodedRefreshToken._id, req.query.referenceDate
-        );
+        const dailyTaskDetails =
+          await appointmentService.getEmployeeDailyTaskDetails(
+            decodedRefreshToken._id,
+            req.params.dailyTaskDate
+          );
         const responseBody = apiUtil.successResponse(true, dailyTaskDetails);
         res.status(201).json(responseBody);
     } catch (e) {
