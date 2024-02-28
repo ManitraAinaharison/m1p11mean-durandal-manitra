@@ -1,52 +1,93 @@
-@if (cursorInterval && !disabled) {
+<h5 class="text-primary">Horaire:</h5>
+@if (businessHours && cursorInterval && !disabled){
+<div class="flex gap-2 mb-2">
+  De
+  <input
+    type="time"
+    [valueAsDate]="cursorInterval.start.local().toDate()"
+    [min]="cursorInterval.start.format('HH:mm:ss')"
+    [max]="cursorInterval.end.format('HH:mm:ss')"
+  />
+  {{ " à " }}
+  <input
+    type="time"
+    [valueAsDate]="cursorInterval.end.local().toDate()"
+    [min]="cursorInterval.start.format('HH:mm:ss')"
+    [max]="cursorInterval.end.format('HH:mm:ss')"
+  />
+</div>
+} @if (businessHours && cursorInterval && !disabled) {
 <div
   class="w-80 h-80 flex gap-6 text-primary"
   id="timepickerParent"
   #timepickerParent
 >
-  <div class="w-24 h-full relative bg-slate-500">
+  <!-- <div class="w-24 h-full relative bg-slate-500">
     @for (nonAvailableHour of nonAvailableHours; track $index) {
     <p
       class="w-full absolute m-0 p-0"
-      [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
+      [style.top.px]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
     >
       {{ nonAvailableHour.dailyPercentage }}
     </p>
     }
     <p class="absolute top-[calc(100%_-_15px)] m-0 p-0">-- end --</p>
-  </div>
-  <div class="w-50 h-full relative bg-slate-500">
-    <p class="absolute top-[calc(0%_-_15px)] m-0 p-0">-- start --</p>
-    @for (nonAvailableHour of nonAvailableHours; track $index) {
-    <div
-      class="w-full absolute m-0 p-0 bg-black"
-      [style.top]="'calc(' + nonAvailableHour.percentageStart + '% - 20px)'"
-      [style.height]="nonAvailableHour.dailyPercentage + '%'"
-    ></div>
-    }
-    <div
-      #timepickerCursor
-      id="timepickerCursor"
-      [ngClass]="{
-        'w-full absolute m-0 p-0 bg-blue-600': true,
-        'bg-red-300': isOverridingNonAvailableHours()
-      }"
-      [style.bottom]="'calc(' + 0 + '%)'"
-      [style.height]="cursorInterval.dailyPercentage + '%'"
-      cdkDragLockAxis="y"
-      cdkDragBoundary="#timepickerParent"
-      (cdkDragEnded)="onDragEnd($event)"
-      cdkDrag
-    ></div>
+  </div> -->
+  <div>
+    <div class="w-50 h-full relative bg-slate-500">
+      <!-- <p class="absolute top-[calc(0%_-_15px)] m-0 p-0">-- start --</p> -->
+      @for (nonAvailableHour of nonAvailableHours; track $index) {
+      <div
+        class="w-full absolute m-0 p-0 bg-black"
+        [style.top]="'calc(' + nonAvailableHour.percentageStart + '%)'"
+        [style.height]="nonAvailableHour.dailyPercentage + '%'"
+      ></div>
+      }
+      <div
+        #timepickerCursor
+        id="timepickerCursor"
+        [ngClass]="{
+          'w-full absolute m-0 p-0 bg-blue-600': true,
+          'bg-red-300': isOverlappingNonAvailableHours() || isPastCurrentDate()
+        }"
+        [style.height]="cursorInterval.dailyPercentage + '%'"
+        [style.bottom.px]="getFrontendPosition()"
+        cdkDragLockAxis="y"
+        cdkDragBoundary="#timepickerParent"
+        (cdkDragEnded)="onDragEnd($event)"
+        [cdkDragFreeDragPosition]="position"
+        cdkDrag
+      ></div>
+    </div>
+    <div class="text-danger">
+      <ul>
+        @if (isCurrentTimeAfterClosingHour()) {
+        <li>
+          Cet employé ne travaille plus à cette heure ci aujourd'hui, veuillez
+          choisir une autre date.
+        </li>
+        } @else {@if (isOverlappingNonAvailableHours()) {
+        <li>Veuillez séléctionner une plage horaire non occupée.</li>
+        } @if (isTheSameDateAsCurrent() && isPastCurrentDate()) {
+        <li>
+          Veuillez sélectionner une plage horaire ultérieure à l'heure actuelle.
+        </li>
+        }}
+      </ul>
+    </div>
   </div>
 </div>
-
-<input type="time" [valueAsDate]="cursorInterval.start.local().toDate()" />
 }@else {
-  <div
-  class="w-80 h-80 flex gap-6 text-primary bg-red-500"
+<div
+  class="w-80 h-80 flex items-center justify-center text-center text-secondary text-semibold bg-neutral-gray select-none"
   id="timepickerParent"
   #timepickerParent
 >
+  @if (!businessHours) { Cet employé ne travaille pas ce jour ci, veuillez
+  choisir une autre date. }@else{ Veuillez sélectionner une offre et un employé
+  pour visiter la liste de ses horaires disponibles}
+  <!-- @if (errorMessage) {
+  {{ errorMessage }}
+  } -->
 </div>
 }

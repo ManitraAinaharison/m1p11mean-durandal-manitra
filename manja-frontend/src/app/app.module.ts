@@ -11,11 +11,13 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 
 // Modules import
-import { ServiceCardComponent } from './shared/components/service-card/service-card.component';
 import { LayoutsModule } from './core/layouts/layouts.module';
 import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
+import { SharedPipesModule } from './shared/pipes/shared-pipes.module';
 import { ConfirmBoxComponent } from './shared/components/confirm-box/confirm-box.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { SharedDatePickerModule } from './shared/shared-datepicker.module';
+import { DatePickerComponent } from './shared/components/datepicker/datepicker.component';
 
 
 
@@ -24,21 +26,24 @@ import { MatDialogModule } from '@angular/material/dialog';
     AppComponent,
     NotFoundComponent,
     PageLoaderComponent,
-    ConfirmBoxComponent
+    ConfirmBoxComponent,
+    // DatePickerComponent
   ],
   imports: [
+    // SharedDatePickerModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatDialogModule,
     HttpClientModule,
     LayoutsModule,
-    AppRoutingModule
+    SharedPipesModule,
+    AppRoutingModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
