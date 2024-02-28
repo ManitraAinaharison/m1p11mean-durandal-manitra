@@ -9,6 +9,7 @@ import { TimepickerComponent } from '../../../shared/components/timepicker/timep
 import { DetailsServiceComponent } from './pages/details-service/details-service.component';
 import { ListServicesComponent } from './pages/list-services/list-services.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
+import { SharedDatePickerModule } from '../../../shared/shared-datepicker.module';
 
 const serviceRoutes: Routes = [
   { path: 'services', component: ListServicesComponent },
@@ -29,9 +30,13 @@ const serviceRoutes: Routes = [
     DetailsServiceComponent,
     ServiceCardComponent,
     ReservationComponent,
-    DatePickerComponent,
     TimepickerComponent,
   ],
-  imports: [DragDropModule, CommonModule, RouterModule.forChild(serviceRoutes)],
+  imports: [
+    CommonModule,
+    SharedDatePickerModule,
+    DragDropModule,
+    RouterModule.forChild(serviceRoutes),
+  ],
 })
 export class ServiceModule {}

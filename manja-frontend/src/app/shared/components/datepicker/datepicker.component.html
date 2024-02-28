@@ -1,4 +1,4 @@
-<div class="w-96 select-none">
+<div class="w-92 select-none">
   <!-- calendar template style -->
   <div class="max-h-106 w-full h-96 text-sm">
     <div class="mb-5 flex justify-between">
@@ -37,11 +37,7 @@
       } @for (calendarDate of dateRange; track $index) {
       <div
         (click)="selectDate(calendarDate)"
-        [title]="
-          !calendarDate.isOpenDay
-            ? 'Jour non ouvrable'
-            : ''
-        "
+        [title]="!calendarDate.isOpenDay ? 'Jour non ouvrable' : ''"
         [ngClass]="{
           'size-8 flex items-center justify-center rounded-full cursor-pointer focus:outline-none':true,
           'text-primary': calendarDate.belongsToMonth && calendarDate.isOpenDay && !calendarDate.isCurrentDate,
