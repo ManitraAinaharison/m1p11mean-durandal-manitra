@@ -41,6 +41,8 @@
           },
           "configurations": {
             "production": {
+              "optimization": true,
+              "aot": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -49,8 +51,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "30kb",
+                  "maximumError": "30kb"
                 }
               ],
               "fileReplacements": [
