@@ -1,0 +1,52 @@
+<div class="mt-25 py-12.5 flex items-center justify-center bg-neutral-gray">
+  <h1>Mes Rendez-Vous</h1>
+</div>
+<div class="w-full py-12.5 mt-50 mb-30 px-6 text-primary">
+  <ul>
+    @for (appointment of appointmentsHistory; track $index) {
+    <li>
+      <p class="mb-2 text-primary">{{appointment.appointmentDate | longDate}}</p>
+      <div class="w-full h-auto grid grid-cols-[1fr_2px_2fr_2px_1fr] gap-6 bg-neutral-gray py-4 px-6">
+        <div class="max-w-50">
+          <p class="m-0 mb-4 text-base">Horaire</p>
+          <div class="py-3 px-3 font-medium">
+            {{appointment.appointmentDate | formatHHmm}}{{'  -  '}}{{appointment.appointmentDateEnd | formatHHmm}}
+          </div>
+        </div>
+        <div class="border-r-2 border-solid border-gray-400"></div>
+        <div class="grid grid-rows-1 justify-center">
+          <div class="h-fit mb-4 flex items-center gap-3">
+            <div class="rounded-md">
+              <img
+                class="w-8 h-9"
+                src="https://assets-global.website-files.com/60993dcfc8e83c6e36ae8b81/60a5c1bcbc4f722522df1ec2_dana-cutts-salon-webflow-template.jpg"
+                [alt]="appointment.employee.firstname+'_'+appointment.employee.lastname"
+              />
+            </div>
+            <div>
+              <span class="font-light">Employé : </span>
+              <span class="">{{appointment.employee.firstname+' '+appointment.employee.lastname}}</span>
+            </div>
+          </div>
+          <div class="">
+            <div>
+              <span class="font-medium text-xl">{{appointment.subService.name}}</span>
+              <span class="font-medium text-base"> ({{appointment.duration}} min)</span>
+            </div>
+          </div>
+        </div>
+        <div class="border-r-2 border-solid border-gray-400"></div>
+        <div class="">
+          <div class=""><span>Prix : </span><span> {{appointment.price}} $ </span></div>
+          <div class="px-6">
+            <a href="/mes-rendez-vous/{{appointment._id}}/details">
+              <button class="bg-gray-500 text-blue-400 rounded-lg px-2.5 py-3">
+                Voir les détails
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </li>}
+  </ul>
+</div>

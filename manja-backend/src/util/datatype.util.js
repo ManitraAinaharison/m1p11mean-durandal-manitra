@@ -9,3 +9,7 @@ module.exports.createEnum = function createEnum(values) {
   };
   return Object.freeze(enumObject);
 }
+
+module.exports.sum = function sum(values) {
+  return values.reduce((partialSum, a) => partialSum + a, 0);
+}
