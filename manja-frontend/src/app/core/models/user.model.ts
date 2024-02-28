@@ -1,12 +1,13 @@
 import { ServiceModel, SubServiceModel } from "./salon-service.model";
 
 export interface User {
-    id?: string;
+    _id?: string;
     firstname: string;
     lastname: string;
     email: string;
     username: string;
     password: string;
+    isActive?: boolean;
 }
 
 export type Credentials = Pick<User, 'email' | 'password'>;

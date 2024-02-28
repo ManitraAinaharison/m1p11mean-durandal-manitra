@@ -1,4 +1,5 @@
 export interface ServiceModel {
+  _id?: string;
   name: string;
   slug: string;
   description: string;
@@ -7,6 +8,7 @@ export interface ServiceModel {
 }
 
 export interface SubServiceModel {
+  _id?: string;
   name: string;
   slug: string;
   description: string;

@@ -5,9 +5,10 @@ const apiUtil = require("../../../../util/api.util");
 const slugify = require('slugify');
 const { v4: uuidv4 } = require('uuid');
 
-module.exports.getListServices = async function getListServices() {
+module.exports.getListServices = async function getListServices(isManager) {
     try {
-        return await Service.find({ isDeleted: false }, '-_id -subServices');
+        if (!isManager) return await Service.find({ isDeleted: false }, '-_id -subServices -isDeleted');
+        else return await Service.find({ isDeleted: false }, '-__v').populate('subServices', '-__v -isDeleted');
     } catch (e) {
         console.log(e);
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);

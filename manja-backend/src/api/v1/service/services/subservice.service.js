@@ -11,6 +11,7 @@ module.exports.getEmployeesBySubService = async function getEmployeesBySubServic
         return await Employee.
         find({ 
             subServices: { $in: [subService._id] }, 
+            isActive: true, 
             $or: [{ lastname: nameRegex }, { firstname: nameRegex }]
         }, 'firstname lastname _id -role');
     } catch (e) {

@@ -1,0 +1,10 @@
+<kendo-treeview
+  [nodes]="data"
+  [children]="children"
+  [hasChildren]="hasChildren"
+  textField="text"
+  kendoTreeViewCheckable
+  [(checkedKeys)]="checkedKeys"
+  (checkedChange)="onValueChange()"
+>
+</kendo-treeview>
