@@ -86,7 +86,37 @@ router.put("/appointments/:appointmentId/pay", authMiddleware.authorise([ROLES.C
     }
 });
 
+router.get("/appointments", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
+    try {
+        const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        const appointment = await appointmentService.getAppointments(
+          decodedRefreshToken._id, req.query.referenceDate
+        );
+        const responseBody = apiUtil.successResponse(true, appointment);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        console.log(e)
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
 
+router.get("/appointments/daily-tasks/:date", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
+    try {
+        const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        const dailyTaskDetails = await appointmentService.getEmployeeDailyTaskDetails(
+          decodedRefreshToken._id, req.query.referenceDate
+        );
+        const responseBody = apiUtil.successResponse(true, dailyTaskDetails);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        console.log(e)
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
 
 
 module.exports = router;
