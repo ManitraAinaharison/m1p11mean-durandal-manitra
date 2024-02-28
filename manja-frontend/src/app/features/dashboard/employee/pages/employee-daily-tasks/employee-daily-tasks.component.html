@@ -1,52 +1,47 @@
 <div class="w-full h-full text-primary text-sm">
-  <div class="grid grid-cols-2">
-    <div class="">
-      <div class="pr-12">
+  <div class="grid grid-cols-[3fr_2fr]">
+    <div class="pr-17">
+      <div class="">
         <h1 class="text-lg text-primary">
-          Tâches d' {{ currentDate | longDate }}
+          Tâches d' {{ dailyTaskDate | longDate }}
         </h1>
       </div>
       <div>
-        <p>Nombre de tâches assignée: 3</p>
-        <p>Taches réalisées: 2 sur 3</p>
+        <p>Nombre de tâches assignée: {{dailyTaskDetails?.taskTotal}}</p>
+        <p>Taches réalisées: {{dailyTaskDetails?.taskDone}} sur {{dailyTaskDetails?.taskTotal}}</p>
         <p>Total heures: 2h40 minutes</p>
-        <p>Comission perçues : 10 $</p>
-        <h3>Commissions :</h3>
+        <p>Comission perçues : {{dailyTaskDetails?.totalReceivedCommission}} $</p>
+        <h3 class="mt-6">Commissions :</h3>
         <div class="mr-6">
           <table class="w-full table-fixed">
             <thead>
               <tr>
                 <th>Horaire</th>
-                <th>Montant commission</th>
+                <th>Montant reçu</th>
+                <!-- <th>Montant Espéré</th> -->
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>10:00 - 11h00</td>
-                <td class="float-right">6 $</td>
-              </tr>
-              <tr>
-                <td>14:40 - 15:00</td>
-                <td class="float-right">0 $</td>
-              </tr>
-              <tr>
-                <td>14:40 - 15:00</td>
-                <td class="float-right">6 $</td>
-              </tr>
+              @for(appointment of dailyTaskDetails?.appointments; track $index){<tr>
+                <td>{{appointment.appointmentDate | formatHHmm}} - {{appointment.appointmentDateEnd | formatHHmm}}</td>
+                <td class="float-right">{{appointment.commission * appointment.price}} $</td>
+              </tr>}
               <hr />
               <tr>
                 <td>Total:</td>
-                <td class="float-right">10 $</td>
+                <td class="float-right">{{dailyTaskDetails?.totalReceivedCommission}} $ / {{dailyTaskDetails?.totalExpectedComission}} $</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
+
     <div class="relative left-10">
       <div
         class="absolute -left-5 w-1 h-full border-r-2 border-dashed border-dark-gray"
       ></div>
+      @for (appointment of dailyTaskDetails?.appointments; track $index){
       <div class="mb-10">
         <div
           class="w-[90%] h-30 rounded-md bg-middle-gray shadow-md shadow-gray-400 relative text-sm"
@@ -60,43 +55,25 @@
             <div
               class="size-4 absolute -bottom-2 -right-2.5 rounded-full border-2 border-dark-gray bg-blue-200"
             ></div>
-            <div class="absolute -top-2.5 -left-3">10:00</div>
-            <div class="absolute -bottom-2.5 -left-3">12:00</div>
+            <div class="absolute -top-2.5 -left-3">
+              {{ appointment.appointmentDate | formatHHmm }}
+            </div>
+            <div class="absolute -bottom-2.5 -left-3">
+              {{ appointment.appointmentDateEnd | formatHHmm }}
+            </div>
           </div>
           <div class="w-full h-full px-6 pt-6 pb-6.5">
-            <p class="m-0 p-0 pb-2.5 font-medium">Massage</p>
-            <p class="m-0 p-0 pb-2.5">LeBron James</p>
             <p class="m-0 p-0 pb-2.5 font-medium">
-              {{ 0 | appointmentStatus }}
+              {{ appointment.subService.name }}
+            </p>
+            <p class="m-0 p-0 pb-2.5">{{ appointment.client }}</p>
+            <p class="m-0 p-0 pb-2.5 font-medium">
+              {{ appointment.status | appointmentStatus }}
             </p>
           </div>
         </div>
       </div>
-      <div class="mt-15">
-        <div
-          class="w-[90%] h-30 rounded-md bg-middle-gray shadow-md shadow-gray-400 relative text-sm"
-        >
-          <div
-            class="absolute w-10 h-full -left-14 border-r-2 border-solid border-dark-gray"
-          >
-            <div
-              class="size-4 absolute -top-2 -right-2.5 rounded-full border-2 border-dark-gray bg-blue-200"
-            ></div>
-            <div
-              class="size-4 absolute -bottom-2 -right-2.5 rounded-full border-2 border-dark-gray bg-blue-200"
-            ></div>
-            <div class="absolute -top-2.5 -left-3">10:00</div>
-            <div class="absolute -bottom-2.5 -left-3">12:00</div>
-          </div>
-          <div class="w-full h-full px-6 pt-6 pb-6.5">
-            <p class="m-0 p-0 pb-2.5 font-medium">Massage</p>
-            <p class="m-0 p-0 pb-2.5">LeBron James</p>
-            <p class="m-0 p-0 pb-2.5 font-medium">
-              {{ 0 | appointmentStatus }}
-            </p>
-          </div>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </div>

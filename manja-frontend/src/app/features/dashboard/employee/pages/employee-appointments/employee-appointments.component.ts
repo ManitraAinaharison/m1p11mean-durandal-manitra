@@ -44,6 +44,11 @@ export class EmployeeAppointmentsComponent {
         this.loading = false;
       });
     });
+
+    this.appointmentService.appointmentList$.subscribe((appointmentList)=>{
+      this.appointments = appointmentList;
+      this.setLoading(false);
+    })
   }
 
   updateMonthReferenceDate(value: Dayjs): void {
@@ -53,12 +58,21 @@ export class EmployeeAppointmentsComponent {
 
   updateSelectedDate(value: Dayjs[]): void {
     if (value.length === 0) return;
-    this.loading = true;
+    this.setLoading(true)
     this.appointmentService.updateSelectedDate(value[0]);
   }
 
   setSelectedAppointment(appointment: AppointmentDetails) {
     this.selectedAppointment = appointment;
+  }
+
+  validateAppointmentDone(appointment: AppointmentDetails) {
+    this.setLoading(true)
+    this.showTooltip(null);
+    this.appointmentService.validateAppointmentDone(appointment)
+    .subscribe(()=>{
+      this.setLoading(false);
+    });
   }
 
   // styles
@@ -81,7 +95,11 @@ export class EmployeeAppointmentsComponent {
     console.log(this.currentTooltip);
   }
 
-  handleClickOutside(){
-    console.log('clicked outside')
+  handleClickOutside() {
+    console.log('clicked outside');
+  }
+
+  setLoading(value: boolean): void {
+    this.loading = value;
   }
 }

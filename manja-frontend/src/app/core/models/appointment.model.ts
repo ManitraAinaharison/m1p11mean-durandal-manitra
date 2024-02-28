@@ -23,6 +23,43 @@ export interface Appointment {
   ];
 }
 
+export interface DailyTasksDetails {
+  taskTotal: number;
+  taskDone: number;
+  totalExpectedDuration: number;
+  totalDoneDuration: number;
+  totalExpectedComission: number;
+  totalReceivedCommission: number;
+  appointments: {
+    appointmentDate: Dayjs;
+    appointmentDateEnd: Dayjs;
+    duration: number;
+    client: string;
+    price: number;
+    commission: number;
+    status: number;
+    subService: {
+      name: string
+    }
+  }[];
+}
+
+export interface DailyTasksDetailsResponse
+  extends Omit<DailyTasksDetails, 'appointments'> {
+  appointments: {
+    appointmentDate: Date;
+    appointmentDateEnd: Dayjs;
+    duration: number;
+    client: { firstname: string; lastname: string };
+    price: number;
+    commission: number;
+    status: number;
+    subService: {
+      name: string;
+    };
+  }[];
+}
+
 export interface AppointmentDetails {
   _id: string;
   appointmentDate: Dayjs;
@@ -37,11 +74,11 @@ export interface AppointmentDetails {
     isDeleted: boolean;
     __v: 0;
   };
-  client:{
-    firstname: string,
-    lastname: string,
-    name: string
-  }
+  client: {
+    firstname: string;
+    lastname: string;
+    name: string;
+  };
   duration: number;
   price: number;
   status: number;
