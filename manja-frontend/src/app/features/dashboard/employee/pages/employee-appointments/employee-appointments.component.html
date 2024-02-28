@@ -1,0 +1,113 @@
+<div class="w-full h-full">
+  <div class="grid grid-cols-[1fr_2fr]">
+    <datepicker
+      [referenceDate]="monthReferenceDate"
+      [selectedDates]="selectedDates"
+      (updateReferenceDate)="updateMonthReferenceDate($event)"
+      (updateSelectedDates)="updateSelectedDate($event)"
+    ></datepicker>
+    @if(loading || (appointments && appointments.length > 0)){
+    <div>
+      <div class="relative overflow-x-auto h-[55vh] overflow-y-scroll">
+        <table
+          class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+        >
+          <thead
+            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0"
+          >
+            <tr>
+              <th scope="col" class="px-6 py-3">Horaire</th>
+              <th scope="col" class="px-6 py-3">Service</th>
+              <th scope="col" class="px-6 py-3 w-40">Client</th>
+              <th scope="col" class="px-6 py-3 w-40">Status</th>
+              <th scope="col" class="px-6 py-3 w-40"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @if(!loading){ @for (appointment of appointments; track $index) {
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th
+                (click)="setSelectedAppointment(appointment)"
+                scope="row"
+                class="px-6 py-4 font-medium text-primary whitespace-nowrap dark:text-white"
+              >
+                {{ appointment.appointmentDate | formatHHmm }} -
+                {{ appointment.appointmentDateEnd | formatHHmm }}
+              </th>
+              <td class="px-6 py-4">{{ appointment.subService.name }}</td>
+              <td class="px-6 py-4 truncate">{{ appointment.client.name }}</td>
+              <td class="px-6 py-4 font-medium text-primary">
+                {{ appointment.status | appointmentStatus }}
+              </td>
+              <td class="px-6 py-4">
+                <div class="relative">
+                  <button
+                    (click)="showTooltip($index)"
+                    class="w-5 bg-neutral-gray flex items-center justify-center relative"
+                  >
+                    <span>...</span>
+                  </button>
+                  <div
+                    [ngClass]="{
+                      'absolute top-6 -left-8 w-27.5 h-20 bg-middle-gray z-10': true,
+                      hidden: currentTooltip !== $index
+                    }"
+                  >
+                    <!-- @if(appointment.status<2){
+                    <div class="w-full py-3 px-2"></div>
+                    <hr />
+                    } -->
+                  </div>
+                </div>
+              </td>
+            </tr>
+            } }@else{
+            <tr
+              class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 animate-pulse"
+              *ngFor="let _ of [1, 2, 3, 4, 5]"
+            >
+              <td class="px-6 py-4">
+                <div
+                  class="w-full h-2.5 rounded-md bg-middle-gray animate-pulse"
+                ></div>
+              </td>
+
+              <td class="px-6 py-4">
+                <div
+                  class="w-full h-2.5 rounded-md bg-middle-gray animate-pulse"
+                ></div>
+              </td>
+              <td class="px-6 py-4">
+                <div
+                  class="w-full h-2.5 rounded-md bg-middle-gray animate-pulse"
+                ></div>
+              </td>
+              <td class="px-6 py-4 font-medium text-primary">
+                <div
+                  class="w-full h-2.5 rounded-md bg-middle-gray animate-pulse"
+                ></div>
+              </td>
+              <td class="px-6 py-4"></td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    }@else{
+    <div class="h-[55vh] px-6 bg-neutral-gray flex items-center justify-center">
+      Pas de rendez-vous pour ce jour
+    </div>
+    } @if(!loading && selectedAppointment){
+    <div class="border-2 px-6 py-8">
+      <div class="w-full">
+        <h3>{{ selectedAppointment.subService.name }}</h3>
+        <span>{{ selectedAppointment.appointmentDate | longDate }}</span>
+      </div>
+      <div class="text-sm">
+        Comission : {{ selectedAppointment.commission }}$
+      </div>
+    </div>
+    }
+  </div>
+</div>
