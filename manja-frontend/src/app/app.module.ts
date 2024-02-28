@@ -1,3 +1,4 @@
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -31,6 +32,7 @@ import { DatePickerComponent } from './shared/components/datepicker/datepicker.c
   imports: [
     // SharedDatePickerModule,
     BrowserModule,
+    BrowserAnimationsModule,
     MatDialogModule,
     HttpClientModule,
     LayoutsModule,

@@ -102,7 +102,6 @@ export class EditServiceComponent implements OnInit, OnDestroy {
         }
       },
       complete: () => {
-        console.log(this.serviceForm);
         this.serviceForm.markAllAsTouched();
       }
     });

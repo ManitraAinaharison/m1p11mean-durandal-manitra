@@ -11,7 +11,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { findEmployee } from './api-mock-data/employee.mockdata';
 import { Employee } from '../models/user.model';
-import { ApiResponse } from '../models/api.model';
+import { ApiResponse, ApiSuccess } from '../models/api.model';
 import { Dayjs } from 'dayjs';
 import { EmployeeSchedule, PrimaryDateEmployeeSchedule } from '../models/appointment.model';
 import { toEmployeeSchedule } from '../util/date.util';
@@ -79,5 +79,35 @@ export class EmployeeService {
         }),
         shareReplay(1)
       );
+  }
+
+  getListEmployees(): Observable<ApiSuccess> {
+    return this.http
+      .get<ApiSuccess>(`/v1/employees`)
+      .pipe(shareReplay(1));
+  }
+
+  getEmployeesById(employeeId: string): Observable<ApiSuccess> {
+    return this.http
+      .get<ApiSuccess>(`/v1/employees/${employeeId}`)
+      .pipe(shareReplay(1));
+  }
+
+  addNewEmployee(payload: FormData): Observable<ApiSuccess> {
+    return this.http
+    .post<ApiSuccess>('/v1/employees', payload)
+    .pipe(shareReplay(1));
+  }
+
+  updateEmployee(employeeId: string, payload: FormData): Observable<ApiSuccess> {
+    return this.http
+    .put<ApiSuccess>(`/v1/Employees/${employeeId}`, payload)
+    .pipe(shareReplay(1));
+  }
+
+  updateEmployeeActivation(employeeId: string, active: boolean): Observable<ApiSuccess> {
+    return this.http
+    .put<ApiSuccess>(`/v1/Employees/${employeeId}/activation`, { active: active })
+    .pipe(shareReplay(1));
   }
 }
