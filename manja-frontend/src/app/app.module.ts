@@ -15,6 +15,8 @@ import { PageLoaderComponent } from './shared/components/page-loader/page-loader
 import { SharedPipesModule } from './shared/pipes/shared-pipes.module';
 import { ConfirmBoxComponent } from './shared/components/confirm-box/confirm-box.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { SharedDatePickerModule } from './shared/shared-datepicker.module';
+import { DatePickerComponent } from './shared/components/datepicker/datepicker.component';
 
 
 
@@ -23,21 +25,23 @@ import { MatDialogModule } from '@angular/material/dialog';
     AppComponent,
     NotFoundComponent,
     PageLoaderComponent,
-    ConfirmBoxComponent
+    ConfirmBoxComponent,
+    // DatePickerComponent
   ],
   imports: [
+    // SharedDatePickerModule,
     BrowserModule,
     MatDialogModule,
     HttpClientModule,
     LayoutsModule,
     SharedPipesModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

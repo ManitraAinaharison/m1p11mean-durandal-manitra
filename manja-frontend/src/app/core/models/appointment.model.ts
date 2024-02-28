@@ -22,6 +22,43 @@ export interface Appointment {
     }
   ];
 }
+
+export interface AppointmentDetails {
+  _id: string;
+  appointmentDate: Dayjs;
+  appointmentDateEnd: Dayjs;
+  employee: {
+    firstname: string;
+    lastname: string;
+  };
+  subService: {
+    name: string;
+    slug: string;
+    isDeleted: boolean;
+    __v: 0;
+  };
+  client:{
+    firstname: string,
+    lastname: string,
+    name: string
+  }
+  duration: number;
+  price: number;
+  status: number;
+  commission: number;
+}
+
+export interface AppointmentDetailsResponse
+  extends Omit<
+    AppointmentDetails,
+    'appointmentDate' | 'appointmentDateEnd' | 'client'
+  > {
+  appointmentDate: Date;
+  client: {
+    firstname: string;
+    lastname: string;
+  };
+}
 export interface GetAppointment {
   _id: string;
   appointmentDate: Dayjs;
@@ -38,13 +75,14 @@ export interface GetAppointment {
   // ];
 }
 
-export interface GetAppointmentResponse extends Omit<GetAppointment, 'appointmentDate'>{
-  appointmentDate: Date
+export interface GetAppointmentResponse
+  extends Omit<GetAppointment, 'appointmentDate'> {
+  appointmentDate: Date;
 }
 
-export interface PutAppointment extends GetAppointment{};
+export interface PutAppointment extends GetAppointment {}
 
-export interface PutAppointmentResponse extends GetAppointmentResponse{};
+export interface PutAppointmentResponse extends GetAppointmentResponse {}
 
 export interface PostAppointment {
   appointmentDate: Date;

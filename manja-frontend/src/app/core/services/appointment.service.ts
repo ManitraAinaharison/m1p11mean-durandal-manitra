@@ -13,6 +13,8 @@ import {
   GetAppointmentResponse,
   PutAppointmentResponse,
   PutAppointment,
+  AppointmentDetails,
+  AppointmentDetailsResponse,
 } from '../models/appointment.model';
 import { SubServiceModel } from '../models/salon-service.model';
 import dayjs, { Dayjs } from 'dayjs';
@@ -81,6 +83,9 @@ export class AppointmentService {
     AppointmentHistory[] | null
   >(null);
   private appointment = new BehaviorSubject<GetAppointment | null>(null);
+  private appointmentList = new BehaviorSubject<AppointmentDetails[] | null>(
+    null
+  );
 
   selectedEmployee$ = this.selectedEmployee.asObservable();
   selectedSubService$ = this.selectedSubService.asObservable();
@@ -93,6 +98,7 @@ export class AppointmentService {
 
   appointmentsHistory$ = this.appointmentsHistory.asObservable();
   appointment$ = this.appointment.asObservable();
+  appointmentList$ = this.appointmentList.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -322,6 +328,92 @@ export class AppointmentService {
         tap({
           next: (response) => {
             this.appointment.next(response.payload);
+          },
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet : api error');
+          },
+        }),
+        shareReplay(1)
+      );
+  }
+
+  getAppointments(): Observable<ApiResponse<AppointmentDetails[]>> {
+    // if(!this.referenceDate)throw new Error('no reference date provided');
+    if (!this.selectedDate.value) throw new Error('no selected date provided');
+    return this.http
+      .get<ApiResponse<AppointmentDetailsResponse[]>>(
+        `/v1/appointments?referenceDate=${this.selectedDate.value.start.format(
+          'YYYY-MM-DD'
+        )}`
+      )
+      .pipe(
+        map((response): ApiResponse<AppointmentDetails[]> => {
+          return {
+            ...response,
+            payload: response.payload.map((appointment) => {
+              const appointmentDate = dayjs(appointment.appointmentDate);
+              const duration = appointment.duration / 60;
+              const name =
+                appointment.client.firstname +
+                ' ' +
+                appointment.client.lastname;
+              return {
+                ...appointment,
+                appointmentDate,
+                appointmentDateEnd: appointmentDate.add(duration, 'minute'),
+                duration,
+                client: { ...appointment.client, name },
+              };
+            }),
+          };
+        }),
+        tap({
+          next: (response) => {
+            this.appointmentList.next(response.payload);
+          },
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet : api error');
+          },
+        }),
+        shareReplay(1)
+      );
+  }
+
+  getAppointmentDailyTasks(value: Dayjs): Observable<ApiResponse<AppointmentDetails[]>> {
+    // if(!this.referenceDate)throw new Error('no reference date provided');
+    if (!this.selectedDate.value) throw new Error('no selected date provided');
+    return this.http
+      .get<ApiResponse<AppointmentDetailsResponse[]>>(
+        `/v1/appointments?referenceDate=${this.selectedDate.value.start.format(
+          'YYYY-MM-DD'
+        )}`
+      )
+      .pipe(
+        map((response): ApiResponse<AppointmentDetails[]> => {
+          return {
+            ...response,
+            payload: response.payload.map((appointment) => {
+              const appointmentDate = dayjs(appointment.appointmentDate);
+              const duration = appointment.duration / 60;
+              const name =
+                appointment.client.firstname +
+                ' ' +
+                appointment.client.lastname;
+              return {
+                ...appointment,
+                appointmentDate,
+                appointmentDateEnd: appointmentDate.add(duration, 'minute'),
+                duration,
+                client: { ...appointment.client, name },
+              };
+            }),
+          };
+        }),
+        tap({
+          next: (response) => {
+            this.appointmentList.next(response.payload);
           },
           error: (e) => {
             console.log(e);
