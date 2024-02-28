@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
     lastname: { type: String, required: true, min: 1, max: 30 },
     username: { type: String, required: true, min: 1, max: 20 },
     password: { type: String, required: true },
-    email: { type: String, required: true, unique: true }
+    email: { type: String, required: true, unique: true },
+    isActive: { type: Boolean, required: true, default: true}
 }, options);
 
 const customerSchema = new mongoose.Schema({
@@ -20,6 +21,7 @@ const customerSchema = new mongoose.Schema({
 });
 
 const employeeSchema = new mongoose.Schema({
+    imgPath: { type: String, required: true },
     subServices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SubService' }],
     workSchedule: [
         {

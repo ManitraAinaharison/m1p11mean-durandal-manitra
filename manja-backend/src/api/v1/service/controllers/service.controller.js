@@ -10,7 +10,13 @@ const { ROLES } = require("../../auth/schemas/user.schema");
 
 router.get("/services", async (req, res) => {
     try {
-        const listServices = await serviceService.getListServices();
+        let isManager = false;
+        if (req.cookies.refreshToken) {
+            const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+            if (decodedRefreshToken.role == ROLES.MANAGER) isManager = true;
+        }
+
+        const listServices = await serviceService.getListServices(isManager);
         const responseBody = apiUtil.successResponse(true, listServices);
         res.status(200).json(responseBody);
     } catch (e) {
