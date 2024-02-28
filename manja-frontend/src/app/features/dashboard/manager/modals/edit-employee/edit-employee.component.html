@@ -20,35 +20,70 @@
         </div>
     </div>
     <div class="grid grid-cols-2" *ngIf="this.modalLoaded">
-        <div class="w-full px-8 border-r-[1px]">
-            <p class="font-bold text-[18px] mb-4">Information de l'employé</p>
-            <div class="text-left mb-4">
+         <div class="w-full px-8 border-r-[1px]">
+          <div class="text-left mb-4">
+            <ngx-dropzone
+            [multiple]="false"
+            [accept]="'image/*'"
+            [ngClass]="{'inp-file-error': fieldHasErrorWrapper(this.employeeForm, 'img', 'required') || fieldHasErrorWrapper(this.employeeForm, 'img', 'imageSize')}"
+            (change)="onImagePicked($event)">
+                <ngx-dropzone-label>
+                    <div class="p-3">
+                    <div class="flex justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                        </svg>
+                    </div>
+                    <p>
+                        Déposer l'image de votre service, ou cliquez pour la sélectionner.
+                    </p>
+                    </div>
+                  </ngx-dropzone-label>
+                  <ngx-dropzone-image-preview
+                      class="preview-img"
+                      ngProjectAs="ngx-dropzone-preview"
+                      *ngIf="this.employeeForm.value.img"
+                      [file]="this.employeeForm.value.img"
+                      [removable]="true"
+                      (removed)="onImageRemove()">
+                  </ngx-dropzone-image-preview>
+                </ngx-dropzone>
+            @if (fieldHasErrorWrapper(this.employeeForm, 'img', 'required')) {
+                <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+            }
+            @if (fieldHasErrorWrapper(this.employeeForm, 'img', 'imageSize')) {
+                <div class="msg-invalidated-input pl-0"> La taille de l'image ne doit pas dépasser les 5Mo</div>
+            }
+        </div>
+          <div class="grid grid-cols-2 mb-4">
+            <div class="w-full pr-2">
                 <label class="ml-2">Prénom:</label>
                 <input
                     type="text"
-                    class="input rounded-lg p-3"
+                    class="input rounded-lg px-3 py-1"
                     [class.error]="fieldHasErrorWrapper(this.employeeForm, 'firstname', 'required')"
                     formControlName="firstname">
                 @if (fieldHasErrorWrapper(this.employeeForm, 'firstname', 'required')) {
                     <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
                 }
             </div>
-            <div class="text-left mb-4">
+            <div class="w-full pl-2">
                 <label class="ml-2">Nom:</label>
                 <input
                     type="text"
-                    class="input rounded-lg p-3"
+                    class="input rounded-lg px-3 py-1"
                     [class.error]="fieldHasErrorWrapper(this.employeeForm, 'lastname', 'required')"
                     formControlName="lastname">
                 @if (fieldHasErrorWrapper(this.employeeForm, 'lastname', 'required')) {
                     <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
                 }
             </div>
+          </div>
             <div class="text-left mb-4">
                 <label class="ml-2">Username:</label>
                 <input
                     type="text"
-                    class="input rounded-lg p-3"
+                    class="input rounded-lg px-3 py-1"
                     [class.error]="fieldHasErrorWrapper(this.employeeForm, 'username', 'required')"
                     formControlName="username">
                 @if (fieldHasErrorWrapper(this.employeeForm, 'username', 'required')) {
@@ -59,23 +94,22 @@
                 <label class="ml-2">Email:</label>
                 <input
                     type="text"
-                    class="input rounded-lg p-3"
-                    [class.error]="fieldHasErrorWrapper(this.employeeForm, 'email', 'required')"
+                    class="input rounded-lg px-3 py-1"
+                    [class.error]="fieldHasErrorWrapper(this.employeeForm, 'email', 'required') || fieldHasErrorWrapper(this.employeeForm, 'email', 'email')"
                     formControlName="email">
                 @if (fieldHasErrorWrapper(this.employeeForm, 'email', 'required')) {
                     <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
                 }
+                @if (fieldHasErrorWrapper(this.employeeForm, 'email', 'email')) {
+                    <div class="msg-invalidated-input pl-0"> Format d'email invalide</div>
+                }
             </div>
         </div>
 
-        <div class="sub-service-section pl-4">
+        <div class="w-full pl-4">
             <div class="w-full h-[450px] pr-6 overflow-y-scroll">
-                <p class="font-bold text-[18px] mb-4">Services attribués</p>
-                <mat-tree>
-                    <mat-tree-node> parent node </mat-tree-node>
-                    <mat-tree-node> -- child node1 </mat-tree-node>
-                    <mat-tree-node> -- child node2 </mat-tree-node>
-                </mat-tree>
+                <p class="font-bold text-[16px] mb-2">Services attribués</p>
+                <tree-checkbox [data]="this.data.serviceList" [checkedData]="this.checkedData" (checkedValues)="onTreeOutputValueChange($event)"></tree-checkbox>
             </div>
     </div>
 

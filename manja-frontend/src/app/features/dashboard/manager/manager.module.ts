@@ -11,6 +11,8 @@ import { MatTreeModule} from '@angular/material/tree';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EditEmployeeComponent } from './modals/edit-employee/edit-employee.component';
+import { TreeCheckboxComponent } from '../../../shared/components/tree-checkbox/tree-checkbox.component';
+import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
 const managerRoutes: Routes = [
   { path: 'employees', component: ListEmployeesComponent },
@@ -24,12 +26,14 @@ const managerRoutes: Routes = [
     ListEmployeesComponent,
     ListServicesComponent,
     EditServiceComponent,
-    EditEmployeeComponent
+    EditEmployeeComponent,
+    TreeCheckboxComponent
   ],
   imports: [
     CommonModule,
     MatDialogModule,
     MatTreeModule,
+    TreeViewModule,
     NgxDropzoneModule,
     ReactiveFormsModule,
     RouterModule.forChild(managerRoutes)
