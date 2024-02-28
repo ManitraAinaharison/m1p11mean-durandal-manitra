@@ -1,0 +1,291 @@
+<div class="flex justify-between mt-1">
+<p class="ml-4 font-bold text-[18px]">{{ data.title }}</p>
+<button class="float-right p-4 hover:text-gray-400" (click)="close()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+    </svg>
+</button>
+</div>
+
+<form [formGroup]="this.serviceForm" (ngSubmit)="submitServiceForm()">
+
+<mat-dialog-content>
+<div class="flex justify-center items-center min-h-106" *ngIf="!this.modalLoaded">
+    <div role="status">
+    <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+    <span class="sr-only">Chargement...</span>
+    </div>
+</div>
+<div class="grid grid-cols-[40%,1fr]" *ngIf="this.modalLoaded">
+    <div class="w-full px-8 border-r-[1px]">
+    <div class="text-left mb-4">
+        <ngx-dropzone
+        [multiple]="false"
+        [accept]="'image/*'"
+        [ngClass]="{'inp-file-error': fieldHasErrorWrapper(this.serviceForm, 'img', 'required') || fieldHasErrorWrapper(this.serviceForm, 'img', 'imageSize')}"
+        (change)="onImagePicked($event)">
+            <ngx-dropzone-label>
+                <div class="p-3">
+                <div class="flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                    </svg>
+                </div>
+                <p>
+                    Déposer l'image de votre service, ou cliquez pour la sélectionner.
+                </p>
+                </div>
+            </ngx-dropzone-label>
+            <ngx-dropzone-image-preview
+                class="preview-img"
+                ngProjectAs="ngx-dropzone-preview"
+                *ngIf="this.serviceForm.value.img"
+                [file]="this.serviceForm.value.img"
+                [removable]="true"
+                (removed)="onImageRemove()">
+            </ngx-dropzone-image-preview>
+        </ngx-dropzone>
+        @if (fieldHasErrorWrapper(this.serviceForm, 'img', 'required')) {
+            <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+        }
+        @if (fieldHasErrorWrapper(this.serviceForm, 'img', 'imageSize')) {
+            <div class="msg-invalidated-input pl-0"> La taille de l'image ne doit pas dépasser les 5Mo</div>
+        }
+    </div>
+
+    <div class="text-left mb-4">
+        <label class="ml-2">Nom:</label>
+        <input
+        type="text"
+        class="input rounded-lg px-3 py-1"
+        [class.error]="fieldHasErrorWrapper(this.serviceForm, 'name', 'required') || fieldHasErrorWrapper(this.serviceForm, 'name', 'maxlength')"
+        formControlName="name">
+        @if (fieldHasErrorWrapper(this.serviceForm, 'name', 'required')) {
+            <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+        }
+        @if (fieldHasErrorWrapper(this.serviceForm, 'name', 'maxlength')) {
+            <div class="msg-invalidated-input pl-0"> 30 caractères maximum</div>
+        }
+    </div>
+
+    <div class="text-left mb-4">
+        <label class="ml-2 py-1">Description:</label>
+        <textarea
+        formControlName="description"
+        class="input rounded-lg px-3"
+        [class.error]="fieldHasErrorWrapper(this.serviceForm, 'description', 'required') || fieldHasErrorWrapper(this.serviceForm, 'description', 'maxlength')"
+        cols="30" rows="3"></textarea>
+        @if (fieldHasErrorWrapper(this.serviceForm, 'description', 'required')) {
+            <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+        }
+        @if (fieldHasErrorWrapper(this.serviceForm, 'description', 'maxlength')) {
+            <div class="msg-invalidated-input pl-0"> 150 caractères maximum</div>
+        }
+    </div>
+    </div>
+
+    <div class="sub-service-section">
+
+    <div *ngIf="!this.showEditSection" class="w-full h-[450px] pr-6 overflow-y-scroll">
+        <div class="w-full sticky top-0 bg-white p-2 flex justify-between items-center z-10">
+          <p class="font-bold text-[18px]">Liste des sous services</p>
+          <button class="button-primary px-6 py-2 flex justify-start items-center" (click)="this.showEditSubServiceSection()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              nouveau sous service
+          </button>
+        </div>
+        <div formArrayName="subServices">
+        <div
+          class="relative sub-service-card cursor-pointer flex justify-between items-center"
+          [ngClass]="{'border-red-400 bg-red-200 hover:bg-red-100': subService.get('slug')?.value && this.isInSubServiceToDelete(subService.get('slug')?.value)}"
+          *ngFor="let subService of subServices.controls; let i = index"
+          [formGroupName]="i"
+          (click)="this.showEditSubServiceSection(i)"
+          >
+            <div *ngIf="!subService.get('slug')?.value" class="absolute inline-flex items-center justify-center w-20 h-6 text-xs font-bold text-white bg-blue-500 border-2 border-white rounded-full -top-2 start-2">Nouveau</div>
+            <span class="ml-2 font-bold text-[18px] pb-1">{{ subService.get('name')?.value }}</span><br>
+            <button
+              *ngIf="!this.isInSubServiceToDelete(subService.get('slug')?.value)"
+              type="button"
+              class="bg-red-500 rounded-lg py-1 px-2 mt-2 mr-2 text-white hover:bg-red-400"
+              (click)="this.deleteSubService($event, i)">
+              supprimer
+            </button>
+            <button
+              *ngIf="subService.get('slug')?.value && this.isInSubServiceToDelete(subService.get('slug')?.value)"
+              type="button"
+              class="bg-gray-900 rounded-lg py-1 px-2 mt-2 mr-2 text-white hover:bg-gray-700"
+              (click)="this.cancelDeleteSubService($event, i)">
+              annuler
+            </button>
+        </div>
+        </div>
+        <div class="sub-service-card bg-gray-50" *ngIf="this.subServices.length == 0">
+        Aucun sous service
+        </div>
+    </div>
+
+    <div *ngIf="this.showEditSection" class="w-full px-6">
+        <form [formGroup]="this.subServiceForm" (ngSubmit)="this.submitSubServiceForm()">
+        <div class="h-full border border-gray-200 px-2" [ngClass]="{ 'border-red-400': this.showErrorMsgOnEditSection}">
+            <div class="flex justify-between">
+            <p class="ml-4 font-bold text-[18px]">{{ this.titleSubServiceForm  }}</p>
+            <button class="float-right p-4 hover:text-gray-400" (click)="closeEditSubService()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+            </div>
+            <div class="p-2">
+            <div class="grid grid-cols-2 mb-4">
+
+                <div class="w-full pr-2">
+                <label class="ml-2">Nom:</label>
+                <input
+                type="text"
+                class="input rounded-lg px-3 py-1"
+                [class.error]="fieldHasErrorWrapper(this.subServiceForm, 'name', 'required')"
+                formControlName="name">
+                @if (fieldHasErrorWrapper(this.subServiceForm, 'name', 'required')) {
+                    <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+                }
+                </div>
+
+                <div class="w-full pl-2">
+                <label class="ml-2">Durée:</label>
+                <input
+                    type="number"
+                    min="0"
+                    class="input rounded-lg px-3 py-1"
+                    [class.error]="fieldHasErrorWrapper(this.subServiceForm, 'duration', 'required') || fieldHasErrorWrapper(this.subServiceForm, 'duration', 'min')"
+                    formControlName="duration">
+                    @if (fieldHasErrorWrapper(this.subServiceForm, 'duration', 'required')) {
+                    <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+                    }
+                    @if (fieldHasErrorWrapper(this.subServiceForm, 'duration', 'min')) {
+                    <div class="msg-invalidated-input pl-0"> Valeur positive uniquement</div>
+                    }
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 mb-4">
+
+                <div class="w-full pr-2">
+                <label class="ml-2">Prix:</label>
+                <input
+                type="number"
+                min="0"
+                class="input rounded-lg px-3 py-1"
+                [class.error]="fieldHasErrorWrapper(this.subServiceForm, 'price', 'required') || fieldHasErrorWrapper(this.subServiceForm, 'price', 'min')"
+                formControlName="price">
+                @if (fieldHasErrorWrapper(this.subServiceForm, 'price', 'required')) {
+                    <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+                }
+                @if (fieldHasErrorWrapper(this.subServiceForm, 'price', 'min')) {
+                    <div class="msg-invalidated-input pl-0"> Valeur positive uniquement</div>
+                }
+                </div>
+
+                <div class="w-full pl-2">
+                <label class="ml-2">Ptg commission:</label>
+                <input
+                    type="number"
+                    min="0"
+                    class="input rounded-lg px-3 py-1"
+                    [class.error]="fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'required') || fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'min') || fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'max')"
+                    formControlName="ptgCommission">
+                    @if (fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'required')) {
+                    <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+                    }
+                    @if (fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'min')) {
+                    <div class="msg-invalidated-input pl-0"> Valeur positive uniquement</div>
+                    }
+                    @if (fieldHasErrorWrapper(this.subServiceForm, 'ptgCommission', 'max')) {
+                    <div class="msg-invalidated-input pl-0"> La valeur doit être compris entre 0 et 100</div>
+                    }
+                </div>
+            </div>
+
+            <div class="text-left mb-4">
+                <label class="ml-2">Description:</label>
+                <textarea
+                formControlName="description"
+                class="input rounded-lg px-3 py-1"
+                [class.error]="fieldHasErrorWrapper(this.subServiceForm, 'description', 'required')"
+                cols="30" rows="3"></textarea>
+                @if (fieldHasErrorWrapper(this.subServiceForm, 'description', 'required')) {
+                <div class="msg-invalidated-input pl-0"> Veuillez renseigner ce champ</div>
+                }
+            </div>
+
+            @if (this.showErrorMsgOnEditSection) {
+                <div class="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-md mb-10" role="alert">
+                    <div class="flex">
+                        <div class="py-1 pr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                            </svg>
+                        </div>
+                        <div>
+                            Merci de sauvegarder vos informations ou d'annuler avant de valider le formulaire.
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="flex justify-center mb-2" >
+                <button class="button-primary small">enregistrer</button>
+            </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+
+</div>
+
+</div>
+@if (this.serviceFormError != "") {
+    <div class="flex justify-center w-full">
+        <div class="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-2 shadow-md mb-0 mt-4 w-1/2" role="alert">
+            <div class="flex">
+            <div class="py-1 pr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+            </div>
+            <div>
+            {{ this.serviceFormError }}
+            </div>
+        </div>
+        </div>
+    </div>
+}
+</mat-dialog-content>
+
+<mat-dialog-actions>
+<div class="w-full flex justify-end items-center m-3 pt-6 border-t-[1px] border-gray-200">
+    <button type="button" class="button-secondary mx-2" (click)="close()">Annuler</button>
+    @if (!this.serviceFormSubmitIsLoading) {
+    <input
+        type="submit"
+        class="button-primary cursor-pointer mx-2"
+        value="Enregistrer">
+    } @else {
+        <button class="min-w-42 button-primary mx-2 cursor-default disabled:opacity-75 hover:bg-gray-900" [disabled]="true">
+            <div
+                class="inline-block h-4 w-4 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                role="status">
+                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Chargement...</span>
+            </div>
+        </button>
+    }
+</div>
+</mat-dialog-actions>
+
+</form>

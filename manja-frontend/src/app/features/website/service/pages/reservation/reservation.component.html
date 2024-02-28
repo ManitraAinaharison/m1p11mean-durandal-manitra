@@ -1,0 +1,115 @@
+@if(matchingService){
+<div class="pt-50 pb-32.5 px-6 bg-neutral-gray">
+  <div class="w-full flex justify-center px-6">
+    <div class="w-180 text-center">
+      <h1 class="mb-4">Faire une résevation</h1>
+      <p class="text-secondary">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
+        aperiam ab, libero debitis at cumque assumenda tempora illum nihil?
+      </p>
+    </div>
+  </div>
+</div>
+<div class="pt-42 flex justify-center">
+  <div class="w-180 mx-6">
+    <h2 class="mb-4">Faire une réservation maintenant</h2>
+    <p class="text-secondary">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt aperiam
+      ab, libero debitis at cumque assumenda tempora illum nihil?
+    </p>
+    <div class="mt-12 mb-4 px-6 py-17">
+      <h4 class="text-primary mt-12 mb-6 font-semibold">Votre offre</h4>
+      <div class="grid grid-cols-3 gap-x-5 gap-y-2.5">
+        <div
+          *ngFor="let subService of matchingService.subServices"
+          (click)="setSelectedSubService(subService)"
+          [ngClass]="{
+            'p-4 rounded-lg hover:scale-105 select-none cursor-pointer focus:outline-none': true,
+            'hover:bg-neutral-gray': !(
+              selectedSubService?.slug === subService.slug
+            ),
+            'bg-tumbleweed': selectedSubService?.slug === subService.slug
+          }"
+        >
+          <div class="mb-0 flex justify-between text-primary font-bold">
+            <h5>{{ subService.name }}</h5>
+            <div class="text-lg">{{ subService.price }} $</div>
+          </div>
+          <span>
+            <p class="m-y-0 p-0 text-secondary">
+              {{ subService.description }} ({{ subService.duration }} min)
+            </p></span
+          >
+        </div>
+      </div>
+      <section>
+        @if(employees && employees.length > 0){
+        <h4 class="text-primary">
+          Sélectionnez l'employé qui vous prendra en charge :
+        </h4>
+        <div class="w-full h-auto py-20 flex gap-12">
+          @for (employee of employees; track $index) {
+          <div
+            class="w-86 h-auto bg-neutral-gray cursor-pointer"
+            (click)="setSelectedEmployee(employee)"
+          >
+            <div class="w-86 h-50 flex items-center justify-center">
+              <img
+                [ngClass]="{
+                  'size-36 rounded-full': true,
+                  'border-4 border-solid bg-gradient-to-b from-gray-200 to-transparent':
+                    employee._id === selectedEmployee?._id
+                }"
+                src="https://assets-global.website-files.com/60993dcfc8e83c6e36ae8b81/60a5c1bcbc4f722522df1ec2_dana-cutts-salon-webflow-template.jpg"
+              />
+            </div>
+            <div class="w-full h-auto text-center px-6">
+              <h3>{{ employee.firstname }} {{ employee.lastname }}</h3>
+              <p class="text-secondary">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi,
+                deserunt?
+              </p>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </section>
+      <h4 class="text-primary mb-6 font-semibold">
+        Date et heure de votre rendez-vous
+      </h4>
+      <div class="flex gap-6">
+        <datepicker
+          [referenceDate]="referenceDate"
+          (updateReferenceDate)="updateReferenceDate($event)"
+          [selectedDates]="[selectedDateToCalendarFormat()]"
+          (updateSelectedDates)="updateSelectedDatePicker($event)"
+          cdkDrag
+        />
+        <timepicker
+          [disabled]="!enablePostAppointment"
+          [cursorInterval]="selectedDate"
+          [businessHours]="businessHours"
+          [nonAvailableHours]="nonAvailableHours"
+          (updateSelectedDate)="updateSelectedDateTimepicker([$event])"
+        />
+      </div>
+      <h4>Votre réservation</h4>
+      <div>
+        <div class="flex justify-center">
+          <button
+            (click)="createAppointment()"
+            [ngClass]="{
+              'px-10 py-5 rounded-button bg-dark font-medium text-light hover:bg-orange-300 hover:duration-300 hover:opacity-75': true,
+              'opacity-50': !enablePostAppointment
+            }"
+          >
+            Valider ma réservation
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+}

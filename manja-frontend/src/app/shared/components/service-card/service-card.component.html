@@ -1,0 +1,37 @@
+<a routerLink="/services/{{salonServiceElement?.slug}}" [routerLinkActive]="salonServiceElement ? 'active-link' : 'inactive-link'">
+  <div class="w-full aspect-[1.36]">
+    <img
+      class="w-full"
+      *ngIf="salonServiceElement; else cardImageLoader"
+      [src]="salonServiceElement.imgPath"
+      alt=""
+    />
+    <ng-template #cardImageLoader>
+      <div className="w-full h-full animate-pulse"></div>
+    </ng-template>
+  </div>
+  <div class="w-full -mt-32 pt-12 pr-10 relative">
+    <div class="w-full min-h-72 px-10 pb-12 bg-white leading-7.5">
+      <img
+        class="-mt-11 mb-4.5"
+        src="https://assets-global.website-files.com/60993dcfc8e83c6e36ae8b81/60a5ae4d04bd07ad7a05df7e_makeup-icon-salon-webflow-template.svg"
+      />
+      <h2 *ngIf="salonServiceElement; else loadingHeader">
+        {{ salonServiceElement.name }}
+      </h2>
+      <ng-template #loadingHeader>
+        <h2 class="animate-pulse"></h2>
+      </ng-template>
+      <p class="mb-8">
+        {{ salonServiceElement?.description }}
+      </p>
+      <ng-template #loadingDescription>
+        <p class="mb-8 animate-pulse"></p>
+      </ng-template>
+      <div class="lowercase">
+        <div>Voir les détails</div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,69 @@
+@import 'tailwindcss/components';
+
+@layer components {
+    .nav-item-wrapper {
+        @apply ml-0 mr-8;
+    }
+
+    .nav-link {
+        @apply lowercase text-[18px] leading-loose font-normal no-underline transition-transform duration-300 text-neutral-800;
+    }
+
+    .nav-link.active {
+        @apply text-[#eba37a];
+    }
+    
+    .nav-link:hover {
+        @apply text-[#eba37a];
+    }
+
+    .dropdown-toggle {
+        @apply flex p-0 transition-colors duration-300 cursor-pointer   align-top text-left whitespace-nowrap mx-auto text-gray-800 no-underline relative;
+    }
+
+    .dropdown-arrow {
+        @apply ml-3 mr-0 static transition-all duration-300;
+    }
+
+    .dropdown-arrow.active {
+        @apply opacity-100 transform -rotate-180 transition duration-300;
+        transform-style: preserve-3d;
+    }
+
+    .dropdown-navbar-container {
+        @apply invisible min-w-60 border-[1px] border-gray-200 bg-white pt-5 px-9 pb-8 top-14 transform translate-y-16 scale-95;
+    }
+
+    .dropdown-navbar-container button {
+        @apply hidden !important;
+    }
+
+    .dropdown-navbar-container.active {
+        transform-style: preserve-3d;
+        @apply visible min-w-60 transform-none  transition-transform duration-300;
+    }
+
+    .dropdown-navbar-container.active button {
+        @apply block !important;
+    }
+
+    .dropdown-list {
+        @apply min-w-full absolute;
+    }
+
+    .dropdown-nav-link {
+        @apply text-gray-900 lowercase p-0 text-[18px] font-normal leading-loose no-underline; 
+    }
+
+    .dropdown-nav-link.inner {
+        @apply text-gray-900 py-1 font-normal;
+    }
+
+    .dropdown-nav-link.inner:hover {
+        @apply text-[#eba37a] transition-all duration-300;
+    }
+
+    .dropdown-link {
+        @apply block align-top text-gray-900 text-left whitespace-nowrap mx-auto no-underline relative;
+    }
+}
