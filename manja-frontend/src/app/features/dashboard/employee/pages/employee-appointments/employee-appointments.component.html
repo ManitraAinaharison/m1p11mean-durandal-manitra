@@ -40,7 +40,7 @@
                 {{ appointment.status | appointmentStatus }}
               </td>
               <td class="px-6 py-4">
-                <div class="relative">
+                @if(appointment.status < 3){<div class="relative">
                   <button
                     (click)="showTooltip($index)"
                     class="w-5 bg-neutral-gray flex items-center justify-center relative"
@@ -49,16 +49,21 @@
                   </button>
                   <div
                     [ngClass]="{
-                      'absolute top-6 -left-8 w-27.5 h-20 bg-middle-gray z-10': true,
+                      'absolute top-10 -left-8 w-27.5 h-20 bg-middle-gray z-10': true,
                       hidden: currentTooltip !== $index
                     }"
                   >
-                    <!-- @if(appointment.status<2){
-                    <div class="w-full py-3 px-2"></div>
+                    @if(appointment.status<3){
+                    <div
+                      class="w-full py-1 px-2"
+                      (click)="validateAppointmentDone(appointment)"
+                    >
+                      Tâche effectuée
+                    </div>
                     <hr />
-                    } -->
+                    }
                   </div>
-                </div>
+                </div>}
               </td>
             </tr>
             } }@else{

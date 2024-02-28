@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, SimpleChanges, ViewChild } from '@angular/core';
 import { AppointmentService } from '../../../../../core/services/appointment.service';
 import dayjs from 'dayjs';
+import { DailyTasksDetails } from '../../../../../core/models/appointment.model';
 
 @Component({
   selector: 'app-employee-daily-tasks',
@@ -8,13 +9,14 @@ import dayjs from 'dayjs';
   styleUrl: './employee-daily-tasks.component.css',
 })
 export class EmployeeDailyTasksComponent {
-  currentDate = dayjs()
+  dailyTaskDate = dayjs(); // by default and should be current date
+  dailyTaskDetails : DailyTasksDetails | null = null;
 
   constructor(private appointmentService: AppointmentService) {}
 
   ngOnInit(): void {
-
+    this.appointmentService.getAppointmentDailyTasks().subscribe((response)=>{
+      this.dailyTaskDetails = response.payload
+    })
   }
-
-  
 }

@@ -9,11 +9,13 @@ export class AppointmentStatusPipe implements PipeTransform {
       case 0:
         return 'Rendez-vous confirmé';
       case 1:
-        return 'Case euh';
+        return 'Payé';
       case 2:
-        return 'Case euh';
+        return 'Liste d\'attente';
       case 3:
-        return 'Case euh';
+        return 'Terminé';
+      case 4:
+        return 'Annulé';
       default:
         return 'status inconnu';
     }
