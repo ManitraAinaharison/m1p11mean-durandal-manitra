@@ -16,6 +16,13 @@ module.exports.customers = [
     username: "KingJames",
     password: "mdp",
   },
+  {
+    firstname: "Kevin",
+    lastname: "Durant",
+    email: "kevindurant@gmail.com",
+    username: "EasyMoneySniper",
+    password: "mdp",
+  },
 ];
 
 module.exports.employees = [
@@ -23,7 +30,7 @@ module.exports.employees = [
     firstname: "Caroline",
     lastname: "Garcia",
     email: "eva.garcia@company.com",
-    username: "egarcia",
+    username: "mdp",
     password: "Eva1234",
     subServices: [],
     imgPath: "img-path",
@@ -34,7 +41,7 @@ module.exports.employees = [
     lastname: "Rodriguez",
     email: "frank.rodriguez@company.com",
     username: "frodriguez",
-    password: "FrankPass",
+    password: "mdp",
     subServices: [],
     imgPath: "img-path",
   },
@@ -43,7 +50,7 @@ module.exports.employees = [
     lastname: "Wembanyama",
     email: "victor.wembanyama@company.com",
     username: "hclark",
-    password: "Henry1234",
+    password: "mdp",
     subServices: [],
     imgPath: "img-path",
   },
@@ -52,7 +59,7 @@ module.exports.employees = [
     lastname: "Russel",
     email: "isabel.wright@company.com",
     username: "iwright",
-    password: "IsabelPass",
+    password: "mdp",
     subServices: [],
     imgPath: "img-path",
   },
@@ -61,7 +68,7 @@ module.exports.employees = [
     lastname: "Harris",
     email: "liam.harris@company.com",
     username: "lharris",
-    password: "Liam9876",
+    password: "mdp",
     subServices: [],
     imgPath: "img-path",
   },
@@ -80,5 +87,20 @@ module.exports.employees = [
         end: new Date("1970-01-01T14:00:00.000+00:00"),
       },
     ],
-  }
+    day: 3,
+    schedule: [
+      {
+        start: new Date("1970-01-01T05:00:00.000+00:00"),
+        end: new Date("1970-01-01T09:00:00.000+00:00"),
+      },
+      {
+        start: new Date("1970-01-01T11:00:00.000+00:00"),
+        end: new Date("1970-01-01T14:00:00.000+00:00"),
+      },
+      {
+        start: new Date("1970-01-01T15:00:00.000+00:00"),
+        end: new Date("1970-01-01T20:30:00.000+00:00"),
+      },
+    ],
+  },
 }));
