@@ -1,0 +1,63 @@
+# version: '3.9'
+services:
+  # start-front:
+  #     image: alpine
+  #     depends_on:
+  #       - backend
+  #       - frontend
+  #     command: sh -c "echo 'Back service started. Now running Front service.' && sleep 5 && docker-compose run --rm frontend"
+
+  backend:
+    container_name: manja-backend-container
+    image:
+      node:21-alpine
+    working_dir: /app
+    volumes:
+      - type: bind
+        source: ./manja-backend
+        target: /app
+    expose:
+      - 5000
+    ports: 
+      - 5000:5000
+    user: "1000"
+    # build: ./manja-backend
+    # restart: no
+    # detach: true
+    tty: true
+
+  # frontend:
+  #   container_name: manja-front-container
+  #   build: ./manja-frontend
+  #   image: manja-frontend-image
+  #   working_dir: /app
+  #   volumes:
+  #     - type: bind
+  #       source: ./manja-frontend
+  #       target: /app
+  #   expose:
+  #     - 9000
+  #   ports:
+  #     - 9000:9000
+  #   user: "1000"
+  #   # restart: no
+  #   # detach: true
+  #   tty: true
+
+
+  db:
+    container_name: manja-db-container
+    image: mongo
+    working_dir: /app
+    volumes:
+      - mongo_data_volume:/app/data/db
+    expose:
+      - 27017
+    ports: 
+        - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=myadmin
+      - MONGO_INITDB_ROOT_PASSWORD=mypassword
+
+volumes:
+  mongo_data_volume:

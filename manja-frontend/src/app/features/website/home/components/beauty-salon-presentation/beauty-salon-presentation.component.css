@@ -1,0 +1,10 @@
+@import 'tailwindcss/utilities';
+
+@layer utilities {
+    .details-center {
+        @apply flex flex-col justify-start text-center;
+    }
+    .details-center.center {
+        @apply border-x-[1px] border-neutral-500;
+    }
+}

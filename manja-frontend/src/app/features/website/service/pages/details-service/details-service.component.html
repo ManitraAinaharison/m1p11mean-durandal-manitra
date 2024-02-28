@@ -1,0 +1,59 @@
+<div class="" *ngIf="matchingService; else noMatchingService">
+  <div class="max-w-300 mx-auto px-6">
+    <div
+      class="mt-25 pt-25 pb-27.5 px-6 grid grid-cols-[1fr_1.4fr] grid-rows-[auto] gap-x-12.5 items-center bg-neutral-gray"
+    >
+      <div>
+        <h1>{{ matchingService.name }}</h1>
+        <p class="text-secondary">{{ matchingService.description }}</p>
+        <a href="/services/{{matchingService.slug}}/reservation" class="mt-12"
+          ><button
+            class="px-10 py-5 rounded-button bg-dark font-medium text-light hover:bg-orange-300 hover:duration-300 hover:opacity-75"
+          >
+            Make a reservation
+          </button></a
+        >
+      </div>
+      <div class="aspect-[1.36]">
+        <img
+          class="aspect-[1.36]"
+          [src]="matchingService.imgPath"
+          alt="{{ matchingService.slug }} image"
+        />
+      </div>
+    </div>
+    <div class="pb-50 flex justify-center">
+      <div class="w-180">
+        <h2 class="text-primary mb-6">About the service</h2>
+        <hr />
+        <h2 class="text-primary mb-6">Sub Services</h2>
+        <p class="text-secondary mb-10">
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe
+          pariatur assumenda voluptatibus cum illo, earum unde distinctio
+          dolorem quaerat! Quibusdam cumque similique earum magni magnam
+          sapiente iure delectus eveniet facere.
+        </p>
+        <div class="grid grid-cols-2 gap-x-25 gap-y-14">
+          <div *ngFor="let subService of matchingService.subServices">
+            <div class="mb-4.5 flex justify-between text-primary font-bold">
+              <h4>{{ subService.name }}</h4>
+              <div class="text-lg">{{ subService.price }} $</div>
+            </div>
+            <p class="text-secondary">
+              {{ subService.description }} ({{ subService.duration }} min)
+            </p>
+          </div>
+        </div>
+        <a href="/services/{{matchingService.slug}}/reservation" class="mt-12"
+          ><button
+            class="px-10 py-5 rounded-button bg-dark font-medium text-light hover:bg-orange-300 hover:duration-300 hover:opacity-75"
+          >
+            Make a reservation
+          </button></a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+<!-- TODO: give style to no matching service or redirect to 404 -->
+<ng-template #noMatchingService> no matching service </ng-template>

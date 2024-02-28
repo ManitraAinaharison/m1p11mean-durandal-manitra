@@ -1,0 +1,159 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        overflow-y: scroll;
+    }
+
+    body {
+        margin: 0;
+        @apply text-gray-500;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 18px;
+        line-height: 30px;
+    }
+
+    h1 {
+        @apply text-gray-900;
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 62px;
+        font-weight: 400;
+        line-height: 80px;
+    }
+
+    h2 {
+        @apply text-gray-900;
+        margin-top: 0;
+        margin-bottom: 18px;
+        font-size: 38px;
+        font-weight: 500;
+        line-height: 52px;
+    }
+
+    h3 {
+        @apply text-gray-900;
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 26px;
+        font-weight: 500;
+        line-height: 36px;
+    }
+
+    p {
+        display: block;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+    }
+
+    img {
+        max-width: 100%;
+        vertical-align: middle;
+        display: inline-block;
+    }
+}
+
+@layer components {
+    .button-primary {
+        @apply bg-gray-900 text-white text-center lowercase rounded-[80px] px-10 py-3 font-medium leading-5 no-underline  transition-all duration-300;
+    }
+
+    .button-primary:hover {
+        @apply bg-[#eba37a] text-white translate-y-[-1px];
+    }
+
+    .button-secondary {
+        @apply border border-gray-200 bg-white text-neutral-800 text-center lowercase rounded-[80px] px-10 py-3 font-medium leading-5 no-underline transition-all duration-300;
+    }
+
+    .button-secondary:hover {
+        @apply bg-gray-900 text-white translate-y-[-1px];
+    }
+
+    .button-primary.large,
+    .button-secondary.large {
+        @apply py-5 !important;
+    }
+
+    .input {
+        @apply w-full rounded-[100px] mb-0 px-6 py-3 text-[18px] transition-all duration-300 bg-gray-100 border-[1px] border-gray-300 hover:border-[#eba37a] hover:bg-white;
+    }
+
+    .input.error {
+        @apply border border-red-400;
+    }
+
+    .inp-file-error {
+      @apply border-2 border-red-400 !important;
+    }
+
+    .msg-invalidated-input {
+        @apply  text-sm text-red-400 pl-6 pt-1;
+    }
+
+    .tooltip {
+      @apply absolute text-white px-3 py-1 rounded-lg text-[14px] text-center text-nowrap z-50;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .tooltip.tooltip-top {
+      top: 0;
+      left: 50%;
+      transform: translateY(-150%) translateX(-50%);
+    }
+
+    .tooltip.tooltip-bottom {
+      bottom: 0;
+      left: 50%;
+      transform: translateY(150%) translateX(-50%);
+    }
+
+    .tooltip.tooltip-left {
+      @apply right-20;
+    }
+
+    .tooltip.tooltip-right {
+      @apply left-20;
+    }
+}
+
+@layer utilities {
+    .section {
+        @apply py-[200px];
+    }
+
+    .section.first {
+        @apply bg-gray-50 pb-20 relative overflow-hidden;
+    }
+
+    .section-container {
+        @apply max-w-[1200px] justify-between items-center mx-auto px-6;
+    }
+
+    .modal-backdrop {
+      @apply absolute top-0 bottom-0 left-0 right-0 bg-gray-900 opacity-50;
+    }
+
+    .custom-overlay-container,
+    .custom-overlay-container .cdk-global-overlay-wrapper {
+      @apply absolute top-0 bottom-0 left-0 right-0;
+    }
+
+    .custom-overlay-container .cdk-global-overlay-wrapper {
+      @apply flex justify-center items-center;
+    }
+
+    .full-card-container-dashboard {
+      @apply size-full border border-gray-200 text-gray-900 rounded-lg shadow-lg py-4 px-8;
+    }
+}
