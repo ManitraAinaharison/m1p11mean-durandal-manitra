@@ -1,4 +1,13 @@
-<p class="py-[50px]"></p>
+<div class="pt-50 pb-32.5 px-6 bg-neutral-gray">
+  <div class="w-full flex justify-center px-6">
+    <div class="w-180 text-center">
+      <h1 class="mb-4">Nos Principaux Services</h1>
+      <p class="text-secondary">
+        N'ayez crainte, nous avons ce qui se fait de mieux en la matière.
+      </p>
+    </div>
+  </div>
+</div>
 <div class="w-full grid grid-cols-2 gap-x-6 gap-y-12 px-6">
   <div class="w-auto h-fit min-h-64" *ngFor="let salonService of salonServiceList">
     <service-card [salonServiceElement]="salonService"></service-card>

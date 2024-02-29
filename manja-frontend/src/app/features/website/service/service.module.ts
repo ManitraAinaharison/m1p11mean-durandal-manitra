@@ -10,6 +10,7 @@ import { DetailsServiceComponent } from './pages/details-service/details-service
 import { ListServicesComponent } from './pages/list-services/list-services.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { SharedDatePickerModule } from '../../../shared/shared-datepicker.module';
+import { SharedPipesModule } from '../../../shared/pipes/shared-pipes.module';
 
 const serviceRoutes: Routes = [
   { path: 'services', component: ListServicesComponent },
@@ -36,6 +37,7 @@ const serviceRoutes: Routes = [
     CommonModule,
     SharedDatePickerModule,
     DragDropModule,
+    SharedPipesModule,
     RouterModule.forChild(serviceRoutes),
   ],
 })
