@@ -75,6 +75,7 @@ module.exports.getCurrentSales = async () => {
 
 module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
   try {
+    console.log('fefezfz');
     const now = new Date();
     let res = [];
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); 
@@ -92,11 +93,14 @@ module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
       let sales = 0;
       appointmentsLastMonth.forEach((appointment) => { sales += appointment.price; });
       res.push({
-        month:  now.getMonth() - i < 0 ? 11 : now.getMonth() - i,
-        year: now.getMonth() - i < 0 ? now.getFullYear() - 1 : now.getFullYear(),
+        month: now.getMonth(),
+        year: now.getFullYear(),
         nbrAppointments: nbrApptmnts,
         sales: sales
       })
+      console.log(now.getMonth());
+      now.setMonth((now.getMonth() - 1) == 0 ? 11 : now.getMonth() - 1);
+      if ((now.getMonth() - 1) == 0) now.setFullYear(now.getFullYear() - 1);
     }
     return res;
   } catch (e) {
