@@ -4,14 +4,14 @@
   De
   <input
     type="time"
-    [valueAsDate]="cursorInterval.start.local().toDate()"
+    [valueAsDate]="cursorInterval.start.toDate()"
     [min]="cursorInterval.start.format('HH:mm:ss')"
     [max]="cursorInterval.end.format('HH:mm:ss')"
   />
   {{ " à " }}
   <input
     type="time"
-    [valueAsDate]="cursorInterval.end.local().toDate()"
+    [valueAsDate]="cursorInterval.end.toDate()"
     [min]="cursorInterval.start.format('HH:mm:ss')"
     [max]="cursorInterval.end.format('HH:mm:ss')"
   />

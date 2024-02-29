@@ -1,4 +1,4 @@
-import { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs/esm";
 import { MONTHS_FRENCH } from "../constants/constants";
 
 export interface CalendarDate {

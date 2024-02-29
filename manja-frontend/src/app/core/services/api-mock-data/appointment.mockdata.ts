@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs/esm';
 import { DateInterval } from '../../models/appointment.model';
 
 export const dailyNonAvailableHours: DateInterval[] = [

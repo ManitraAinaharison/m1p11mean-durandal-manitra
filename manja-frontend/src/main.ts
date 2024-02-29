@@ -4,11 +4,14 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 
-import * as dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import calendar from 'dayjs/plugin/calendar';
+import dayjs from 'dayjs/esm';
+import advancedFormat from 'dayjs/esm/plugin/advancedFormat';
+import utc from 'dayjs/esm/plugin/utc';
+import timezone from 'dayjs/esm/plugin/timezone';
+import localizedFormat from 'dayjs/esm/plugin/localizedFormat';
+import calendar from 'dayjs/esm/plugin/calendar';
+import { enableProdMode } from '@angular/core';
+
 
 import 'dayjs/locale/fr';
 

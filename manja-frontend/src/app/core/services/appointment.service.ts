@@ -19,7 +19,7 @@ import {
   DailyTasksDetails,
 } from '../models/appointment.model';
 import { SubServiceModel } from '../models/salon-service.model';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs/esm';
 import {
   createDateIntervalDetail,
   createDateIntervalDetail2,
