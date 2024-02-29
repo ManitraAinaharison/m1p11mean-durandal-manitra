@@ -75,7 +75,6 @@ module.exports.getCurrentSales = async () => {
 
 module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
   try {
-    console.log('fefezfz');
     const now = new Date();
     let res = [];
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); 
@@ -98,7 +97,6 @@ module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
         nbrAppointments: nbrApptmnts,
         sales: sales
       })
-      console.log(now.getMonth());
       now.setMonth((now.getMonth() - 1) == 0 ? 11 : now.getMonth() - 1);
       if ((now.getMonth() - 1) == 0) now.setFullYear(now.getFullYear() - 1);
     }
