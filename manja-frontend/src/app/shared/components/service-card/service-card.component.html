@@ -3,7 +3,7 @@
     <img
       class="w-full"
       *ngIf="salonServiceElement; else cardImageLoader"
-      [src]="salonServiceElement.imgPath"
+      [src]="salonServiceElement.imgPath | imgPath"
       alt=""
     />
     <ng-template #cardImageLoader>

@@ -22,6 +22,9 @@ interface LoginForm {
 })
 export class LoginComponent implements OnInit {
 
+    DEFAULT_LOGIN = 'user@yopmail.com';
+    DEFAULT_PASSWORD = 'password'
+
     loginForm!: FormGroup<LoginForm>;
     loginFormSubmitIsLoading: boolean = false;
 
@@ -40,11 +43,11 @@ export class LoginComponent implements OnInit {
 
     initLoginForm(): void {
         this.loginForm = this.fb.group<LoginForm>({
-            email: new FormControl("", {
+            email: new FormControl(this.DEFAULT_LOGIN, {
                 validators: [Validators.required],
                 nonNullable: true
             }),
-            password: new FormControl("", {
+            password: new FormControl(this.DEFAULT_PASSWORD, {
                 validators: [Validators.required],
                 nonNullable: true
             })

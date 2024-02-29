@@ -350,7 +350,7 @@ export class ReservationComponent {
       .subscribe((insertedAppointment) => {
         this.redirectToReservationDetailsPage(insertedAppointment.payload._id);
       })
-      .unsubscribe();
+      ;
   }
 
   redirectToReservationDetailsPage(appointmentId: string): void {

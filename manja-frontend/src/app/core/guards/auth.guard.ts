@@ -29,7 +29,7 @@ export const employeeGuard: CanActivateFn = (route, state) => {
       map((res: ApiSuccess) => {
           userService.errorMessage = "Accès refusé";
           userService.targetUrl = route.url[0].path;
-          if(res.payload.role != 'EMPLOYEE') router.navigate(['/dashboard/login']);
+          if(res.payload.role !== 'EMPLOYEE') router.navigate(['/dashboard/login']);
           return true;
       })
     );

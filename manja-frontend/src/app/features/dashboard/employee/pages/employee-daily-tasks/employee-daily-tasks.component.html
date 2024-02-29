@@ -6,11 +6,11 @@
           Tâches d' {{ dailyTaskDate | longDate }}
         </h1>
       </div>
-      <div>
-        <p>Nombre de tâches assignée: {{dailyTaskDetails?.taskTotal}}</p>
-        <p>Taches réalisées: {{dailyTaskDetails?.taskDone}} sur {{dailyTaskDetails?.taskTotal}}</p>
-        <p>Total heures: 2h40 minutes</p>
-        <p>Comission perçues : {{dailyTaskDetails?.totalReceivedCommission}} $</p>
+      @if(dailyTaskDetails){<div>
+        <p>Nombre de tâches assignée: {{dailyTaskDetails.taskTotal}}</p>
+        <p>Taches réalisées: {{dailyTaskDetails.taskDone}} sur {{dailyTaskDetails.taskTotal}}</p>
+        <p>Total heures: {{dailyTaskDetails.totalDoneDuration//60}} h {{dailyTaskDetails.totalDoneDuration%60}} min</p>
+        <p>Comission perçues : {{dailyTaskDetails.totalReceivedCommission}} $</p>
         <h3 class="mt-6">Commissions :</h3>
         <div class="mr-6">
           <table class="w-full table-fixed">
@@ -22,19 +22,21 @@
               </tr>
             </thead>
             <tbody>
-              @for(appointment of dailyTaskDetails?.appointments; track $index){<tr>
+              @for(appointment of dailyTaskDetails.appointments; track $index){<tr>
                 <td>{{appointment.appointmentDate | formatHHmm}} - {{appointment.appointmentDateEnd | formatHHmm}}</td>
                 <td class="float-right">{{appointment.commission * appointment.price}} $</td>
               </tr>}
               <hr />
               <tr>
                 <td>Total:</td>
-                <td class="float-right">{{dailyTaskDetails?.totalReceivedCommission}} $ / {{dailyTaskDetails?.totalExpectedComission}} $</td>
+                <td class="float-right">{{dailyTaskDetails.totalReceivedCommission}} $ / {{dailyTaskDetails.totalExpectedComission}} $</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </div>}@else {
+        Pas de tâche pour aujourd'hui
+      }
     </div>
 
     <div class="relative left-10">
