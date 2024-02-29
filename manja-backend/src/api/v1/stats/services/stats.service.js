@@ -1,5 +1,6 @@
 const apiUtil = require("../../../../util/api.util");
 const { Appointment } = require("../../service/schemas/appointment.schema");
+const { Employee } = require("../../../v1/auth/schemas/user.schema");
 
 module.exports.getCurrentSales = async () => {
     try {
@@ -108,3 +109,28 @@ module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
     throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
   }
 };
+
+module.exports.getTotalEmployeeWorkingHours = async () => {
+  try {
+    let res = await Appointment.aggregate([
+      {
+        $group: {
+          _id: '$employee',
+          totalDuration: { $sum: '$duration' }
+        }
+      }
+    ]);
+
+    for (let i = 0; i < res.length; i++) {
+      const el = res[i];
+      let employee = await Employee.findById(el._id);
+      res[i].employeeName = employee.firstname + ' ' + employee.lastname;
+      res[i].employeeImgPath = employee.imgPath;
+      res[i].duration = res[i].totalDuration / 3600;
+    }
+
+    return res;
+  } catch (e) {
+    throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
+  }
+} ;
