@@ -15,6 +15,7 @@ export function toCalendarDate(
     openDays: number[];
     selectedDates?: CalendarDate[];
     selected?: boolean;
+    highlightedDates?: Dayjs[]
   }
 ): CalendarDate {
   const currentDate = dayjs();
@@ -24,6 +25,7 @@ export function toCalendarDate(
     ? options.openDays.includes(value.day() - 1)
     : true;
   const isPriorToCurrent = value.isBefore(currentDate, 'date');
+  const isHighlighted = options?.highlightedDates ? options.highlightedDates.some((highlightedDate)=>(highlightedDate.isSame(value, 'date'))): false
   return {
     value,
     isPriorToCurrent,
@@ -32,6 +34,7 @@ export function toCalendarDate(
     isOpenDay,
     selectable: isOpenDay && !isPriorToCurrent,
     selected: isSelected(value, {selectedDates : options?.selectedDates, selected: options?.selected}),
+    isHighlighted
   };
 }
 

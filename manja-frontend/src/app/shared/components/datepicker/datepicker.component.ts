@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { MONTHS_FRENCH, WEEKDAYS } from '../../constants/constants';
 import { CalendarDate, Month } from '../../types/date.types';
-import { toCalendarDates } from '../../utils/date.util';
+import { cleanHMSM, toCalendarDates } from '../../utils/date.util';
 
 @Component({
   selector: 'datepicker',
@@ -28,7 +28,7 @@ export class DatePickerComponent {
   }
 
   generateDates(referenceDate: Dayjs, selectedDates: CalendarDate[] = []) {
-    const firstDateOfMonth: Dayjs = referenceDate.date(1);
+    const firstDateOfMonth: Dayjs = referenceDate.second(1).date(1).second(0);
     const lastDateOfMonth: Dayjs = referenceDate.endOf('month');
     const calendarDays: Dayjs[] = [];
     for (let weekday = 1; weekday < firstDateOfMonth.day(); weekday++)
@@ -82,7 +82,7 @@ export class DatePickerComponent {
 
   selectDate(calendarDate: CalendarDate): void {
     if (!calendarDate.selectable) return;
-    // calendarDate.selected = true;
+    calendarDate.selected = true;
     this.updateSelectedDates.emit([calendarDate.value]);
     this.generateDates(this.referenceDate, [calendarDate]);
   }
