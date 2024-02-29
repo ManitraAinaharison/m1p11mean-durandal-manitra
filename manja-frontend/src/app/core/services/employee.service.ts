@@ -93,13 +93,24 @@ export class EmployeeService {
 
   updateEmployee(employeeId: string, payload: FormData): Observable<ApiSuccess> {
     return this.http
-    .put<ApiSuccess>(`/v1/Employees/${employeeId}`, payload)
+    .put<ApiSuccess>(`/v1/employees/${employeeId}`, payload)
+    .pipe(shareReplay(1));
+  }
+  updateEmployeeItself(payload: FormData): Observable<ApiSuccess> {
+    return this.http
+    .put<ApiSuccess>(`/v1/employees`, payload)
+    .pipe(shareReplay(1));
+  }
+
+  updateEmployeeWorkSchedules(payload: { day: number, start: string, end: string} ): Observable<ApiSuccess> {
+    return this.http
+    .put<ApiSuccess>(`/v1/employees/work-schedules`, payload)
     .pipe(shareReplay(1));
   }
 
   updateEmployeeActivation(employeeId: string, active: boolean): Observable<ApiSuccess> {
     return this.http
-    .put<ApiSuccess>(`/v1/Employees/${employeeId}/activation`, { active: active })
+    .put<ApiSuccess>(`/v1/employees/${employeeId}/activation`, { active: active })
     .pipe(shareReplay(1));
   }
 }

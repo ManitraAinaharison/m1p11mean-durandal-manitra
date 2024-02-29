@@ -13,10 +13,25 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EditEmployeeComponent } from './modals/edit-employee/edit-employee.component';
 import { TreeCheckboxComponent } from '../../../shared/components/tree-checkbox/tree-checkbox.component';
 import { TreeViewModule } from '@progress/kendo-angular-treeview';
+import { StatsComponent } from './pages/stats/stats.component';
+import { ProfitCalculationComponent } from './pages/profit-calculation/profit-calculation.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { AverageEmployeeWorkingHoursComponent } from './components/average-employee-working-hours/average-employee-working-hours.component';
+import { BookingLineChartComponent } from './components/booking-line-chart/booking-line-chart.component';
+import { SalesComponent } from './components/sales/sales.component';
+import { EmployeeProfileComponent } from './pages/employee-profile/employee-profile.component';
+import { EmployeeInformationsComponent } from './components/employee-informations/employee-informations.component';
+import { EmployeeSchedulesComponent } from './components/employee-schedules/employee-schedules.component';
+import { EmployeeSchedulesUpdateComponent } from './modals/employee-schedules-update/employee-schedules-update.component';
+import { EmployeeInformationsUpdateComponent } from './modals/employee-informations-update/employee-informations-update.component';
+import { employeeGuard } from '../../../core/guards/auth.guard';
 
 const managerRoutes: Routes = [
-  { path: 'employees', component: ListEmployeesComponent },
-  { path: 'services', component: ListServicesComponent }
+  { path: 'profile', component: EmployeeProfileComponent, canActivate: [employeeGuard]},
+  { path: 'employees', component: EmployeeCrudComponent },
+  { path: 'services', component: ServiceCrudComponent },
+  { path: 'statistiques', component: StatsComponent },
+  { path: 'calcul-des-benefices', component: ProfitCalculationComponent }
 ];
 
 @NgModule({
@@ -27,13 +42,24 @@ const managerRoutes: Routes = [
     ListServicesComponent,
     EditServiceComponent,
     EditEmployeeComponent,
-    TreeCheckboxComponent
+    TreeCheckboxComponent,
+    StatsComponent,
+    ProfitCalculationComponent,
+    AverageEmployeeWorkingHoursComponent,
+    BookingLineChartComponent,
+    SalesComponent,
+    EmployeeProfileComponent,
+    EmployeeInformationsComponent,
+    EmployeeSchedulesComponent,
+    EmployeeSchedulesUpdateComponent,
+    EmployeeInformationsUpdateComponent
   ],
   imports: [
     CommonModule,
     MatDialogModule,
     MatTreeModule,
     TreeViewModule,
+    NgApexchartsModule,
     NgxDropzoneModule,
     ReactiveFormsModule,
     RouterModule.forChild(managerRoutes)
