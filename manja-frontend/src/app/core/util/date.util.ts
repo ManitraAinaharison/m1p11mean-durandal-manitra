@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs/esm';
 import { DateInterval, DateIntervalDetails, EmployeeSchedule, PrimaryDateEmployeeSchedule } from '../models/appointment.model';
 
 function sum(values: number[]): number {

@@ -12,7 +12,7 @@ import { HttpClient } from '@angular/common/http';
 import { findEmployee } from './api-mock-data/employee.mockdata';
 import { Employee } from '../models/user.model';
 import { ApiResponse, ApiSuccess } from '../models/api.model';
-import { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs/esm';
 import { EmployeeSchedule, PrimaryDateEmployeeSchedule } from '../models/appointment.model';
 import { toEmployeeSchedule } from '../util/date.util';
 

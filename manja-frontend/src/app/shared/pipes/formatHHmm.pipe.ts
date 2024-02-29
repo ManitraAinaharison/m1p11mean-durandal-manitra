@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs/esm';
 import { formatHHmm } from '../../core/util/date.util';
 
 @Pipe({

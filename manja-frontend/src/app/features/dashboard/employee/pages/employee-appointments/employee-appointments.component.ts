@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, SimpleChanges, ViewChild } from '@angular/core';
 import { AppointmentService } from '../../../../../core/services/appointment.service';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs/esm';
 import {
   AppointmentDetails, DateIntervalDetails,
 } from '../../../../../core/models/appointment.model';

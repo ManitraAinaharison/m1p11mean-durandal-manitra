@@ -14,8 +14,9 @@ export class SalonService {
   constructor(private readonly http: HttpClient) {}
   getServices(): Observable<ApiResponse<ServiceModel[]>> {
     return this.http.get<ApiResponse<ServiceModel[]>>('/v1/services').pipe(
+      map((response)=>{console.log(response); return response}),
       tap({
-        next: (response) => this.setServiceList(response.payload),
+        next: (response) => {console.log(response);this.setServiceList(response.payload)},
         error: (e) => {
           console.log(e);
           throw Error('not implemented yet');

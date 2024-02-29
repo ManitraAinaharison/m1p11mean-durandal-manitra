@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs/esm";
 import { CalendarDate } from "../types/date.types";
 
 export function toCalendarDates(

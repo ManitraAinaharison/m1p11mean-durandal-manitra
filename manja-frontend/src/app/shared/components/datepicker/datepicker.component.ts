@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs/esm';
 import { MONTHS_FRENCH, WEEKDAYS } from '../../constants/constants';
 import { CalendarDate, Month } from '../../types/date.types';
 import { cleanHMSM, toCalendarDates } from '../../utils/date.util';
