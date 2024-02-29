@@ -1,4 +1,4 @@
-import { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs/esm';
 import { ServiceModel, SubServiceModel } from './salon-service.model';
 import { User } from './user.model';
 
