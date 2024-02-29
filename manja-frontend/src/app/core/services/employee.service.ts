@@ -10,7 +10,7 @@ import {
 } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { findEmployee } from './api-mock-data/employee.mockdata';
-import { Employee } from '../models/user.model';
+import { Employee, User } from '../models/user.model';
 import { ApiResponse, ApiSuccess } from '../models/api.model';
 import { Dayjs } from 'dayjs/esm';
 import { EmployeeSchedule, PrimaryDateEmployeeSchedule } from '../models/appointment.model';
@@ -21,6 +21,7 @@ import { toEmployeeSchedule } from '../util/date.util';
 })
 export class EmployeeService {
   private employeeList = new BehaviorSubject<Employee[] | null>(null);
+  private employeeSubServicesNames = new BehaviorSubject<string[] | null>(null);
 
   constructor(private readonly http: HttpClient) {}
   getEmployees(query?: {
@@ -120,5 +121,24 @@ export class EmployeeService {
     return this.http
     .put<ApiSuccess>(`/v1/employees/${employeeId}/activation`, { active: active })
     .pipe(shareReplay(1));
+  }
+
+  getEmployeeSubServiceNames(employee: User | Employee | null) : Observable<ApiResponse<string[]>>{
+    if(!employee || employee.role !== 'EMPLOYEE')
+      throw new Error('not implemented yet : insuffisent permission')
+    return this.http
+      .get<ApiResponse<string[]>>(
+        `/v1/employee/subservices`
+      )
+      .pipe(
+        tap({
+          next: (response) => {this.employeeSubServicesNames.next(response.payload)},
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet');
+          },
+        }),
+        shareReplay(1)
+      );
   }
 }

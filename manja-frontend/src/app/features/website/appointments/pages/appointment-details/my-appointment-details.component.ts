@@ -26,12 +26,12 @@ export class MyAppointmentDetailsComponent {
     this.route.paramMap.subscribe((params) => {
       let slug: string | null = params.get('appointmentId');
       this.appointmentSlug = slug;
-      console.log(this.appointmentSlug);
       if (slug === null) {
         this.appointmentNotFound = true;
       } else {
         this.appointmentService.getAppointment(slug).subscribe((response) => {
           this.appointment = response.payload;
+          console.log(this.appointment)
         });
       }
     });
@@ -43,7 +43,6 @@ export class MyAppointmentDetailsComponent {
 
   pay() {
     this.appointmentService.payAppointment().subscribe((response) => {
-      console.log('response');
       // afficher modal réussite
     });
   }

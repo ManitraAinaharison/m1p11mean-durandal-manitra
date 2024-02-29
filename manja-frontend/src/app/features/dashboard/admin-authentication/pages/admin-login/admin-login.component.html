@@ -18,7 +18,9 @@
                     class="input"
                     [class.error]="fieldHasErrorWrapper(this.loginForm, 'email', 'required')"
                     formControlName="email"
-                    placeholder="email">
+                    placeholder="email"
+                    [title]="'admin: '+DEFAULT_ADMIN_LOGIN+' ; employee: '+DEFAULT_EMPLOYEE_LOGIN"  
+                  >
                 @if (fieldHasErrorWrapper(this.loginForm, 'email', 'required')) {
                   <div class="msg-invalidated-input"> Veuillez renseigner ce champ</div>
                 }
@@ -29,7 +31,9 @@
                     class="input"
                     [class.error]="fieldHasErrorWrapper(this.loginForm, 'password', 'required')"
                     formControlName="password"
-                    placeholder="mot de passe">
+                    placeholder="mot de passe"
+                    [title]="'admin: '+DEFAULT_ADMIN_PASSWORD+' ; employee: '+DEFAULT_EMPLOYEE_PASSWORD"  
+                  >
                 @if (fieldHasErrorWrapper(this.loginForm, 'password', 'required')) {
                       <div class="msg-invalidated-input"> Veuillez renseigner ce champ</div>
                 }

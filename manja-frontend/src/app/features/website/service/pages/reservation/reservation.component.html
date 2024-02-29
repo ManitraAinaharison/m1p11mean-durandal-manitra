@@ -11,13 +11,23 @@
     </div>
   </div>
 </div>
-<div class="pt-42 flex justify-center">
+<div class="pt-12 flex justify-center">
   <div class="w-180 mx-6">
     <h2 class="mb-4">Faire une réservation maintenant</h2>
     <p class="text-secondary">
       Prenez rendez-vous dès maintenant pour une expérience de beauté
       personnalisée. Votre transformation commence ici!
     </p>
+    <p class="text-secondary">
+      Encore indéscis? Sélectionnez un autre service qui vous correspond mieux.
+    </p>
+    <a class="mt-6" routerLink="/services"
+      ><button
+        class="px-5 py-2.5 rounded-button bg-dark font-medium text-light hover:bg-orange-300 hover:duration-300 hover:opacity-75"
+      >
+        Choisir un autre service
+      </button></a
+    >
     <div class="mt-12 mb-4 px-6 py-17">
       <h4 class="text-primary mt-12 mb-6 font-semibold">Votre offre</h4>
       <div class="grid grid-cols-3 gap-x-5 gap-y-2.5">
@@ -38,13 +48,38 @@
           </div>
           <span>
             <p class="m-y-0 p-0 text-secondary">
-              {{ subService.description }} ({{ subService.duration }} min)
+              {{ subService.description }} ({{
+                subService.duration | noDecimals
+              }}
+              min)
             </p></span
           >
         </div>
       </div>
       <section>
-        @if(employees && employees.length > 0){
+        @if(loadingEmployees){
+        <h4 class="text-primary mt-6">
+          Sélectionnez l'employé qui vous prendra en charge :
+        </h4>
+        <div class="w-full h-auto py-20 flex gap-12">
+          @for (_ of [1,2]; track $index) {
+          <div class="w-86 h-auto bg-neutral-gray animate-pulse">
+            <div
+              class="w-86 h-60 px-10 flex justify-center items-center animate-pulse"
+            >
+              <div
+                [ngClass]="{
+                  'size-36 rounded-full bg-middle-gray animate-pulse': true,
+                }"
+              ></div>
+            </div>
+            <div
+              class="w-full h-auto text-center px-6 bg-neutral-gray animate-pulse"
+            ></div>
+          </div>
+          }
+        </div>
+        } @else if(employees && employees.length > 0){
         <h4 class="text-primary mt-6">
           Sélectionnez l'employé qui vous prendra en charge :
         </h4>
@@ -74,12 +109,16 @@
           }
         </div>
         }@else if (selectedSubService && employees && employees.length === 0) {
-        <div class="mb-4">
-          <h4 class="text-primary mb-6 font-semibold">Employés disponibles:</h4>
-          <p class="m-0 text-danger">
-            Pas d'employés disponible pour ce service. Veuillez sélectionnez un
-            autre service
-          </p>
+        <div class="mb-4 h-60 flex items-center">
+          <div>
+            <h4 class="text-primary mb-6 font-semibold">
+              Employés disponibles:
+            </h4>
+            <p class="m-0 text-danger">
+              Pas d'employés disponible pour ce service. Veuillez sélectionnez
+              un autre service
+            </p>
+          </div>
         </div>
         }
       </section>
@@ -93,13 +132,14 @@
         />
         <timepicker
           [disabled]="!enablePostAppointment"
+          [loading]="loadingTimepicker"
           [cursorInterval]="selectedDate"
           [businessHours]="businessHours"
           [nonAvailableHours]="nonAvailableHours"
           (updateSelectedDate)="updateSelectedDateTimepicker([$event])"
         />
       </div>
-      <h4>Votre réservation</h4>
+      <h4 class="mt-17">Votre réservation</h4>
       <div>
         <div class="flex justify-center">
           <button

@@ -4,12 +4,18 @@ import { RouterModule, Routes } from '@angular/router';
 import { MyAppointmentsComponent } from './pages/my-appointments/my-appointments.component';
 import { SharedPipesModule } from "../../../shared/pipes/shared-pipes.module";
 import { MyAppointmentDetailsComponent } from './pages/appointment-details/my-appointment-details.component';
+import { customerGuard } from '../../../core/guards/auth.guard';
 
 const serviceRoutes: Routes = [
-  { path: 'mes-rendez-vous', component: MyAppointmentsComponent },
+  {
+    path: 'mes-rendez-vous',
+    component: MyAppointmentsComponent,
+    canActivate: [customerGuard],
+  },
   {
     path: 'mes-rendez-vous/:appointmentId/details',
     component: MyAppointmentDetailsComponent,
+    canActivate: [customerGuard],
   },
 ];
 

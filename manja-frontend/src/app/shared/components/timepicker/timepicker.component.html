@@ -4,16 +4,18 @@
   De
   <input
     type="time"
-    [valueAsDate]="cursorInterval.start.toDate()"
-    [min]="cursorInterval.start.format('HH:mm:ss')"
-    [max]="cursorInterval.end.format('HH:mm:ss')"
+    [valueAsDate]="
+      cursorInterval.start.add(3, 'hour').second(0).millisecond(0).toDate()
+    "
+    readonly
   />
   {{ " à " }}
   <input
     type="time"
-    [valueAsDate]="cursorInterval.end.toDate()"
-    [min]="cursorInterval.start.format('HH:mm:ss')"
-    [max]="cursorInterval.end.format('HH:mm:ss')"
+    [valueAsDate]="
+      cursorInterval.end.add(3, 'hour').second(0).millisecond(0).toDate()
+    "
+    readonly
   />
 </div>
 } @if (businessHours && cursorInterval && !disabled) {
@@ -34,11 +36,11 @@
     <p class="absolute top-[calc(100%_-_15px)] m-0 p-0">-- end --</p>
   </div> -->
   <div>
-    <div class="w-50 h-full relative bg-slate-500">
+    <div class="w-50 h-full relative bg-middle-gray">
       <!-- <p class="absolute top-[calc(0%_-_15px)] m-0 p-0">-- start --</p> -->
       @for (nonAvailableHour of nonAvailableHours; track $index) {
       <div
-        class="w-full absolute m-0 p-0 bg-black"
+        class="w-full absolute m-0 p-0 bg-slate-900"
         [style.top]="'calc(' + nonAvailableHour.percentageStart + '%)'"
         [style.height]="nonAvailableHour.dailyPercentage + '%'"
       ></div>
@@ -47,7 +49,7 @@
         #timepickerCursor
         id="timepickerCursor"
         [ngClass]="{
-          'w-full absolute m-0 p-0 bg-blue-600': true,
+          'w-full absolute m-0 p-0 bg-blue-200': true,
           'bg-red-300': isOverlappingNonAvailableHours() || isPastCurrentDate()
         }"
         [style.height]="cursorInterval.dailyPercentage + '%'"
@@ -59,7 +61,7 @@
         cdkDrag
       ></div>
     </div>
-    <div class="text-danger">
+    <div class="text-danger pt-17">
       <ul>
         @if (isCurrentTimeAfterClosingHour()) {
         <li>
@@ -76,6 +78,19 @@
       </ul>
     </div>
   </div>
+</div>
+<div class="flex relative gap-3">
+  <div
+    [ngClass]="{
+      'relative top-2 size-3 round-full  bg-blue-200': true,
+      'bg-red-300': isOverlappingNonAvailableHours() || isPastCurrentDate()
+    }"
+  ></div>
+  <div>Votre horaire</div>
+</div>
+}@else if(loading) {
+<div class="w-80 h-80 bg-neutral-gray select-none">
+  <div class="h-full w-40 bg-middle-gray animate-pulse"></div>
 </div>
 }@else {
 <div

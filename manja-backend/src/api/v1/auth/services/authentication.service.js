@@ -54,7 +54,8 @@ module.exports.login = async function login(req, roles) {
             throw apiUtil.ErrorWithStatusCode("Email ou mot de passe invalide", 401);
 
         if (user.role == ROLES.EMPLOYEE) {
-            user = await Employee.findById(user.id).populate('subServices');
+            // user = await Employee.findById(user.id).populate('subServices');
+            // user = await Employee.findById(user.id);
         }
         const { accessToken, refreshToken } = await securityUtil.generateTokens(user);
         const { password: pwd, __t, __v, _id, ...newUser } = user._doc;

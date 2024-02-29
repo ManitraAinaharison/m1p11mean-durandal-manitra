@@ -287,7 +287,7 @@ export class AppointmentService {
       .pipe(
         map((response): ApiResponse<GetAppointment> => {
           const duration = response.payload.duration / 60;
-          const appointmentDate = dayjs(duration);
+          const appointmentDate = dayjs(response.payload.appointmentDate);
           return {
             ...response,
             payload: {
@@ -367,6 +367,62 @@ export class AppointmentService {
     return this.http
       .put<ApiResponse<PutAppointmentResponse>>(
         `/v1/appointments/${appointment._id}/done`,
+        {}
+      )
+      .pipe(
+        map((response): ApiResponse<PutAppointment> => {
+          const duration = response.payload.duration / 60;
+          const appointmentDate = dayjs(duration);
+          return {
+            ...response,
+            payload: {
+              ...response.payload,
+              duration,
+              appointmentDate,
+            },
+          };
+        }),
+        tap({
+          next: (response) => {
+            if (this.appointmentList.value) {
+              this.appointmentList.next(
+                this.appointmentList.value.map((appointmentDetail) => ({
+                  ...appointmentDetail,
+                  status:
+                    appointmentDetail._id === response.payload._id
+                      ? response.payload.status
+                      : appointmentDetail.status,
+                }))
+              );
+            }
+          },
+          error: (e) => {
+            console.log(e);
+            throw Error('not implemented yet : api error');
+          },
+        }),
+        shareReplay(1)
+      );
+  }
+  cancelAppointment(
+    appointment: AppointmentDetails
+  ): Observable<ApiResponse<PutAppointment>> {
+    if (!appointment) {
+      throw new Error(
+        "Impossibilité de mettre à jour le status à 'annulé'. !AppointmentDetails"
+      );
+    } else if (appointment.status === 3) {
+      throw new Error(
+        'Ce rendez-vous a déja été effectué. Vous ne pouvez plus annuler ce rendez-vous'
+      );
+    } else if (!this.appointmentList.value || !this.appointmentList.value.some((el)=>el._id === appointment._id)) {
+      throw new Error(
+        "Can't update an appointment that is not in the appointments' list"
+      );
+    }
+    return this.http
+      .put<ApiResponse<PutAppointmentResponse>>(
+        `/v1/appointments/${appointment._id}/cancel`,
         {}
       )
       .pipe(

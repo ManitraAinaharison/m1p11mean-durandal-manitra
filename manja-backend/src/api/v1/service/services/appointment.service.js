@@ -327,6 +327,43 @@ module.exports.validateAppointmentDone = async (employeeId, appointmentId) => {
   }
 };
 
+module.exports.cancelAppointment = async (employeeId, appointmentId) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    let appointment = await Appointment.findOne(
+      { _id: appointmentId, employee: employeeId },
+      "-commission -__v"
+    )
+      .populate({ path: "employee", select: "firstname lastname -_id -role" })
+      .populate({
+        path: "subService",
+        select: "-_id -ptgCommission -price -duration -description",
+      });
+    if (!appointment) throw new Error("Can't find appointment");
+    if (!appointment.subService) throw new Error("!appointment.subService");
+    const APPOINTMENT_STATUS = 4;
+    appointment.status = APPOINTMENT_STATUS;
+    appointment.payment = {
+      paymentDate: new Date(),
+      amount: appointment.subService.price,
+    };
+    appointment.statusHistory = [
+      ...appointment.statusHistory,
+      { status: APPOINTMENT_STATUS, statusDate: new Date() },
+    ];
+    appointment = await appointment.save({ session });
+    await session.commitTransaction();
+    return appointment;
+  } catch (e) {
+    console.log(e, e.statusCode, e.message);
+    await session.abortTransaction();
+    throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
+  } finally {
+    await session.endSession();
+  }
+};
+
 /**
  * returns the appointments assigned to this employee
  * @augments referenceDateString : {string} the current date that indicates the month and year of the appointments that needs to be found in YYYY-MM-DD format

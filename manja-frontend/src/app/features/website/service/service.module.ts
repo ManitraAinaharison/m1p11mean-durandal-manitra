@@ -2,7 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { authGuard } from '../../../core/guards/auth.guard';
+import { authGuard, customerGuard } from '../../../core/guards/auth.guard';
 import { DatePickerComponent } from '../../../shared/components/datepicker/datepicker.component';
 import { ServiceCardComponent } from '../../../shared/components/service-card/service-card.component';
 import { TimepickerComponent } from '../../../shared/components/timepicker/timepicker.component';
@@ -11,6 +11,7 @@ import { ListServicesComponent } from './pages/list-services/list-services.compo
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { SharedDatePickerModule } from '../../../shared/shared-datepicker.module';
 import { SharedPipesModule } from '../../../shared/pipes/shared-pipes.module';
+import { ServiceCardLoadingComponent } from '../../../shared/components/service-card-loading/service-card-loading.component';
 
 const serviceRoutes: Routes = [
   { path: 'services', component: ListServicesComponent },
@@ -21,7 +22,7 @@ const serviceRoutes: Routes = [
   {
     path: 'services/:sub-service-slug/reservation',
     component: ReservationComponent,
-    canActivate: [authGuard],
+    canActivate: [customerGuard],
   },
 ];
 
@@ -30,6 +31,7 @@ const serviceRoutes: Routes = [
     ListServicesComponent,
     DetailsServiceComponent,
     ServiceCardComponent,
+    ServiceCardLoadingComponent,
     ReservationComponent,
     TimepickerComponent,
   ],

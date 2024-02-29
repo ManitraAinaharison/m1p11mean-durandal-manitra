@@ -104,6 +104,24 @@ router.put("/appointments/:appointmentId/done", authMiddleware.authorise([ROLES.
     }
 });
 
+router.put("/appointments/:appointmentId/cancel", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
+    try {
+        const appointmentId = req.params.appointmentId;
+        const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        const employeeId = decodedRefreshToken._id;
+        const appointment = await appointmentService.cancelAppointment(
+          employeeId,
+          appointmentId
+        );
+        const responseBody = apiUtil.successResponse(true, appointment);
+        res.status(201).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
 router.get("/appointments", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
     try {
         const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);

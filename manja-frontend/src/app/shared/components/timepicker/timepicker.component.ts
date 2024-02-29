@@ -32,6 +32,7 @@ export class TimepickerComponent {
   @Input({ required: true }) cursorInterval: DateIntervalDetails | null = null; // selectedDate
   @Input() disabled: boolean = false; // selectedDate
   @Input() errorMessage: string | null = null;
+  @Input() loading: boolean = false;
 
   @Output() updateSelectedDate = new EventEmitter<Dayjs>();
 

@@ -79,14 +79,19 @@ module.exports.updateEmployeeWorkSchedules = async (employeeId, data) => {
     try {
         let employee = await Employee.findById(employeeId);
         if (!employee) throw apiUtil.ErrorWithStatusCode("Cet employé n'existe pas", 404);
+
+        let dateStart = new Date("1970-01-01T" + data.start);
+        let dateEnd = new Date("1970-01-01T" + data.end);
+        dateStart.setHours(dateStart.getHours()+3);
+        dateEnd.setHours(dateStart.getHours()+3);
         
         const currWorkSchedule = employee.workSchedule.findIndex(workSchedule => workSchedule.day == data.day);
         if(currWorkSchedule >= 0) {
             await Employee.updateOne(
-                { _id: employeeId, 'workSchedules.day': 1 }, 
+                { _id: employeeId, 'workSchedule.day': currWorkSchedule }, 
                 { $set: { 
-                    'workSchedules.$.schedule.0.start': new Date('1970-01-01T' + data.start),
-                    'workSchedules.$.schedule.0.end': new Date('1970-01-01T' + data.end)
+                    'workSchedule.$.schedule.0.start': dateStart,
+                    'workSchedule.$.schedule.0.end': dateEnd
                 }
             });
         } else {
@@ -94,8 +99,8 @@ module.exports.updateEmployeeWorkSchedules = async (employeeId, data) => {
                 day: data.day, 
                 schedule: [
                     {
-                        start: new Date('1970-01-01T' + data.start),
-                        end: new Date('1970-01-01T' + data.end)
+                        start: dateStart,
+                        end: dateEnd
                     }
                 ]
             };
@@ -103,9 +108,11 @@ module.exports.updateEmployeeWorkSchedules = async (employeeId, data) => {
                 { _id: employeeId },
                 { $push: { workSchedule: newSchedule } }
             );
+            console.log("option 2: ", currWorkSchedule, data.start, data.end);
         }
         
-        return await Employee.findById(employee._id, '-__v').populate('subServices');
+        return await Employee.findById(employee._id, '-__v')
+        // .populate('subServices');
     } catch (e) {
         console.log(e);
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
@@ -165,3 +172,18 @@ module.exports.getSchedulesOfEmployeeByGivenDate = async (employeeId, dateStr) =
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
     }
 };
+
+module.exports.getEmployeeSubServicesNames = async (employeeId) => {
+    try {
+        const employee = await Employee.findById(employeeId).populate(
+          "subServices", "name"
+        );
+        if (!employee) throw apiUtil.ErrorWithStatus("Cet employé n'existe pas");
+        if (!employee.subServices) throw apiUtil.ErrorWithStatus("Pas de sous services pour cet employé");
+        const subServicesNames = employee.subServices.map((subService)=>(subService.name));
+        return {employee : {...employee._doc, subServices: undefined}, subServicesNames};
+    } catch (e) {
+        console.log(e);
+        throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
+    }
+}

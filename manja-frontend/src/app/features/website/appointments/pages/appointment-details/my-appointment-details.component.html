@@ -21,6 +21,7 @@
                 appointment.employee.lastname
               "
               class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+              readonly
             />
           </div>
           <div class="grid grid-cols-1">
@@ -28,6 +29,7 @@
             <input
               [value]="appointment.price + ' $'"
               class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+              readonly
             />
           </div>
           <div class="">
@@ -35,6 +37,7 @@
             <input
               [value]="appointment.appointmentDate | longDate"
               class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+              readonly
             />
           </div>
           <div class="">
@@ -42,6 +45,7 @@
             <input
               [value]="appointment.status | appointmentStatus"
               class="mt-2 py-2 px-6 rounded-button bg-middle-gray select-none"
+              readonly
             />
           </div>
         </div>
@@ -54,7 +58,7 @@
             }"
           >Effectuer le paiement</button
           >}
-          <a href="/mes-rendez-vous">
+          <a routerLink="/mes-rendez-vous">
             <button
               [ngClass]="{
                 'px-5 py-2.5 rounded-button bg-dark font-medium text-light hover:bg-orange-300 hover:duration-300 hover:opacity-75': true,

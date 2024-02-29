@@ -11,7 +11,7 @@ export class AppointmentStatusPipe implements PipeTransform {
       case 1:
         return 'Payé';
       case 2:
-        return 'Liste d\'attente';
+        return "Liste d'attente";
       case 3:
         return 'Terminé';
       case 4:

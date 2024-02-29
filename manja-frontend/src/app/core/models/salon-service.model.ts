@@ -18,3 +18,5 @@ export interface SubServiceModel {
   promotions?: [{}];
   history?: [];
 }
+
+export interface ServiceMinimalData extends Pick<ServiceModel, 'slug' | 'name'>{}

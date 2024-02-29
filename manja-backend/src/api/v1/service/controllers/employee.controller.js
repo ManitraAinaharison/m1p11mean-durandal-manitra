@@ -132,4 +132,24 @@ router.get("/employees/:employeeId/schedules", async (req, res) => {
     }
 });
 
+router.get("/employee/subservices",/* authMiddleware.authorise([ROLES.EMPLOYEE]),*/ async (req, res) => {
+    try {
+        let decodedRefreshToken;
+        if (req.cookies.refreshToken) {
+            decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        }
+
+        const {employee, subServicesNames} = await employeeService.getEmployeeSubServicesNames(decodedRefreshToken._id, req.body);
+        console.log(employee)
+        const { accessToken, refreshToken } = await securityUtil.generateTokens(employee);
+        await authHelper.addTokenCookies(res, { accessToken, refreshToken });
+        const responseBody = apiUtil.successResponse(true, subServicesNames);
+        res.status(200).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
 module.exports = router;

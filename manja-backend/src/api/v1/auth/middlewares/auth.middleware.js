@@ -8,7 +8,7 @@ module.exports.authorise = function authorise(permittedRoles) {
 			let refreshToken = req.cookies.refreshToken;
 
 			helperUtil.removeTokenCookies(res);
-
+			console.log(accessToken, refreshToken);
 			if ((!accessToken && !refreshToken) || (accessToken && !refreshToken)) {
 				return res.status(403).json({
 					message: "" // Token manquant.

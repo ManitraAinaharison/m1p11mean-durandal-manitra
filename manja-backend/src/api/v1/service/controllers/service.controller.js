@@ -15,11 +15,24 @@ router.get("/services", async (req, res) => {
             const decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
             if (decodedRefreshToken.role == ROLES.MANAGER) isManager = true;
         }
-
-        const listServices = await serviceService.getListServices(isManager);
+        const minimalDataOnly = req.query.minimalData;
+        const listServices = await serviceService.getListServices(isManager, minimalDataOnly);
         const responseBody = apiUtil.successResponse(true, listServices);
         res.status(200).json(responseBody);
     } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+});
+
+router.get("/services/slugs", async (req, res) => {
+    try {
+        const listServicesSlugs = await serviceService.getServicesSlugs();
+        const responseBody = apiUtil.successResponse(true, listServicesSlugs);
+        res.status(200).json(responseBody);
+    } catch (e) {
+        console.log(e)
         res.status(500).json({
             message: e.message
         });

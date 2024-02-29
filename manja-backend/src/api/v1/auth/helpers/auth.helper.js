@@ -1,6 +1,6 @@
 const securityUtil = require("../../../../util/security.util");
 
-function addTokenCookies(
+async function addTokenCookies(
   response,
   { accessToken, refreshToken }
 ) {

@@ -20,18 +20,13 @@
                                         alt="Chevron"
                                         class="dropdown-arrow">
                                 </div>
-                                <nav class="dropdown-navbar-container dropdown-list">
-                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Makeup</a>
-                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Coiffure</a>
-                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Épilation</a>
-                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Massages</a>
-                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Ongles</a>
-                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Soins du visage</a>
-                                </nav>
+                                @if(servicesMinimal){<nav class="dropdown-navbar-container dropdown-list">
+                                    @for(serviceMinimal of servicesMinimal; track $index){<a [routerLink]="'services/'+serviceMinimal.slug" class="dropdown-nav-link inner dropdown-link">{{serviceMinimal.name}}</a>}
+                                </nav>}
                             </div>
                         </li>
                         <li class="nav-item-wrapper">
-                            <a routerLink="/a-propos" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">À propos</a>
+                            <a routerLink="/mes-rendez-vous" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Mes rendez-vous</a>
                         </li>
                         <li class="nav-item-wrapper">
                             <div class="block relative text-left mx-auto z-50">
@@ -45,7 +40,7 @@
                                 </div>
                                 <nav class="dropdown-navbar-container dropdown-list">
                                     <a routerLink="/services" class="dropdown-nav-link inner dropdown-link">Nos Services</a>
-                                    <a routerLink="" class="dropdown-nav-link inner dropdown-link">Promotions</a>
+                                    <a routerLink="/dashboard/login" class="dropdown-nav-link inner dropdown-link">Dashboard</a>
                                     <a routerLink="" class="dropdown-nav-link inner dropdown-link">Adresse</a>
                                 </nav>
                             </div>

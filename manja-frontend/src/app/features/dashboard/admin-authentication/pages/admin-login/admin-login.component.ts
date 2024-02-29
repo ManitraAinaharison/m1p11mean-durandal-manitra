@@ -18,9 +18,14 @@ interface LoginForm {
 @Component({
   selector: 'app-admin-login',
   templateUrl: './admin-login.component.html',
-  styleUrl: './admin-login.component.css'
+  styleUrl: './admin-login.component.css',
 })
 export class AdminLoginComponent {
+  DEFAULT_ADMIN_LOGIN = 'admin@yopmail.com';
+  DEFAULT_ADMIN_PASSWORD = 'password';
+
+  DEFAULT_EMPLOYEE_LOGIN = 'employee@yopmail.com';
+  DEFAULT_EMPLOYEE_PASSWORD = 'password';
 
   loginForm!: FormGroup<LoginForm>;
   loginFormSubmitIsLoading: boolean = false;
@@ -31,7 +36,7 @@ export class AdminLoginComponent {
     private fb: FormBuilder,
     private router: Router,
     public userService: UserService,
-    public pageLoaderService: PageLoaderService,
+    public pageLoaderService: PageLoaderService
   ) {}
 
   ngOnInit(): void {
@@ -39,55 +44,70 @@ export class AdminLoginComponent {
   }
 
   initLoginForm(): void {
-      this.loginForm = this.fb.group<LoginForm>({
-          email: new FormControl("", {
-              validators: [Validators.required],
-              nonNullable: true
-          }),
-          password: new FormControl("", {
-              validators: [Validators.required],
-              nonNullable: true
-          })
-      });
+    this.loginForm = this.fb.group<LoginForm>({
+      email: new FormControl(this.DEFAULT_EMPLOYEE_LOGIN, {
+        validators: [Validators.required],
+        nonNullable: true,
+      }),
+      password: new FormControl(this.DEFAULT_EMPLOYEE_PASSWORD, {
+        validators: [Validators.required],
+        nonNullable: true,
+      }),
+    });
   }
 
   defineLoginPayload(): Credentials {
-      return {
-          email: this.loginForm.value.email ?? '',
-          password: this.loginForm.value.password ?? '',
-      };
+    return {
+      email: this.loginForm.value.email ?? '',
+      password: this.loginForm.value.password ?? '',
+    };
   }
 
   submitLoginForm(): void {
-      this.userService.errorMessage = "";
-      this.loginFormSubmitIsLoading = true;
-      markFormGroupTouched(this.loginForm);
+    this.userService.errorMessage = '';
+    this.loginFormSubmitIsLoading = true;
+    markFormGroupTouched(this.loginForm);
 
-      if(this.loginForm.valid) {
+    if (this.loginForm.valid) {
+      const loginPayload: Credentials = this.defineLoginPayload();
 
-          const loginPayload: Credentials = this.defineLoginPayload();
+      this.userService
+        .adminLogin(loginPayload)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (response) => {
+            this.loginFormSubmitIsLoading = false;
+            let nextPage = '/dashboard'
 
-          this.userService
-          .adminLogin(loginPayload)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-              next: () => {
-                  this.loginFormSubmitIsLoading = false;
-                  const nextPage = this.userService.targetUrl === "" ? "/dashboard/" : "/dashboard/" + this.userService.targetUrl
-                  this.router.navigate([nextPage]);
-              },
-              error: (err: ApiError) => {
-                  this.userService.errorMessage = err.message;
-                  this.loginFormSubmitIsLoading = false;
+            if (this.userService.targetUrl === ''){
+              if (response.payload.role === 'EMPLOYEE') {
+                nextPage += '/profile';
+              } else if (response.payload.role === 'MANAGER') {
+                nextPage += '/employees';
               }
-          });
-      } else {
-          this.loginFormSubmitIsLoading = false;
-      }
+            }else{
+              nextPage += '/';
+              nextPage += this.userService.targetUrl !== 'dashboard' ? this.userService.targetUrl : '';
+              console.log(nextPage)
+            }
 
+            this.router.navigate([nextPage]);
+          },
+          error: (err: ApiError) => {
+            this.userService.errorMessage = err.message;
+            this.loginFormSubmitIsLoading = false;
+          },
+        });
+    } else {
+      this.loginFormSubmitIsLoading = false;
+    }
   }
 
-  fieldHasErrorWrapper(form: FormGroup, formControlName: string, validatorName: string): boolean {
-      return fieldHasError(form, formControlName, validatorName);
+  fieldHasErrorWrapper(
+    form: FormGroup,
+    formControlName: string,
+    validatorName: string
+  ): boolean {
+    return fieldHasError(form, formControlName, validatorName);
   }
 }

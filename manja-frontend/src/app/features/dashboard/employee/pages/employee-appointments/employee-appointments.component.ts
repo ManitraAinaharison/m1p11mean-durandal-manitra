@@ -75,6 +75,15 @@ export class EmployeeAppointmentsComponent {
     });
   }
 
+  cancelAppointment(appointment: AppointmentDetails) {
+    this.setLoading(true)
+    this.showTooltip(null);
+    this.appointmentService.cancelAppointment(appointment)
+    .subscribe(()=>{
+      this.setLoading(false);
+    });
+  }
+
   // styles
   /**
    * returns -1 if the appointmentArrayRef is undefined

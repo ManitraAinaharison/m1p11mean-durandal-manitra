@@ -12,7 +12,7 @@ import { cleanHMSM, toCalendarDates } from '../../utils/date.util';
 export class DatePickerComponent {
   weeksNumber: number = 6;
   dateRange: CalendarDate[] = [];
-  openDays: number[] = [0, 1, 2, 3, 4];
+  openDays: number[] = [0, 1, 2, 3, 4, 5, 6];
   weekDays = WEEKDAYS;
   @Input({ required: true }) referenceDate: Dayjs = dayjs();
   @Input({ required: true }) selectedDates: CalendarDate[] = [];

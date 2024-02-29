@@ -5,6 +5,9 @@ const authenticationService = require("../services/authentication.service");
 const authHelper = require("../helpers/auth.helper");
 const { ROLES } = require("../schemas/user.schema");
 
+const securityUtil = require("../../../../util/security.util");
+
+
 router.post("/register", async (req, res) => {
     try {
         const { accessToken, refreshToken, responseBody } = await authenticationService.register(req);

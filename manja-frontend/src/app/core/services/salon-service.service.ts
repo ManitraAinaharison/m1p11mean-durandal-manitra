@@ -1,22 +1,27 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, shareReplay, tap, of, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { ServiceModel } from '../models/salon-service.model';
+import { ServiceMinimalData, ServiceModel } from '../models/salon-service.model';
 import { ApiResponse, ApiSuccess } from '../models/api.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SalonService {
+  private servicesMinimal = new BehaviorSubject<ServiceMinimalData[] | null>(null);
   private serviceList = new BehaviorSubject<ServiceModel[] | null>(null);
   private selectedService = new BehaviorSubject<ServiceModel | null>(null);
 
   constructor(private readonly http: HttpClient) {}
   getServices(): Observable<ApiResponse<ServiceModel[]>> {
     return this.http.get<ApiResponse<ServiceModel[]>>('/v1/services').pipe(
-      map((response)=>{console.log(response); return response}),
+      map((response) => {
+        return response;
+      }),
       tap({
-        next: (response) => {console.log(response);this.setServiceList(response.payload)},
+        next: (response) => {
+          this.setServiceList(response.payload);
+        },
         error: (e) => {
           console.log(e);
           throw Error('not implemented yet');
@@ -62,29 +67,46 @@ export class SalonService {
 
   addNewService(payload: FormData): Observable<ApiSuccess> {
     return this.http
-    .post<ApiSuccess>('/v1/services', payload)
-    .pipe(shareReplay(1));
+      .post<ApiSuccess>('/v1/services', payload)
+      .pipe(shareReplay(1));
   }
 
-  updateService(slugService: string, payload: FormData): Observable<ApiSuccess> {
+  updateService(
+    slugService: string,
+    payload: FormData
+  ): Observable<ApiSuccess> {
     return this.http
-    .put<ApiSuccess>(`/v1/services/${slugService}`, payload)
-    .pipe(shareReplay(1));
+      .put<ApiSuccess>(`/v1/services/${slugService}`, payload)
+      .pipe(shareReplay(1));
   }
 
   deleteService(slugService: string): Observable<ApiSuccess> {
     return this.http
-    .delete<ApiSuccess>(`/v1/services/${slugService}`)
-    .pipe(shareReplay(1));
+      .delete<ApiSuccess>(`/v1/services/${slugService}`)
+      .pipe(shareReplay(1));
   }
 
   getImageFile(imgName: string): Observable<File> {
-    return this.http
-      .get('/images/' + imgName, { responseType: 'blob' })
-      .pipe(
-        map((blob) => {
-          return new File([blob], 'service-img', { type: blob.type });
-        })
-      );
+    return this.http.get('/images/' + imgName, { responseType: 'blob' }).pipe(
+      map((blob) => {
+        return new File([blob], 'service-img', { type: blob.type });
+      })
+    );
+  }
+
+  getServicesMinimal(): Observable<ApiResponse<ServiceMinimalData[] | null>> {
+    return this.http.get<ApiResponse<ServiceMinimalData[] | null>>(`/v1/services?minimalData=true`).pipe(
+      tap({
+        next: (response) => {
+          this.servicesMinimal.next(response.payload);
+        },
+        error: (e) => {
+          this.servicesMinimal.next(null);
+          console.log(e);
+          throw Error('not implemented yet : api error');
+        },
+      }),
+      shareReplay(1)
+    );
   }
 }

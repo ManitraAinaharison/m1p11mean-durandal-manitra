@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { EmployeeInformationsUpdateComponent } from '../../modals/employee-informations-update/employee-informations-update.component';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from '../../../../../../environments/environment';
+import { EmployeeService } from '../../../../../core/services/employee.service';
 
 @Component({
     selector: 'app-employee-informations',
@@ -16,13 +17,16 @@ export class EmployeeInformationsComponent implements OnInit {
 
     constructor(
         private dialog: MatDialog,
-        public userService: UserService
+        public userService: UserService,
+        private employeeService : EmployeeService
     ) {}
     ngOnInit(): void {
         this.userService.currentUser.subscribe((user) => {
-            console.log(user);
             this.profileImg = environment.baseUrl + '/images/' + user!.imgPath;
             this.empSubServices = user!.subServices!.map((subService) => subService.name);
+            this.employeeService.getEmployeeSubServiceNames(user).subscribe((response)=>{
+                this.empSubServices = response.payload
+            })
         })
     }
 

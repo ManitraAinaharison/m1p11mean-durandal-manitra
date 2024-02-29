@@ -3,6 +3,8 @@ import { AfterViewInit, Component, DestroyRef, ElementRef, HostListener, OnChang
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserService } from '../../../services/user.service';
 import { PageLoaderService } from '../../../../shared/services/page-loader.service';
+import { SalonService } from '../../../services/salon-service.service';
+import { ServiceMinimalData } from '../../../models/salon-service.model';
 
 @Component({
     selector: 'app-website-navbar',
@@ -13,6 +15,7 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
 
     logoUrl: string = 'assets/img/logo.svg';
     dropdownToggles: HTMLElement[]  = [];
+    servicesMinimal: ServiceMinimalData[] | null = null;
 
     destroyRef = inject(DestroyRef);
 
@@ -20,11 +23,15 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
         private elementRef: ElementRef,
         private renderer: Renderer2,
         public userService: UserService,
+        private salonService : SalonService,
         private pageLoaderService: PageLoaderService
     ) {}
 
     ngOnInit(): void {
       this.dropdownToggles = this.elementRef.nativeElement.querySelectorAll('.dropdown-toggle');
+      this.salonService.getServicesMinimal().subscribe((response) => {
+        this.servicesMinimal = response.payload;
+      });
     }
 
     ngAfterViewInit() {
@@ -52,7 +59,7 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
     }
 
     openDropdown(event: MouseEvent) {
-        const targetDropdownToggle: HTMLElement = event.currentTarget as HTMLElement;
+        if(this.servicesMinimal){const targetDropdownToggle: HTMLElement = event.currentTarget as HTMLElement;
         this.dropdownToggles.forEach((dropdownToggle: HTMLElement) => {
             if (dropdownToggle === targetDropdownToggle) {
                 if(targetDropdownToggle!.nextElementSibling!.classList.contains('active')) {
@@ -66,7 +73,7 @@ export class WebsiteNavbarComponent implements OnInit, AfterViewInit {
                 this.renderer.removeClass(dropdownToggle!.nextElementSibling!, 'active');
                 this.renderer.removeClass(dropdownToggle.children[1], 'active');
             }
-        });
+        });}
     }
 
     updateDropdownTogglesWhenUserChanges() {

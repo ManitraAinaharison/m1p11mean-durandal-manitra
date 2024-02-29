@@ -33,13 +33,13 @@ module.exports.services = services = [
         slug: "teinture-de-cheuveux",
       },
       {
-        name: "Cheveux décolorés",
+        name: "Décoloration",
         price: 20,
         duration: 3600,
         description:
           "Optez pour une décoloration maîtrisée pour un look audacieux et moderne.",
         ptgCommission: 20,
-        slug: "cheuveux-decolores",
+        slug: "decoloration",
       },
       {
         name: "Shampoing et mise en plis",
