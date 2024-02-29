@@ -1,4 +1,5 @@
 const apiUtil = require("../../../../util/api.util");
+const securityUtil = require("../../../../util/security.util");
 const { Employee } = require("../../auth/schemas/user.schema");
 const employeeHelper = require("../helpers/employee.helper");
 const appointmentHelper = require("../helpers/appointment.helper");
@@ -50,6 +51,61 @@ module.exports.updateEmployee = async (employeeId, employeeData, fileName) => {
         );
         
         return await Employee.findById(employee._id, '-__v');
+    } catch (e) {
+        console.log(e);
+        throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
+    }
+}
+
+module.exports.updateEmployeeItSelf = async (employeeId, employeeData, fileName) => {
+    try {
+        let employee = await Employee.findById(employeeId);
+        if (!employee) throw apiUtil.ErrorWithStatusCode("Cet employé n'existe pas", 404);
+        if (fileName) employeeData.imgPath = fileName;
+        if (employeeData.password) employeeData.password = securityUtil.hash(employeeData.password);
+        await Employee.updateOne(
+            { _id: employee._id },
+            { $set: employeeData }
+        );
+        
+        return await Employee.findById(employee._id, '-__v').populate('subServices');
+    } catch (e) {
+        console.log(e);
+        throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);
+    }
+}
+
+module.exports.updateEmployeeWorkSchedules = async (employeeId, data) => {
+    try {
+        let employee = await Employee.findById(employeeId);
+        if (!employee) throw apiUtil.ErrorWithStatusCode("Cet employé n'existe pas", 404);
+        
+        const currWorkSchedule = employee.workSchedule.findIndex(workSchedule => workSchedule.day == data.day);
+        if(currWorkSchedule >= 0) {
+            await Employee.updateOne(
+                { _id: employeeId, 'workSchedules.day': 1 }, 
+                { $set: { 
+                    'workSchedules.$.schedule.0.start': new Date('1970-01-01T' + data.start),
+                    'workSchedules.$.schedule.0.end': new Date('1970-01-01T' + data.end)
+                }
+            });
+        } else {
+            const newSchedule = {
+                day: data.day, 
+                schedule: [
+                    {
+                        start: new Date('1970-01-01T' + data.start),
+                        end: new Date('1970-01-01T' + data.end)
+                    }
+                ]
+            };
+            await Employee.updateOne(
+                { _id: employeeId },
+                { $push: { workSchedule: newSchedule } }
+            );
+        }
+        
+        return await Employee.findById(employee._id, '-__v').populate('subServices');
     } catch (e) {
         console.log(e);
         throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode);

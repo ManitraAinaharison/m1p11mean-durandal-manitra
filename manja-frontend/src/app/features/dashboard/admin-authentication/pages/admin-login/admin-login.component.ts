@@ -73,7 +73,7 @@ export class AdminLoginComponent {
           .subscribe({
               next: () => {
                   this.loginFormSubmitIsLoading = false;
-                  const nextPage = this.userService.targetUrl === "" ? "/dashboard/" : this.userService.targetUrl
+                  const nextPage = this.userService.targetUrl === "" ? "/dashboard/" : "/dashboard/" + this.userService.targetUrl
                   this.router.navigate([nextPage]);
               },
               error: (err: ApiError) => {

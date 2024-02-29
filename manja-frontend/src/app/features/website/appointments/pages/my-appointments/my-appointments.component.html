@@ -1,7 +1,14 @@
-<div class="mt-25 py-12.5 flex items-center justify-center bg-neutral-gray">
-  <h1>Mes Rendez-Vous</h1>
+<div class="pt-50 pb-32.5 px-6 bg-neutral-gray">
+  <div class="w-full flex justify-center px-6">
+    <div class="w-180 text-center">
+      <h1 class="mb-4">Mes Rendez-Vous</h1>
+      <p class="text-secondary">
+        La liste de tous vos rendez-vous en temps en en heures.
+      </p>
+    </div>
+  </div>
 </div>
-<div class="w-full py-12.5 mt-50 mb-30 px-6 text-primary">
+<div class="w-full py-12.5 mb-30 px-6 text-primary">
   <ul>
     @for (appointment of appointmentsHistory; track $index) {
     <li>
@@ -38,9 +45,9 @@
         <div class="border-r-2 border-solid border-gray-400"></div>
         <div class="">
           <div class=""><span>Prix : </span><span> {{appointment.price}} $ </span></div>
-          <div class="px-6">
+          <div class="px-6 flex justify-center">
             <a href="/mes-rendez-vous/{{appointment._id}}/details">
-              <button class="bg-gray-500 text-blue-400 rounded-lg px-2.5 py-3">
+              <button class="bg-middle-gray text-blue-400 rounded-lg mt-3 px-2.5 py-2">
                 Voir les détails
               </button>
             </a>

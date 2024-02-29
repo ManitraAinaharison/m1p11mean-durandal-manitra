@@ -4,6 +4,8 @@ const authMiddleware = require("../../auth/middlewares/auth.middleware");
 const { upload } = require("../../../../upload/upload.config");
 const employeeService = require("../services/employee.service");
 const apiUtil = require("../../../../util/api.util");
+const authHelper = require("../../auth/helpers/auth.helper");
+const securityUtil = require("../../../../util/security.util");
 const { ROLES } = require("../../auth/schemas/user.schema");
 
 router.get("/employees",  authMiddleware.authorise([ROLES.MANAGER]), async (req, res) => {
@@ -37,6 +39,47 @@ router.post("/employees",  [authMiddleware.authorise([ROLES.MANAGER]), upload('u
         let employeeData = JSON.parse(req.body.employee);
         const fileName = req.file.filename;
         const employee = await employeeService.addNewEmployee(employeeData, fileName);
+        const responseBody = apiUtil.successResponse(true, employee);
+        res.status(200).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
+router.put("/employees",  [authMiddleware.authorise([ROLES.EMPLOYEE]), upload('uploads/img').single('img')], async (req, res) => {
+    try {
+        let decodedRefreshToken;
+        if (req.cookies.refreshToken) {
+            decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        }
+
+        if (!req.body.employee) throw apiUtil.ErrorWithStatusCode("Données manquantes", 500); 
+        let employeeData = JSON.parse(req.body.employee);
+        const fileName = req.file ? req.file.filename : null;
+        const employee = await employeeService.updateEmployeeItSelf(decodedRefreshToken._id, employeeData, fileName);
+        const { accessToken, refreshToken } = await securityUtil.generateTokens(employee);
+        await authHelper.addTokenCookies(res, { accessToken, refreshToken });
+        const responseBody = apiUtil.successResponse(true, employee);
+        res.status(200).json(responseBody);
+    } catch (e) {
+        res.status(e.statusCode || 500).json({
+            message: e.message
+        });
+    }
+});
+
+router.put("/employees/work-schedules", authMiddleware.authorise([ROLES.EMPLOYEE]), async (req, res) => {
+    try {
+        let decodedRefreshToken;
+        if (req.cookies.refreshToken) {
+            decodedRefreshToken = securityUtil.decodeToken(req.cookies.refreshToken);
+        }
+
+        const employee = await employeeService.updateEmployeeWorkSchedules(decodedRefreshToken._id, req.body);
+        const { accessToken, refreshToken } = await securityUtil.generateTokens(employee);
+        await authHelper.addTokenCookies(res, { accessToken, refreshToken });
         const responseBody = apiUtil.successResponse(true, employee);
         res.status(200).json(responseBody);
     } catch (e) {

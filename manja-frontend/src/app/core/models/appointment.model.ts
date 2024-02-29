@@ -151,6 +151,7 @@ export interface AppointHistoryResponse
 }
 
 export interface PostAppointmentResponse {
+  _id: string;
   appointmentDate: Date;
   client: string;
   employee: string;

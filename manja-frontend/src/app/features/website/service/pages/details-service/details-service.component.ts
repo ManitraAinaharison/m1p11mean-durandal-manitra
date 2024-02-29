@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceModel } from '../../../../../core/models/salon-service.model';
 import { SalonService } from '../../../../../core/services/salon-service.service';
 
@@ -12,6 +12,7 @@ export class DetailsServiceComponent {
   serviceSlug: string | null = null;
   matchingService: ServiceModel | null = null;
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private salonService: SalonService
   ) {}
@@ -19,15 +20,20 @@ export class DetailsServiceComponent {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       let slug: string | null = params.get('sub-service-slug');
-      this.serviceSlug = slug
+      this.serviceSlug = slug;
       this.setMatchingService(slug);
     });
   }
 
   setMatchingService(slug: string | null) {
-    if (!slug) return ;
+    if (!slug) return;
     this.salonService
       .getService(slug)
       .subscribe((response) => (this.matchingService = response.payload)); // handle if getSubService returns null
+  }
+
+  // routing
+  redirectToReservationPage() {
+    this.router.navigate([`/services/${this.serviceSlug}/reservation`]);
   }
 }
