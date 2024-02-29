@@ -16,9 +16,6 @@ module.exports.createServices = createServices = async () => {
       return { ...service, subServices: serviceSubServices };
     });
 
-    // console.log(services.map((s)=>(s.subServices)).flat(1))
-    // console.log(services.filter((s)=>(!s.imgPath || !s.description || !s.name)))
-
     return await postServices(services);
   } catch (error) {
     console.log("can't insert services");

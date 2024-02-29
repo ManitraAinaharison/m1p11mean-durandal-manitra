@@ -1,5 +1,5 @@
 const serviceDataFile = require("./service.datafile");
-const { postSubServices } = require("./subservice.mock-services");
+const { postSubServices, updateEmployeesAddSubService } = require("./subservice.mock-services");
 
 module.exports.createSubServices = createSubServices = async () => {
   try {
