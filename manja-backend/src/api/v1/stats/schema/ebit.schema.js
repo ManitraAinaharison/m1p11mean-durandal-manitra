@@ -9,8 +9,8 @@ const ebitSchema = new mongoose.Schema({
         designation: { type: String, required: true},
         amount: { type: Number, required: true, min: 0 }
     }],
-    sales: { type: Number, required: true, min: 0 },
-    totalProfit: { type: Number, required: true, min: 0 }
+    sales: { type: Number, required: true },
+    totalProfit: { type: Number, required: true }
 });
 
-module.exports.EbitSchema = mongoose.model("EbitSchema", ebitSchema);
+module.exports.Ebit = mongoose.model("Ebit", ebitSchema);

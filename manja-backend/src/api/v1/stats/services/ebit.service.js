@@ -31,7 +31,7 @@ module.exports.addNewEbit = async (ebitData) => {
       ebitData.totalProfit = ebitData.sales - totalExpense;
       let ebit = new Ebit(ebitData);
       ebit = await ebit.save();
-      return  await Employee.findById(ebit._id, '-__v');
+      return  await Ebit.findById(ebit._id, '-__v');
     } catch (e) {
       throw apiUtil.ErrorWithStatusCode(e.message, e.statusCode || 500);
     }

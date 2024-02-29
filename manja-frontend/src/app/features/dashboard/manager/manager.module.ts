@@ -25,6 +25,8 @@ import { EmployeeSchedulesComponent } from './components/employee-schedules/empl
 import { EmployeeSchedulesUpdateComponent } from './modals/employee-schedules-update/employee-schedules-update.component';
 import { EmployeeInformationsUpdateComponent } from './modals/employee-informations-update/employee-informations-update.component';
 import { employeeGuard } from '../../../core/guards/auth.guard';
+import { ListEbitComponent } from './components/list-ebit/list-ebit.component';
+import { EditEbitComponent } from './modals/edit-ebit/edit-ebit.component';
 
 const managerRoutes: Routes = [
   { path: 'profile', component: EmployeeProfileComponent, canActivate: [employeeGuard]},
@@ -52,7 +54,9 @@ const managerRoutes: Routes = [
     EmployeeInformationsComponent,
     EmployeeSchedulesComponent,
     EmployeeSchedulesUpdateComponent,
-    EmployeeInformationsUpdateComponent
+    EmployeeInformationsUpdateComponent,
+    ListEbitComponent,
+    EditEbitComponent
   ],
   imports: [
     CommonModule,
