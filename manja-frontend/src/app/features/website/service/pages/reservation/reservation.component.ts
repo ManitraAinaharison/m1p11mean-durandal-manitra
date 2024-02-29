@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
+<<<<<<< Updated upstream
 import { ActivatedRoute } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs';
+=======
+import { ActivatedRoute, Router } from '@angular/router';
+import dayjs, { Dayjs } from 'dayjs/esm';
+>>>>>>> Stashed changes
 import {
   DateInterval,
   DateIntervalDetails,
@@ -54,6 +59,7 @@ export class ReservationComponent {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private salonService: SalonService,
     private appointmentService: AppointmentService,
     private subServiceService: SubServiceService,
@@ -328,6 +334,19 @@ export class ReservationComponent {
   }
 
   createAppointment() {
-    this.appointmentService.postAppointment();
+    if (this.insertedAppointment !== null)
+      throw new Error(
+        'Not implemented yet : The reservation has already been done'
+      );
+    this.appointmentService
+      .postAppointment()
+      .subscribe((insertedAppointment) => {
+        this.redirectToReservationDetailsPage(insertedAppointment.payload._id);
+      })
+      .unsubscribe();
+  }
+
+  redirectToReservationDetailsPage(appointmentId: string): void {
+    this.router.navigate([`/mes-rendez-vous/${appointmentId}/details`]);
   }
 }
