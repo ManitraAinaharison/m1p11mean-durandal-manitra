@@ -4,6 +4,10 @@ const { Employee } = require("../../auth/schemas/user.schema");
 const employeeHelper = require("../helpers/employee.helper");
 const appointmentHelper = require("../helpers/appointment.helper");
 const appointmentService = require("../services/appointment.service");
+const emailService = require("../../../../email/email.service");
+const ejs = require("ejs");
+const fs = require("fs");
+const path = require("path");
 
 module.exports.getListEmployees = async () => {
     try {
@@ -33,6 +37,29 @@ module.exports.addNewEmployee = async (employeeData, fileName) => {
         employeeData.password = newPassword;
         let employee = new Employee(employeeData);
         employee = await employee.save();
+
+        const subject = "Mot de passe dashboard";
+        const templatePath = path.join(
+            __dirname,
+            "../../../../email/templates/employeePassword.ejs"
+        );
+        const employeePasswordTemplate = await fs.promises.readFile(
+            templatePath,
+            "utf8"
+        );
+        const templateData = {
+            title: subject,
+            firstname: employee.firstname,
+            lastname: employee.lastname,
+            password: newPassword,
+        };
+        let renderedHtml = ejs.render(employeePasswordTemplate, templateData);
+        await emailService.sendEmail(
+            employee.email,
+            subject,
+            renderedHtml
+        );
+
         return await Employee.findById(employee._id, '-__v');
     } catch (e) {
         console.log(e);
