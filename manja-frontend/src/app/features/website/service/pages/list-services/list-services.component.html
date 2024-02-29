@@ -9,7 +9,12 @@
   </div>
 </div>
 <div class="w-full grid grid-cols-2 gap-x-6 gap-y-12 px-6">
-  <div class="w-auto h-fit min-h-64" *ngFor="let salonService of salonServiceList">
+  @if(loading){<div class="w-auto h-fit min-h-64" *ngFor="let _ of [1,2,3,4]">
+    <service-card-loading></service-card-loading>
+  </div>}@else if(salonServiceList.length > 0){<div class="w-auto h-fit min-h-64" *ngFor="let salonService of salonServiceList">
     <service-card [salonServiceElement]="salonService"></service-card>
-  </div>
+  </div>}@else{
+    <!-- impossible but ... still -->
+    <h2>Aucun service trouvé, veuillez réactualiser la page</h2>
+  }
 </div>

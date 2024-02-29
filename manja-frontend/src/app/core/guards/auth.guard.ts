@@ -49,3 +49,18 @@ export const managerGuard: CanActivateFn = (route, state) => {
       })
     );
 };
+
+export const customerGuard: CanActivateFn = (route, state) => {
+  const userService = inject<UserService>(UserService);
+  const router = inject<Router>(Router);
+  return userService
+    .getCurrentUser()
+    .pipe(
+      map((res: ApiSuccess) => {
+          userService.errorMessage = "Accès refusé";
+          userService.targetUrl = route.url[0].path;
+          if(res.payload.role != 'CUSTOMER') router.navigate(['/login']);
+          return true;
+      })
+    );
+};

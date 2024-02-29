@@ -1,11 +1,6 @@
 import { Component } from '@angular/core';
-<<<<<<< Updated upstream
-import { ActivatedRoute } from '@angular/router';
-import dayjs, { Dayjs } from 'dayjs';
-=======
 import { ActivatedRoute, Router } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs/esm';
->>>>>>> Stashed changes
 import {
   DateInterval,
   DateIntervalDetails,
@@ -29,6 +24,7 @@ import {
 } from '../../../../../core/util/date.util';
 import { CalendarDate } from '../../../../../shared/types/date.types';
 import { toCalendarDate } from '../../../../../shared/utils/date.util';
+import { PageLoaderService } from '../../../../../shared/services/page-loader.service';
 
 @Component({
   selector: 'app-reservation',
@@ -57,17 +53,23 @@ export class ReservationComponent {
   enablePostAppointment: boolean = false;
   insertedAppointment: PostAppointmentResponse | null = null;
 
+  loadingEmployees : boolean = false;
+  loadingTimepicker : boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private salonService: SalonService,
     private appointmentService: AppointmentService,
     private subServiceService: SubServiceService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private pageLoaderService: PageLoaderService
   ) {}
 
   ngOnInit(): void {
+    this.pageLoaderService.show();
     this.route.paramMap.subscribe((params) => {
+      this.pageLoaderService.hide();
       let slug: string | null = params.get('sub-service-slug');
       this.serviceSlug = slug;
       this.setMatchingService(slug);
@@ -94,11 +96,13 @@ export class ReservationComponent {
 
       this.subServiceService.selectedSubService$.subscribe(
         (selectedSubService) => {
+          this.setLoadingEmployees(true);
           this.appointmentService.checkEnablePostAppointment();
           this.selectedSubService = selectedSubService;
           this.subServiceService.getRelatedEmployees().subscribe((response) => {
             this.employees = response.payload;
             this.setSelectedEmployee(null);
+            this.setLoadingEmployees(false);
           });
         }
       );
@@ -124,10 +128,12 @@ export class ReservationComponent {
   }
 
   update(selectedEmployee: Employee, selectedDate: DateIntervalDetails) {
+    this.setLoadingTimepicker(true);
     this.employeeService
       .getEmployeeSchedule(selectedEmployee._id, selectedDate.start)
       .subscribe({
         next: (response) => {
+          this.setLoadingTimepicker(false);
           if (!response.payload) return;
           const newNonAvailableHours = calculateNonAvailableHours(
             response.payload
@@ -148,6 +154,7 @@ export class ReservationComponent {
           this.appointmentService.checkEnablePostAppointment();
         },
         error: (err) => {
+          this.setLoadingTimepicker(false);
           this.disableTimePicker = true;
           this.appointmentService.setBusinessHours(null);
           this.appointmentService.setNonAvailableHours([]);
@@ -348,5 +355,14 @@ export class ReservationComponent {
 
   redirectToReservationDetailsPage(appointmentId: string): void {
     this.router.navigate([`/mes-rendez-vous/${appointmentId}/details`]);
+  }
+
+  // ui
+  setLoadingEmployees(value : boolean){
+    this.loadingEmployees = value;
+  }
+
+  setLoadingTimepicker(value : boolean){
+    this.loadingTimepicker = value;
   }
 }

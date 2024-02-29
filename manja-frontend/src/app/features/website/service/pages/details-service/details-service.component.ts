@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceModel } from '../../../../../core/models/salon-service.model';
 import { SalonService } from '../../../../../core/services/salon-service.service';
+import { PageLoaderService } from '../../../../../shared/services/page-loader.service';
 
 @Component({
   selector: 'app-details-service',
@@ -14,14 +15,18 @@ export class DetailsServiceComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private salonService: SalonService
+    private salonService: SalonService,
+    private pageLoaderService: PageLoaderService
   ) {}
 
   ngOnInit(): void {
+    this.pageLoaderService.show();
     this.route.paramMap.subscribe((params) => {
       let slug: string | null = params.get('sub-service-slug');
       this.serviceSlug = slug;
-      this.setMatchingService(slug);
+      this.pageLoaderService.hide();
+      if (this.serviceSlug === null) this.router.navigateByUrl(`/fergtrzretrhzrthtr`);
+      else this.setMatchingService(slug);
     });
   }
 

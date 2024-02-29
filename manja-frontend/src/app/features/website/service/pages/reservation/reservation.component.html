@@ -44,7 +44,26 @@
         </div>
       </div>
       <section>
-        @if(employees && employees.length > 0){
+        @if(loadingEmployees){
+        <h4 class="text-primary mt-6">
+          Sélectionnez l'employé qui vous prendra en charge :
+        </h4>
+        <div class="w-full h-auto py-20 flex gap-12">
+          @for (_ of [1,2]; track $index) {
+          <div class="w-86 h-auto bg-neutral-gray animate-pulse">
+            <div class="w-86 h-60 px-10 flex justify-center items-center animate-pulse">
+              <div
+                [ngClass]="{
+                  'size-36 rounded-full bg-middle-gray animate-pulse': true,
+                }"
+              ></div>
+            </div>
+            <div class="w-full h-auto text-center px-6 bg-neutral-gray animate-pulse">
+            </div>
+          </div>
+          }
+        </div>
+        } @else if(employees && employees.length > 0){
         <h4 class="text-primary mt-6">
           Sélectionnez l'employé qui vous prendra en charge :
         </h4>
@@ -74,12 +93,13 @@
           }
         </div>
         }@else if (selectedSubService && employees && employees.length === 0) {
-        <div class="mb-4">
-          <h4 class="text-primary mb-6 font-semibold">Employés disponibles:</h4>
+        <div class="mb-4 h-60 flex items-center">
+          <div><h4 class="text-primary mb-6 font-semibold">Employés disponibles:</h4>
           <p class="m-0 text-danger">
             Pas d'employés disponible pour ce service. Veuillez sélectionnez un
             autre service
           </p>
+          </div>
         </div>
         }
       </section>
@@ -93,6 +113,7 @@
         />
         <timepicker
           [disabled]="!enablePostAppointment"
+          [loading]="loadingTimepicker"
           [cursorInterval]="selectedDate"
           [businessHours]="businessHours"
           [nonAvailableHours]="nonAvailableHours"

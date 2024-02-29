@@ -4,14 +4,14 @@
   De
   <input
     type="time"
-    [valueAsDate]="cursorInterval.start.local().toDate()"
-    [min]="cursorInterval.start.format('HH:mm:ss')"
-    [max]="cursorInterval.end.format('HH:mm:ss')"
+    [valueAsDate]="cursorInterval.start.toDate()"
+    [min]="cursorInterval.start.add(3, 'hour').second(0).format('HH:mm:ss')"
+    [max]="cursorInterval.end.add(3, 'hour').second(0).format('HH:mm:ss')"
   />
   {{ " à " }}
   <input
     type="time"
-    [valueAsDate]="cursorInterval.end.local().toDate()"
+    [valueAsDate]="cursorInterval.end.toDate()"
     [min]="cursorInterval.start.format('HH:mm:ss')"
     [max]="cursorInterval.end.format('HH:mm:ss')"
   />
@@ -76,6 +76,10 @@
       </ul>
     </div>
   </div>
+</div>
+}@else if(loading) {
+<div class="w-80 h-80 bg-neutral-gray select-none">
+  <div class="h-full w-40 bg-middle-gray animate-pulse"></div>
 </div>
 }@else {
 <div
