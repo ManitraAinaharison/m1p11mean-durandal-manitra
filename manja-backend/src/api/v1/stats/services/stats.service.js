@@ -92,8 +92,8 @@ module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
       let sales = 0;
       appointmentsLastMonth.forEach((appointment) => { sales += appointment.price; });
       res.push({
-        month: startOfMonth.getMonth(),
-        year: startOfMonth.getFullYear(),
+        month:  now.getMonth() - i < 0 ? 11 : now.getMonth() - i,
+        year: now.getMonth() - i < 0 ? now.getFullYear() - 1 : now.getFullYear(),
         nbrAppointments: nbrApptmnts,
         sales: sales
       })
