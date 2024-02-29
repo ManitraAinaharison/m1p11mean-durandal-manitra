@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const securityUtil = require("../../../../util/security.util");
 const apiUtil = require("../../../../util/api.util");
-
-const { User, Customer } = require("../schemas/user.schema");
+const { ROLES } = require("../schemas/user.schema");
+const { User, Customer, Employee } = require("../schemas/user.schema");
 
 module.exports.register = async function register(req) {
     const session = await mongoose.startSession();
@@ -53,6 +53,9 @@ module.exports.login = async function login(req, roles) {
         if (!user || !securityUtil.isMatch(password, user.password))
             throw apiUtil.ErrorWithStatusCode("Email ou mot de passe invalide", 401);
 
+        if (user.role == ROLES.EMPLOYEE) {
+            user = await Employee.findById(user.id).populate('subServices');
+        }
         const { accessToken, refreshToken } = await securityUtil.generateTokens(user);
         const { password: pwd, __t, __v, _id, ...newUser } = user._doc;
         return {

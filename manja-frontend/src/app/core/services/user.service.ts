@@ -1,7 +1,7 @@
 import { JwtService } from './jwt.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, distinctUntilChanged, map, shareReplay, tap } from 'rxjs';
-import { Credentials, SignUpData, User } from '../models/user.model';
+import { Credentials, Employee, SignUpData, User } from '../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { Route, Router } from '@angular/router';
 import { ApiError, ApiSuccess } from '../models/api.model';
@@ -11,7 +11,7 @@ import { ApiError, ApiSuccess } from '../models/api.model';
 })
 export class UserService {
 
-    private currentUserSubject = new BehaviorSubject<User | null>(null);
+    private currentUserSubject = new BehaviorSubject<User| Employee | null>(null);
 
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
     public isAuthenticated = this.currentUser.pipe(map((user) => !!user));
@@ -45,6 +45,7 @@ export class UserService {
 
     logout(): void {
         this.purgeAuth();
+        this.errorMessage = "";
         let currentUrl = this.router.url;
         if (currentUrl.startsWith('/')) currentUrl = currentUrl.substring(1);
         const currentRoute: Route | null = this.router.config.find(route => route.path === currentUrl) || null;
