@@ -2,11 +2,14 @@ import { ServiceModel, SubServiceModel } from "./salon-service.model";
 
 export interface User {
     _id?: string;
+    imgPath?: string;
     firstname: string;
     lastname: string;
     email: string;
     username: string;
     password: string;
+    subServices?: SubServiceModel[];
+    workSchedule?: [];
     isActive?: boolean;
 }
 
