@@ -76,14 +76,14 @@ module.exports.getCurrentSales = async () => {
 module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
   try {
     const now = new Date();
+    now.setDate(1);
     let res = [];
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); 
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1); 
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0)
+    endOfMonth.setDate(endOfMonth.getDate() - 1);
     for (let i = 0; i < nbrMonth; i++) {
-      startOfMonth.setMonth((startOfMonth.getMonth() - 1) == 0 ? 11 : now.getMonth() - 1);
-      endOfMonth.setMonth((endOfMonth.getMonth() - 1) == 0 ? 11 : now.getMonth() - 1);
-      if ((startOfMonth.getMonth() - 1) == 0) startOfMonth.setFullYear(startOfMonth.getFullYear() - 1);
-      if ((endOfMonth.getMonth() - 1) == 0) endOfMonth.setFullYear(endOfMonth.getFullYear() - 1);
+      startOfMonth.setMonth(startOfMonth.getMonth() - 1);
+      endOfMonth.setMonth(endOfMonth.getMonth() - 1);
       let appointmentsLastMonth = await Appointment.find({
         'payment.paymentDate': {
           $gte: startOfMonth,
@@ -94,13 +94,14 @@ module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
       let sales = 0;
       appointmentsLastMonth.forEach((appointment) => { sales += appointment.price; });
       res.push({
+        startOfMonth: new Date(startOfMonth),
+        endOfMonth: new Date(endOfMonth),
         month: now.getMonth(),
         year: now.getFullYear(),
         nbrAppointments: nbrApptmnts,
         sales: sales
       })
-      now.setMonth((now.getMonth() - 1) == 0 ? 11 : now.getMonth() - 1);
-      if ((now.getMonth() - 1) == 0) now.setFullYear(now.getFullYear() - 1);
+      now.setMonth(now.getMonth() - 1);
     }
     return res;
   } catch (e) {
