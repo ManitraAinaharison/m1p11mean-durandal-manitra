@@ -22,6 +22,11 @@ function humanizeHour(date) {
     return `${hour}h${minute < 10 ? '0' : ''}${minute}`;
 }
 
+function isValidDate(d) {
+  return d instanceof Date && !isNaN(d);
+}
+
 module.exports.datesAreEqualWithoutTime = datesAreEqualWithoutTime
 module.exports.toLongFrenchDate = toLongFrenchDate
 module.exports.humanizeHour = humanizeHour
+module.exports.isValidDate = isValidDate

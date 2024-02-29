@@ -6,13 +6,15 @@ import {
   tap,
   of,
   Observer,
+  map,
 } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { findEmployee } from './api-mock-data/employee.mockdata';
 import { Employee } from '../models/user.model';
 import { ApiResponse, ApiSuccess } from '../models/api.model';
 import { Dayjs } from 'dayjs';
-import { EmployeeSchedule } from '../models/appointment.model';
+import { EmployeeSchedule, PrimaryDateEmployeeSchedule } from '../models/appointment.model';
+import { toEmployeeSchedule } from '../util/date.util';
 
 @Injectable({
   providedIn: 'root',
@@ -56,12 +58,18 @@ export class EmployeeService {
     if (!employeeId || !selectedDate)
       return of({ success: true, payload: null });
     return this.http
-      .get<ApiResponse<EmployeeSchedule>>(
+      .get<ApiResponse<PrimaryDateEmployeeSchedule>>(
         `/v1/employees/${employeeId}/schedules?date=${selectedDate.format(
           'YYYY-MM-DD'
         )}`
       )
       .pipe(
+        map((response)=>{
+          return {
+            ...response,
+            payload: toEmployeeSchedule(response.payload, selectedDate),
+          };
+        }),
         tap({
           next: (response) => {},
           error: (e) => {

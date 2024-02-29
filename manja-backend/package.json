@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --inspect --watch src/index.js",
+    "mock": "node --inspect --watch src/index.mockdata.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "durandal & manitra",

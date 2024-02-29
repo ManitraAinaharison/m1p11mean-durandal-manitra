@@ -37,6 +37,18 @@ export class SalonService {
     return this.http
       .get<ApiResponse<ServiceModel>>(`/v1/services/${slug}`)
       .pipe(
+        map((response) => {
+          return {
+            ...response,
+            payload: {
+              ...response.payload,
+              subServices: response.payload.subServices.map((sub) => ({
+                ...sub,
+                duration: sub.duration / 60,
+              })),
+            },
+          };
+        }),
         tap({
           next: (response) => this.setSelectedService(response.payload),
           error: () => {

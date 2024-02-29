@@ -9,6 +9,7 @@ export interface CalendarDate {
   isOpenDay: boolean;
   selectable: boolean;
   selected: boolean;
+  isHighlighted: boolean;
 }
 
 export type Month = (typeof MONTHS_FRENCH)[number];
