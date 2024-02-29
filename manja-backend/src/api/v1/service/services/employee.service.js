@@ -82,8 +82,8 @@ module.exports.updateEmployeeWorkSchedules = async (employeeId, data) => {
 
         let dateStart = new Date("1970-01-01T" + data.start);
         let dateEnd = new Date("1970-01-01T" + data.end);
-        dateStart.setHours(dateStart.getHours()+3);
-        dateEnd.setHours(dateStart.getHours()+3);
+        dateStart.setHours(dateStart.getHours()+0);
+        dateEnd.setHours(dateEnd.getHours()+0);
         
         const currWorkSchedule = employee.workSchedule.findIndex(workSchedule => workSchedule.day == data.day);
         if(currWorkSchedule >= 0) {
