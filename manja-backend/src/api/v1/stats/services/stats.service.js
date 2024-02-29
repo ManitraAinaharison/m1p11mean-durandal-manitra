@@ -80,8 +80,10 @@ module.exports.getSalesAndAppointmentsNumberForLast = async (nbrMonth) => {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); 
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     for (let i = 0; i < nbrMonth; i++) {
-      startOfMonth.setMonth(startOfMonth.getMonth() - i);
-      endOfMonth.setMonth(endOfMonth.getMonth() - i);
+      startOfMonth.setMonth((startOfMonth.getMonth() - 1) == 0 ? 11 : now.getMonth() - 1);
+      endOfMonth.setMonth((endOfMonth.getMonth() - 1) == 0 ? 11 : now.getMonth() - 1);
+      if ((startOfMonth.getMonth() - 1) == 0) startOfMonth.setFullYear(startOfMonth.getFullYear() - 1);
+      if ((endOfMonth.getMonth() - 1) == 0) endOfMonth.setFullYear(endOfMonth.getFullYear() - 1);
       let appointmentsLastMonth = await Appointment.find({
         'payment.paymentDate': {
           $gte: startOfMonth,
