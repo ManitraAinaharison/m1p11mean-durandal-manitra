@@ -1,35 +1,45 @@
 <div class="size-full">
     <div class="h-[calc(50%-10px)] border mb-5 border-gray-200 text-gray-900 rounded-lg shadow-lg">
         <div class="size-full flex justify-start items-center px-6 mr-6">
-            <div class="bg-red-200 flex justify-start items-center p-14 rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600">
+            <div class="bg-green-200 flex justify-start items-center p-14 rounded-lg" *ngIf="this.salesToday.gapFromPrev >= 0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-green-600">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+              </svg>
+            </div>
+            <div class="bg-red-200 flex justify-start items-center p-14 rounded-lg" *ngIf="this.salesToday.gapFromPrev < 0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600" >
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
                 </svg>
             </div>
             <div class="h-full px-6 pt-4">
                 <p class="text-[18px] font-bold">Aujourd'hui</p>
-                <span class="text-[32px]"><b>2</b>&nbsp;<small>RDV</small></span>
+                <span class="text-[32px]"><b>{{ this.salesToday.nbrAppointments }}</b>&nbsp;<small>RDV</small></span>
                 <br>
-                <span><b>20 000 Ar</b> de CA </span>
+                <span><b>{{ this.salesToday.sales }} Ar</b> de CA </span>
                 <br>
-                <small class="text-red-600"><b>-12%</b> de chiffres d'affaire par rapport à hier</small>
+                <small [ngClass]="{ 'text-green-600': this.salesToday.gapFromPrev >= 0, 'text-red-600': this.salesToday.gapFromPrev < 0 }"><b>{{ this.showSign(this.salesToday.gapFromPrev) + this.salesToday.gapFromPrev }}%</b> de chiffres d'affaire par rapport à hier</small>
             </div>
         </div>
     </div>
     <div class="h-[calc(50%-10px)] border mt-5 border-gray-200 text-gray-900 rounded-lg shadow-lg">
         <div class="size-full flex justify-start items-center px-6 mr-6">
-            <div class="bg-green-200 flex justify-start items-center p-14 rounded-lg">
+            <div class="bg-green-200 flex justify-start items-center p-14 rounded-lg" *ngIf="this.salesCurrMonth.gapFromPrev >= 0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-green-600">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
                 </svg>
             </div>
+            <div class="bg-red-200 flex justify-start items-center p-14 rounded-lg"  *ngIf="this.salesCurrMonth.gapFromPrev < 0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600" >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+              </svg>
+            </div>
             <div class="h-full px-6 pt-4">
                 <p class="text-[18px] font-bold">Ce mois</p>
-                <span class="text-[32px]"><b>41</b>&nbsp;<small>RDV</small></span>
+                <span class="text-[32px]"><b>{{ this.salesCurrMonth.nbrAppointments }}</b>&nbsp;<small>RDV</small></span>
                 <br>
-                <span><b>345 000 Ar</b> de CA </span>
+                <span><b>{{ this.salesCurrMonth.sales }} Ar</b> de CA </span>
                 <br>
-                <small class="text-green-600"><b>+12%</b> de chiffres d'affaire par rapport au mois dernier</small>
+                <small [ngClass]="{ 'text-green-600': this.salesCurrMonth.gapFromPrev >= 0, 'text-red-600': this.salesCurrMonth.gapFromPrev < 0 }"><b>{{ this.showSign(this.salesCurrMonth.gapFromPrev) + this.salesCurrMonth.gapFromPrev }}%</b> de chiffres d'affaire par rapport au mois dernier</small>
             </div>
         </div>
     </div>

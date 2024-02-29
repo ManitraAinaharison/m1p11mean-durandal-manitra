@@ -1,5 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ChartComponent } from 'ng-apexcharts';
+import { StatsService } from '../../../../../core/services/stats.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -14,17 +15,23 @@ export type ChartOptions = {
   templateUrl: './booking-line-chart.component.html',
   styleUrl: './booking-line-chart.component.css'
 })
-export class BookingLineChartComponent {
+export class BookingLineChartComponent implements OnInit{
+
+  listMonths: string[] = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout','Septembre', 'Octobre', 'Novembre', 'Decembre'];
+  yData = [0, 0, 0, 0, 0, 0];
+  xData = ["", "", "", "", "", ""];
 
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions: ChartOptions;
 
-  constructor() {
+  constructor(
+    public statsService: StatsService
+  ) {
     this.chartOptions = {
       series: [
         {
-          name: "My-series",
-          data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+          name: "Chiffres d'affaire/ Nbr RDV",
+          data: this.yData
         }
       ],
       chart: {
@@ -39,7 +46,43 @@ export class BookingLineChartComponent {
 
       },
       xaxis: {
-        categories: ["Jan", "Feb",  "Mar",  "Apr",  "May",  "Jun",  "Jul",  "Aug", "Sep"]
+        categories: this.xData
+      }
+    };
+  }
+  ngOnInit(): void {
+    this.statsService
+    .getBookingFromLastSix()
+    .subscribe((response) => {
+      const res = response.payload;
+      console.log(res);
+      this.yData = res.map((x: any) => x.sales).reverse();
+      this.xData = res.map((x: any) => this.listMonths[x.month] + ' ' + x.year).reverse();
+      this.refreshChart();
+    });
+  }
+
+  refreshChart() {
+    this.chartOptions = {
+      series: [
+        {
+          name: "Chiffres d'affaire/ Nbr RDV",
+          data: this.yData
+        }
+      ],
+      chart: {
+        height: 350,
+        type: "line",
+        fontFamily: 'DM Sans',
+        toolbar: {
+          show: false
+        }
+      },
+      title: {
+
+      },
+      xaxis: {
+        categories: this.xData
       }
     };
   }

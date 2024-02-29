@@ -19,11 +19,11 @@ router.get("/stats/sales", async (req, res) => {
 });
 
 
-router.get("/stats/average-employee-working-hours", async (req, res) => {
+router.get("/stats/total-employee-working-hours", async (req, res) => {
     try {
-        const sales = await statsService.getCurrentSales();  
+        const sales = await statsService.getTotalEmployeeWorkingHours();
         const responseBody = apiUtil.successResponse(true, sales);
-        res.status(201).json(responseBody);
+        res.status(200).json(responseBody);
     } catch (e) {
         res.status(e.statusCode || 500).json({
             message: e.message
